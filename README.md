@@ -7,3 +7,6 @@
 
 - Etheraffle FreeLOT Token:
     [**0x4c388dce25665ea602b92f15718ca278bba45a9a**](https://etherscan.io/address/0x4c388dce25665ea602b92f15718ca278bba45a9a)
+
+- EthRelief Placeholder:
+    [**0x63E14Dc47003d87d152eD507DF3F50C20bD88c3e**](https://etherscan.io/address/0x63E14Dc47003d87d152eD507DF3F50C20bD88c3e)
