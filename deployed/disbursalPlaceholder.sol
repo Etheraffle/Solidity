@@ -3,10 +3,7 @@ pragma solidity^0.4.15;
 contract ReceiverInterface {
     function receiveEther() external payable {}
 }
-/**
- * @author G.Kapka <greg@etheraffle.com>
- * @title Etheraffle Disbursal (placeholder)
- */
+
 contract EtheraffleDisbursal is ReceiverInterface {
 
     bool    upgraded;
@@ -77,17 +74,3 @@ contract EtheraffleDisbursal is ReceiverInterface {
     function () payable external {
     }
 }
-/*
-Main Chain
-
-0x3bfb12ed112aB833F275Dbf622b7CacC4CBF092b
-
-[{"constant":false,"inputs":[{"name":"_addr","type":"address"}],"name":"upgrade","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_addr","type":"address"}],"name":"selfDestruct","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_newAddr","type":"address"}],"name":"setEtheraffle","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"receiveEther","outputs":[],"payable":true,"type":"function"},{"inputs":[{"name":"_etheraffle","type":"address"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"fromWhere","type":"address"},{"indexed":false,"name":"howMuch","type":"uint256"},{"indexed":false,"name":"atTime","type":"uint256"}],"name":"LogEtherReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"toWhere","type":"address"},{"indexed":false,"name":"amountTransferred","type":"uint256"},{"indexed":false,"name":"atTime","type":"uint256"}],"name":"LogUpgrade","type":"event"}]
-
-
-
-Rinkeby
-var disbAdd = '0xf58ea2ed7d5748e0a251c1752e6cf644e3aea122'
-var disbABI = eth.contract([{"constant":false,"inputs":[{"name":"_addr","type":"address"}],"name":"upgrade","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_addr","type":"address"}],"name":"selfDestruct","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"receiveEther","outputs":[],"payable":true,"type":"function"},{"inputs":[{"name":"_etheraffle","type":"address"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"fromWhere","type":"address"},{"indexed":false,"name":"howMuch","type":"uint256"},{"indexed":false,"name":"atTime","type":"uint256"}],"name":"LogEtherReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"toWhere","type":"address"},{"indexed":false,"name":"amountTransferred","type":"uint256"},{"indexed":false,"name":"atTime","type":"uint256"}],"name":"LogUpgrade","type":"event"}])
-var disb = disbABI.at(disbAdd)
-*/
