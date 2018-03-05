@@ -12,8 +12,8 @@
   <br/>
   <b>❍ Etheraffle FreeLOT Token ❍</b>
   <br/>
-  <a href='https://etherscan.io/address/0x4c388dce25665ea602b92f15718ca278bba45a9a'>
-    <b>0x4c388dce25665ea602b92f15718ca278bba45a9a<b>
+  <a href='https://etherscan.io/address/0xc39f7bB97B31102C923DaF02bA3d1bD16424F4bb'>
+    <b>0xc39f7bB97B31102C923DaF02bA3d1bD16424F4bb<b>
   </a>
   <br/>
   <br/>
