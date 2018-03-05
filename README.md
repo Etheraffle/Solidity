@@ -5,8 +5,8 @@
 <p align='center'>
   <b>❍ Etheraffle LOT Token ❍</b>
   <br/>
-  <a href='https://etherscan.io/address/0xd70b659ae2c61fc52a31723af84a1922747feab7'>
-    <b>0xd70b659ae2c61fc52a31723af84a1922747feab7<b>
+  <a href='https://etherscan.io/address/0xAfD9473dfe8a49567872f93c1790b74Ee7D92A9F'>
+    <b>0xAfD9473dfe8a49567872f93c1790b74Ee7D92A9F<b>
   </a>
   <br/>
   <br/>
