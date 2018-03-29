@@ -20,7 +20,7 @@ contract Promo is EtheraffleInterface {
     uint public rate;
     LOTInterface LOTContract;
     EtheraffleInterface etheraffleContract;
-    /* Mappig of  user address to weekNo to claimed bool */
+    /* Mapping of  user address to weekNo to claimed bool */
     mapping (address => mapping (uint => bool)) public claimed;
     
     event LogActiveStatus(bool currentStatus, uint atTime);
