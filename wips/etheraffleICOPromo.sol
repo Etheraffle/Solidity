@@ -12,14 +12,21 @@ contract LOTInterface {
 }
 
 contract Promo is EtheraffleInterface {
-
-    uint constant RAFEND   = 500400;// 7:00pm Saturdays
-    uint constant BIRTHDAY = 1500249600;// Etheraffle's birthday <3
+    
     address etheraffle;
     bool public isActive;
     uint public rate;
+
+    uint constant public RAFEND   = 500400;// 7:00pm Saturdays
+    uint constant public BIRTHDAY = 1500249600;// Etheraffle's birthday <3
+    uint constant public ICOSTART = 1522281600;//Thur 29th March 2018
+    uint constant public TIER1END = 1523491200;//Thur 12th April 2018
+    uint constant public TIER2END = 1525305600;//Thur 3rd May 2018
+    uint constant public TIER3END = 1527724800;//Thur 31st May 2018
+    
     LOTInterface LOTContract;
     EtheraffleInterface etheraffleContract;
+
     /* Mapping of  user address to weekNo to claimed bool */
     mapping (address => mapping (uint => bool)) public claimed;
     
@@ -50,19 +57,19 @@ contract Promo is EtheraffleInterface {
         etheraffleContract = EtheraffleInterface(_er);
     }
     /*
-     * @dev     Fallback function used for main contract feature. Claims the 
+     * @dev     Function used to redeem promotional LOT owed. Sends the 
      *          promo LOT earnt by the Etheraffle player. Requires user to 
-     *          not have already claimed this week, and for promo to be active. 
+     *          not have already claimed in chosenweek, and for promo to be active. 
      *          Function retrieves user's number of entries in Etheraffle this 
      *          week and returns LOT tokens based on the exchange rate and number 
      *          of entries as a multiplier. Logs the claim and emits event of it.
      */
-    function () public {
+    function redeem(uint _weekNo) public {
         require(
             !claimed[msg.sender][getWeek()] &&
             isActive
             );
-        uint amt = getNumEntries();
+        uint amt = _weekNo == 0 ? getNumEntries(msg.sender, getWeek()) : getNumEntries(msg.sender, _weekNo);
         require(getLOTBalance() >= amt);
         claimed[msg.sender][getWeek()] = true;
         LOTContract.transfer(msg.sender, amt);
@@ -72,8 +79,9 @@ contract Promo is EtheraffleInterface {
      * @dev     Returns number of entries made in Etheraffle contract by function 
      *          caller in whatever the current week is.
      */
-    function getNumEntries() public constant returns (uint) {
-        return etheraffleContract.getUserNumEntries(msg.sender, getWeek());
+    function getNumEntries(address _address uint _weekNo) public constant returns (uint) {
+        uint week = _weekNo == 0 ? getWeek() : _weekNo;
+        return etheraffleContract.getUserNumEntries(_address, week);
     }
     /*
      * @dev     Toggles promo on & off. Only callable by the Etheraffle
@@ -111,11 +119,35 @@ contract Promo is EtheraffleInterface {
         return LOTContract.balanceOf(this);
     }
     /*
-     * @dev     Destroys contract, sending any remaining LOT tokens back 
-     *          to the Etheraffle multisig.
+     * @dev     Function returns bool re whether or not address in question 
+     *          has claimed promo LOT for the week in question.
+     *
+     * @param _address  Ethereum address to be queried
+     * @param _weekNo   Week number to be queried (use 0 for current week)
      */
-    function destroy() external onlyEtheraffle {
+    function hasRedeemed(address _address, uint _weekNo) public constant returns (bool) {
+        uint week = _weekNo == 0 ? getWeek() : _weekNo;
+        return claimed[_address][week];
+    }
+    /*
+     * @dev     Function returns current ICO tier's exchange 
+     *          rate of LOT per ETH.
+     */
+    function getRate() public constant returns (uint) {
+        if (now <  ICOSTART) return 110000 * 10 ** 6;
+        if (now <= TIER1END) return 100000 * 10 ** 6;
+        if (now <= TIER2END) return 90000  * 10 ** 6;
+        if (now <= TIER3END) return 80000  * 10 ** 6;
+        else return 0;
+    }
+    /*
+     * @dev     Scuttles contract, sending any remaining LOT tokens back 
+     *          to the Etheraffle multisig (by whom it is only callable)
+     */
+    function scuttle() external onlyEtheraffle {
         LOTContract.transfer(etheraffle, LOTContract.balanceOf(this));
         selfdestruct(etheraffle);
     }
 }
+
+    
