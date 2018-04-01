@@ -3,6 +3,7 @@ pragma solidity^0.4.21;
 /* solium-disable */
 
 contract EtheraffleInterface {
+    uint public tktPrice;
     function getUserNumEntries(address _entrant, uint _week) returns (uint) {}
 }
 
@@ -13,16 +14,15 @@ contract LOTInterface {
 
 contract Promo is EtheraffleInterface {
     
-    address etheraffle;
     bool public isActive;
-    uint public rate;
+    address public etheraffle;
 
-    uint constant public RAFEND   = 500400;// 7:00pm Saturdays
-    uint constant public BIRTHDAY = 1500249600;// Etheraffle's birthday <3
-    uint constant public ICOSTART = 1522281600;//Thur 29th March 2018
-    uint constant public TIER1END = 1523491200;//Thur 12th April 2018
-    uint constant public TIER2END = 1525305600;//Thur 3rd May 2018
-    uint constant public TIER3END = 1527724800;//Thur 31st May 2018
+    uint constant public RAFEND   = 500400;     // 7:00pm Saturdays
+    uint constant public BIRTHDAY = 1500249600; // Etheraffle's birthday <3
+    uint constant public ICOSTART = 1522281600; // Thur 29th March 2018
+    uint constant public TIER1END = 1523491200; // Thur 12th April 2018
+    uint constant public TIER2END = 1525305600; // Thur 3rd May 2018
+    uint constant public TIER3END = 1527724800; // Thur 31st May 2018
     
     LOTInterface LOTContract;
     EtheraffleInterface etheraffleContract;
@@ -51,7 +51,6 @@ contract Promo is EtheraffleInterface {
     //'0x4251139bf01d46884c95b27666c9e317df68b876','0xafd9473dfe8a49567872f93c1790b74ee7d92a9f','0x97f535e98cf250cdd7ff0cb9b29e4548b609a0bd'
     function Promo(address _er, address _LOT, address _erMsig) public {
         isActive = true;
-        rate = 200000000;
         etheraffle = _erMsig;
         LOTContract = LOTInterface(_LOT);
         etheraffleContract = EtheraffleInterface(_er);
@@ -69,7 +68,8 @@ contract Promo is EtheraffleInterface {
             !claimed[msg.sender][getWeek()] &&
             isActive
             );
-        uint amt = _weekNo == 0 ? getNumEntries(msg.sender, getWeek()) : getNumEntries(msg.sender, _weekNo);
+        uint entries = _weekNo == 0 ? getNumEntries(msg.sender, getWeek()) : getNumEntries(msg.sender, _weekNo);
+        uint amt = entries * getRate();
         require(getLOTBalance() >= amt);
         claimed[msg.sender][getWeek()] = true;
         LOTContract.transfer(msg.sender, amt);
@@ -139,6 +139,21 @@ contract Promo is EtheraffleInterface {
         if (now <= TIER2END) return 90000  * 10 ** 6;
         if (now <= TIER3END) return 80000  * 10 ** 6;
         else return 0;
+    }
+    /*
+     * @dev     Returns number of promotional LOT earnt per 
+     *          entry based on current ICO tier's exchange 
+     *          rate and current Etheraffle ticket price.
+     */
+    function getLOTPerEntry(uint _entries) public constant returns (uint) {
+        return (_entries * getRate() * getTktPrice()) / 1 * 10 ** 18;
+    }
+    /*
+     * @dev     Returns current ticket price from the main
+     *          Etheraffle contract
+     */
+    function getTktPrice() public constant returns (uint) {
+        return etheraffleContract.tktPrice();
     }
     /*
      * @dev     Scuttles contract, sending any remaining LOT tokens back 
