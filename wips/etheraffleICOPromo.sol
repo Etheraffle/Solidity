@@ -56,30 +56,30 @@ contract Promo is EtheraffleInterface {
         etheraffleContract = EtheraffleInterface(_er);
     }
     /*
-     * @dev     Function used to redeem promotional LOT owed. Sends the 
-     *          promo LOT earnt by the Etheraffle player. Requires user to 
-     *          not have already claimed in chosenweek, and for promo to be active. 
-     *          Function retrieves user's number of entries in Etheraffle this 
-     *          week and returns LOT tokens based on the exchange rate and number 
-     *          of entries as a multiplier. Logs the claim and emits event of it.
+     * @dev     Function used to redeem promotional LOT owed. Use weekNo of 
+     *          0 to get current week number. Requires user not to have already 
+     *          claimed week number in questions earnt promo LOT and for promo 
+     *          to be active. It calculates LOT owed, and sends them to the 
+     *          caller.
      */
     function redeem(uint _weekNo) public {
+        uint week = _weekNo == 0 ? getWeek() : _weekNo;
         require(
-            !claimed[msg.sender][getWeek()] &&
+            !claimed[msg.sender][week] &&
             isActive
             );
-        uint entries = _weekNo == 0 ? getNumEntries(msg.sender, getWeek()) : getNumEntries(msg.sender, _weekNo);
-        uint amt = entries * getRate();
-        require(getLOTBalance() >= amt);
-        claimed[msg.sender][getWeek()] = true;
+        uint entries = getNumEntries(msg.sender, week);
+        uint amt = getLOTPerEntry(entries);
+        require(getLOTBalance(this) >= amt);
+        claimed[msg.sender][week] = true;
         LOTContract.transfer(msg.sender, amt);
-        emit LogLOTClaim(msg.sender, amt, getWeek(), now);
+        emit LogLOTClaim(msg.sender, amt, week, now);
     }
     /*
-     * @dev     Returns number of entries made in Etheraffle contract by function 
-     *          caller in whatever the current week is.
+     * @dev     Returns number of entries made in Etheraffle contract by
+     *          function caller in whatever the current week is.
      */
-    function getNumEntries(address _address uint _weekNo) public constant returns (uint) {
+    function getNumEntries(address _address, uint _weekNo) public constant returns (uint) {
         uint week = _weekNo == 0 ? getWeek() : _weekNo;
         return etheraffleContract.getUserNumEntries(_address, week);
     }
@@ -105,6 +105,7 @@ contract Promo is EtheraffleInterface {
     /**
      * @dev     ERC223 tokenFallback function allows to receive ERC223 token 
      *          deposits properly.
+     *
      * @param _from  Address of the sender.
      * @param _value Amount of deposited tokens.
      * @param _data  Token transaction data.
@@ -113,10 +114,10 @@ contract Promo is EtheraffleInterface {
         if (_value > 0) emit LogTokenDeposit(_from, _value, _data);
     }
     /*
-     * @dev     Retrieves current LOT token balance of this contract.
+     * @dev     Retreives current LOT token balance of this contract.
      */
-    function getLOTBalance() internal constant returns (uint) {
-        return LOTContract.balanceOf(this);
+    function getLOTBalance(address _address) internal constant returns (uint) {
+        return LOTContract.balanceOf(_address);
     }
     /*
      * @dev     Function returns bool re whether or not address in question 
