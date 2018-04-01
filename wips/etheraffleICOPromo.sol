@@ -4,12 +4,12 @@ pragma solidity^0.4.21;
 
 contract EtheraffleInterface {
     uint public tktPrice;
-    function getUserNumEntries(address _entrant, uint _week) returns (uint) {}
+    function getUserNumEntries(address _entrant, uint _week) public view returns (uint) {}
 }
 
 contract LOTInterface {
-    function transfer(address _to, uint _value) {}
-    function balanceOf(address _owner) returns (uint) {}
+    function transfer(address _to, uint _value) public {}
+    function balanceOf(address _owner) public view returns (uint) {}
 }
 
 contract Promo is EtheraffleInterface {
@@ -79,7 +79,7 @@ contract Promo is EtheraffleInterface {
      * @dev     Returns number of entries made in Etheraffle contract by
      *          function caller in whatever the current week is.
      */
-    function getNumEntries(address _address, uint _weekNo) public constant returns (uint) {
+    function getNumEntries(address _address, uint _weekNo) public view returns (uint) {
         uint week = _weekNo == 0 ? getWeek() : _weekNo;
         return etheraffleContract.getUserNumEntries(_address, week);
     }
@@ -97,7 +97,7 @@ contract Promo is EtheraffleInterface {
      *          ensure parity of week number - as defined by number of weeks 
      *          since Etheraffle's birthday.
      */
-    function getWeek() public constant returns (uint) {
+    function getWeek() public view returns (uint) {
         uint curWeek = (now - BIRTHDAY) / 604800;
         if (now - ((curWeek * 604800) + BIRTHDAY) > RAFEND) curWeek++;
         return curWeek;
@@ -116,7 +116,7 @@ contract Promo is EtheraffleInterface {
     /*
      * @dev     Retreives current LOT token balance of this contract.
      */
-    function getLOTBalance(address _address) internal constant returns (uint) {
+    function getLOTBalance(address _address) internal view returns (uint) {
         return LOTContract.balanceOf(_address);
     }
     /*
@@ -126,7 +126,7 @@ contract Promo is EtheraffleInterface {
      * @param _address  Ethereum address to be queried
      * @param _weekNo   Week number to be queried (use 0 for current week)
      */
-    function hasRedeemed(address _address, uint _weekNo) public constant returns (bool) {
+    function hasRedeemed(address _address, uint _weekNo) public view returns (bool) {
         uint week = _weekNo == 0 ? getWeek() : _weekNo;
         return claimed[_address][week];
     }
@@ -134,7 +134,7 @@ contract Promo is EtheraffleInterface {
      * @dev     Function returns current ICO tier's exchange 
      *          rate of LOT per ETH.
      */
-    function getRate() public constant returns (uint) {
+    function getRate() public view returns (uint) {
         if (now <  ICOSTART) return 110000 * 10 ** 6;
         if (now <= TIER1END) return 100000 * 10 ** 6;
         if (now <= TIER2END) return 90000  * 10 ** 6;
@@ -146,14 +146,14 @@ contract Promo is EtheraffleInterface {
      *          entry based on current ICO tier's exchange 
      *          rate and current Etheraffle ticket price.
      */
-    function getLOTPerEntry(uint _entries) public constant returns (uint) {
+    function getLOTPerEntry(uint _entries) public view returns (uint) {
         return (_entries * getRate() * getTktPrice()) / 1 * 10 ** 18;
     }
     /*
      * @dev     Returns current ticket price from the main
      *          Etheraffle contract
      */
-    function getTktPrice() public constant returns (uint) {
+    function getTktPrice() public view returns (uint) {
         return etheraffleContract.tktPrice();
     }
     /*
