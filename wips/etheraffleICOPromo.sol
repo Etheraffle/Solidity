@@ -14,7 +14,7 @@ contract LOTInterface {
 
 contract Promo is EtheraffleInterface {
     
-    bool public isActive;
+    bool    public isActive;
     address public etheraffle;
 
     uint constant public RAFEND   = 500400;     // 7:00pm Saturdays
@@ -44,16 +44,12 @@ contract Promo is EtheraffleInterface {
     /*
      * @dev     Constructor - sets promo running and instantiates required
      *          contracts.
-     * @param _er       Etheraffle contract address
-     * @param _LOT      LOT token contract address
-     * @param _erMsig   Etheraffle multisig address
      */
-    //'0x4251139bf01d46884c95b27666c9e317df68b876','0xafd9473dfe8a49567872f93c1790b74ee7d92a9f','0x97f535e98cf250cdd7ff0cb9b29e4548b609a0bd'
-    function Promo(address _er, address _LOT, address _erMsig) public {
+    function Promo() public {
         isActive = true;
-        etheraffle = _erMsig;
-        LOTContract = LOTInterface(_LOT);
-        etheraffleContract = EtheraffleInterface(_er);
+        etheraffle = 0x97f535e98cf250CDd7Ff0cb9B29E4548b609A0bd;
+        LOTContract = LOTInterface(0xAfD9473dfe8a49567872f93c1790b74Ee7D92A9F);
+        etheraffleContract = EtheraffleInterface(0x4251139bF01D46884c95b27666C9E317DF68b876);
     }
     /*
      * @dev     Function used to redeem promotional LOT owed. Use weekNo of 
