@@ -9,18 +9,28 @@ contract LOTInterface {
     function transfer(address _to, uint _value) public {}
     function balanceOf(address _owner) public view returns (uint) {}
 }
-
-contract Promo is EtheraffleInterface {
+/*
+ * @everyone    Welcome to the Etheraffle LOT token promotional contract!
+ *              First you should go and play Etheraffle @ https://etheraffle.com
+ *              Then you can get free LOT tokens via this very promotion!
+ *              Next you should learn about our ICO @ https://etheraffle.com/ico
+ *              Then take part by buying some LOT tokens! 
+ *              And don't forget to play Etheraffle some more because it's brilliant!
+ *              If you want to chat to us you have loads of options:
+ *              On Telegram @ https://t.me/etheraffle
+ *              Or on Twitter @ https://twitter.com/etheraffle
+ *              Or on Reddit @ https://etheraffle.reddit.com
+ */
+contract EtheraffleLOTPromo {
     
     bool    public isActive;
-    address public etheraffle;
-
-    uint constant public RAFEND   = 500400;     // 7:00pm Saturdays
-    uint constant public BIRTHDAY = 1500249600; // Etheraffle's birthday <3
-    uint constant public ICOSTART = 1522281600; // Thur 29th March 2018
-    uint constant public TIER1END = 1523491200; // Thur 12th April 2018
-    uint constant public TIER2END = 1525305600; // Thur 3rd May 2018
-    uint constant public TIER3END = 1527724800; // Thur 31st May 2018
+    address constant public ETHERAFFLE;
+    uint    constant public RAFEND   = 500400;     // 7:00pm Saturdays
+    uint    constant public BIRTHDAY = 1500249600; // Etheraffle's birthday <3
+    uint    constant public ICOSTART = 1522281600; // Thur 29th March 2018
+    uint    constant public TIER1END = 1523491200; // Thur 12th April 2018
+    uint    constant public TIER2END = 1525305600; // Thur 3rd May 2018
+    uint    constant public TIER3END = 1527724800; // Thur 31st May 2018
     
     LOTInterface LOTContract;
     EtheraffleInterface etheraffleContract;
@@ -36,7 +46,7 @@ contract Promo is EtheraffleInterface {
      *          multisig wallet address
      */
     modifier onlyEtheraffle() {
-        require(msg.sender == etheraffle);
+        require(msg.sender == ETHERAFFLE);
         _;
     }
     /*
@@ -65,7 +75,7 @@ contract Promo is EtheraffleInterface {
             entries > 0 &&
             isActive
             );
-        uint amt = getLOTPerEntry(entries);
+        uint amt = getPromoLOTEarnt(entries);
         if (getLOTBalance(this) < amt) {
             isActive = false;
             emit LogActiveStatus(false, now);
@@ -155,11 +165,11 @@ contract Promo is EtheraffleInterface {
         else return 0;
     }
     /*
-     * @dev     Returns number of promotional LOT earnt per 
-     *          entry based on current ICO tier's exchange 
-     *          rate and current Etheraffle ticket price.
+     * @dev     Returns number of promotional LOT earnt as calculated 
+     *          based on number of entries, current ICO exchange rate
+     *          and the current Etheraffle ticket price. 
      */
-    function getLOTPerEntry(uint _entries) public view returns (uint) {
+    function getPromoLOTEarnt(uint _entries) public view returns (uint) {
         return (_entries * getRate() * getTktPrice()) / (1 * 10 ** 18);
     }
     /*
@@ -168,6 +178,6 @@ contract Promo is EtheraffleInterface {
      */
     function scuttle() external onlyEtheraffle {
         LOTContract.transfer(etheraffle, LOTContract.balanceOf(this));
-        selfdestruct(etheraffle);
+        selfdestruct(ETHERAFFLE);
     }
 }
