@@ -24,13 +24,13 @@ contract LOTInterface {
 contract EtheraffleLOTPromo {
     
     bool    public isActive;
-    address constant public ETHERAFFLE;
-    uint    constant public RAFEND   = 500400;     // 7:00pm Saturdays
-    uint    constant public BIRTHDAY = 1500249600; // Etheraffle's birthday <3
-    uint    constant public ICOSTART = 1522281600; // Thur 29th March 2018
-    uint    constant public TIER1END = 1523491200; // Thur 12th April 2018
-    uint    constant public TIER2END = 1525305600; // Thur 3rd May 2018
-    uint    constant public TIER3END = 1527724800; // Thur 31st May 2018
+    uint    constant public RAFEND     = 500400;     // 7:00pm Saturdays
+    uint    constant public BIRTHDAY   = 1500249600; // Etheraffle's birthday <3
+    uint    constant public ICOSTART   = 1522281600; // Thur 29th March 2018
+    uint    constant public TIER1END   = 1523491200; // Thur 12th April 2018
+    uint    constant public TIER2END   = 1525305600; // Thur 3rd May 2018
+    uint    constant public TIER3END   = 1527724800; // Thur 31st May 2018
+    address constant public ETHERAFFLE = 0x97f535e98cf250CDd7Ff0cb9B29E4548b609A0bd;
     
     LOTInterface LOTContract;
     EtheraffleInterface etheraffleContract;
@@ -53,9 +53,8 @@ contract EtheraffleLOTPromo {
      * @dev     Constructor - sets promo running and instantiates required
      *          contracts.
      */
-    function Promo() public {
+    function EtheraffleLOTPromo() public {
         isActive           = true;
-        etheraffle         = 0x97f535e98cf250CDd7Ff0cb9B29E4548b609A0bd;
         LOTContract        = LOTInterface(0xAfD9473dfe8a49567872f93c1790b74Ee7D92A9F);
         etheraffleContract = EtheraffleInterface(0x4251139bF01D46884c95b27666C9E317DF68b876);
     }
@@ -177,7 +176,7 @@ contract EtheraffleLOTPromo {
      *          to the Etheraffle multisig (by whom it is only callable)
      */
     function scuttle() external onlyEtheraffle {
-        LOTContract.transfer(etheraffle, LOTContract.balanceOf(this));
+        LOTContract.transfer(ETHERAFFLE, LOTContract.balanceOf(this));
         selfdestruct(ETHERAFFLE);
     }
 }
