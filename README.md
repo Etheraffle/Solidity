@@ -17,6 +17,13 @@
   </a>
   <br/>
   <br/>
+  <b>❍ Etheraffle LOT Promotion ❍</b>
+  <br/>
+  <a href='https://etherscan.io/address/0xb0991c05510b34aa5386f1c1d87222a3e66c835f'>
+    <b>0xb0991c05510b34aa5386f1c1d87222a3e66c835f<b>
+  </a>
+  <br/>
+  <br/>
   <b>❍ Etheraffle FreeLOT Token ❍</b>
   <br/>
   <a href='https://etherscan.io/address/0xc39f7bB97B31102C923DaF02bA3d1bD16424F4bb'>
@@ -37,3 +44,5 @@
     <b>0x63E14Dc47003d87d152eD507DF3F50C20bD88c3e<b>
   </a>
 </p>
+
+
