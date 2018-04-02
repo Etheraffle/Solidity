@@ -139,8 +139,15 @@ contract Promo is EtheraffleInterface {
         return claimed[_address][week];
     }
     /*
-     * @dev     Function returns current ICO tier's exchange 
-     *          rate of LOT per ETH.
+     * @dev     Returns current ticket price from the main Etheraffle
+     *          contract
+     */
+    function getTktPrice() public view returns (uint) {
+        return etheraffleContract.tktPrice();
+    }
+    /*
+     * @dev     Function returns current ICO tier's exchange rate of LOT
+     *          per ETH.
      */
     function getRate() public view returns (uint) {
         if (now <  ICOSTART) return 110000 * 10 ** 6;
@@ -158,13 +165,6 @@ contract Promo is EtheraffleInterface {
         return (_entries * getRate() * getTktPrice()) / 1 * 10 ** 18;
     }
     /*
-     * @dev     Returns current ticket price from the main
-     *          Etheraffle contract
-     */
-    function getTktPrice() public view returns (uint) {
-        return etheraffleContract.tktPrice();
-    }
-    /*
      * @dev     Scuttles contract, sending any remaining LOT tokens back 
      *          to the Etheraffle multisig (by whom it is only callable)
      */
@@ -173,5 +173,3 @@ contract Promo is EtheraffleInterface {
         selfdestruct(etheraffle);
     }
 }
-
-    
