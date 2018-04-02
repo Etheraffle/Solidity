@@ -54,7 +54,7 @@ contract Promo is EtheraffleInterface {
     /*
      * @dev     Function used to redeem promotional LOT owed. Use weekNo of 
      *          0 to get current week number. Requires user not to have already 
-     *          claimed week number in questions earnt promo LOT and for promo 
+     *          claimed week number in question's earnt promo LOT and for promo 
      *          to be active. It calculates LOT owed, and sends them to the 
      *          caller.
      */
