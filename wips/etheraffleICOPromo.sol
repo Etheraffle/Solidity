@@ -44,9 +44,9 @@ contract Promo is EtheraffleInterface {
      *          contracts.
      */
     function Promo() public {
-        isActive = true;
-        etheraffle = 0x97f535e98cf250CDd7Ff0cb9B29E4548b609A0bd;
-        LOTContract = LOTInterface(0xAfD9473dfe8a49567872f93c1790b74Ee7D92A9F);
+        isActive           = true;
+        etheraffle         = 0x97f535e98cf250CDd7Ff0cb9B29E4548b609A0bd;
+        LOTContract        = LOTInterface(0xAfD9473dfe8a49567872f93c1790b74Ee7D92A9F);
         etheraffleContract = EtheraffleInterface(0x4251139bF01D46884c95b27666C9E317DF68b876);
     }
     /*
@@ -160,7 +160,7 @@ contract Promo is EtheraffleInterface {
      *          rate and current Etheraffle ticket price.
      */
     function getLOTPerEntry(uint _entries) public view returns (uint) {
-        return (_entries * getRate() * getTktPrice()) / 1 * 10 ** 18;
+        return (_entries * getRate() * getTktPrice()) / (1 * 10 ** 18);
     }
     /*
      * @dev     Scuttles contract, sending any remaining LOT tokens back 
