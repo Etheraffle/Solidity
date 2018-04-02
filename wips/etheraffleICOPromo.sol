@@ -59,22 +59,29 @@ contract Promo is EtheraffleInterface {
      *          caller.
      */
     function redeem(uint _weekNo) public {
-        uint week = _weekNo == 0 ? getWeek() : _weekNo;
+        uint week    = _weekNo == 0 ? getWeek() : _weekNo;
+        uint entries = getNumEntries(msg.sender, week);
         require(
             !claimed[msg.sender][week] &&
+            entries > 0 &&
             isActive
             );
-        uint entries = getNumEntries(msg.sender, week);
-        require(entries > 0);
         uint amt = getLOTPerEntry(entries);
-        require(getLOTBalance(this) >= amt);
+        if (getLOTBalance(this) < amt) {
+            isActive = false;
+            emit LogActiveStatus(false, now);
+            return;
+        }
         claimed[msg.sender][week] = true;
         LOTContract.transfer(msg.sender, amt);
         emit LogLOTClaim(msg.sender, amt, week, now);
     }
     /*
      * @dev     Returns number of entries made in Etheraffle contract by
-     *          function caller in whatever the current week is.
+     *          function caller in whatever the queried week is. 
+     *
+     * @param _address  Address to be queried
+     * @param _weekNo   Desired week number. (Use 0 for current week)
      */
     function getNumEntries(address _address, uint _weekNo) public view returns (uint) {
         uint week = _weekNo == 0 ? getWeek() : _weekNo;
@@ -83,15 +90,16 @@ contract Promo is EtheraffleInterface {
     /*
      * @dev     Toggles promo on & off. Only callable by the Etheraffle
      *          multisig wallet.
+     *
      * @param _status   Desired bool status of the promo
      */
-    function togglePromo(bool _status) external onlyEtheraffle {
+    function togglePromo(bool _status) public onlyEtheraffle {
         isActive = _status;
         emit LogActiveStatus(_status, now);
     }
     /*
      * @dev     Same getWeek function as seen in main Etheraffle contract to 
-     *          ensure parity of week number - as defined by number of weeks 
+     *          ensure parity. Ddefined by number of weeks since Etheraffle's
      *          since Etheraffle's birthday.
      */
     function getWeek() public view returns (uint) {
@@ -100,8 +108,8 @@ contract Promo is EtheraffleInterface {
         return curWeek;
     }
     /**
-     * @dev     ERC223 tokenFallback function allows to receive ERC223 token 
-     *          deposits properly.
+     * @dev     ERC223 tokenFallback function allows to receive ERC223 tokens 
+     *          properly.
      *
      * @param _from  Address of the sender.
      * @param _value Amount of deposited tokens.
@@ -111,7 +119,9 @@ contract Promo is EtheraffleInterface {
         if (_value > 0) emit LogTokenDeposit(_from, _value, _data);
     }
     /*
-     * @dev     Retreives current LOT token balance of this contract.
+     * @dev     Retrieves current LOT token balance of an address.
+     *
+     * @param _address Address whose balance is to be queried.
      */
     function getLOTBalance(address _address) internal view returns (uint) {
         return LOTContract.balanceOf(_address);
