@@ -65,6 +65,7 @@ contract Promo is EtheraffleInterface {
             isActive
             );
         uint entries = getNumEntries(msg.sender, week);
+        require(entries > 0);
         uint amt = getLOTPerEntry(entries);
         require(getLOTBalance(this) >= amt);
         claimed[msg.sender][week] = true;
