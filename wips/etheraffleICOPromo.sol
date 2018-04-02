@@ -1,7 +1,5 @@
 pragma solidity^0.4.21;
 
-/* solium-disable */
-
 contract EtheraffleInterface {
     uint public tktPrice;
     function getUserNumEntries(address _entrant, uint _week) public view returns (uint) {}
