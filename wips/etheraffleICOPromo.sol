@@ -56,7 +56,8 @@ contract Promo is EtheraffleInterface {
      *          0 to get current week number. Requires user not to have already 
      *          claimed week number in question's earnt promo LOT and for promo 
      *          to be active. It calculates LOT owed, and sends them to the 
-     *          caller.
+     *          caller. Should contract's LOT balance fall too low, attempts 
+     *          to redeem will arrest the contract awaiting additional LOT tokens.
      */
     function redeem(uint _weekNo) public {
         uint week    = _weekNo == 0 ? getWeek() : _weekNo;
