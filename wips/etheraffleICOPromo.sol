@@ -10,7 +10,8 @@ contract LOTInterface {
     function balanceOf(address _owner) public view returns (uint) {}
 }
 /*
- * @everyone    Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧 promotional contract!
+ * @everyone    
+ *              Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧 promotional contract!
  *              First you should go and play 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦
  *              Then you'll have earnt free 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧𝐬 via this very promotion!
  *              Next you should learn about our 𝐈𝐂𝐎 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦/𝐢𝐜𝐨
@@ -67,7 +68,7 @@ contract EtheraffleLOTPromo {
      *          claimed week number in question's earnt promo LOT and for promo 
      *          to be active. It calculates LOT owed, and sends them to the 
      *          caller. Should contract's LOT balance fall too low, attempts 
-     *          to redeem will arrest the contract awaiting additional LOT tokens.
+     *          to redeem will arrest the contract to await a resupply of LOT.
      */
     function redeem(uint _weekNo) public {
         uint week    = _weekNo == 0 ? getWeek() : _weekNo;
@@ -111,7 +112,7 @@ contract EtheraffleLOTPromo {
     /*
      * @dev     Same getWeek function as seen in main Etheraffle contract to 
      *          ensure parity. Ddefined by number of weeks since Etheraffle's
-     *          since Etheraffle's birthday.
+     *          birthday.
      */
     function getWeek() public view returns (uint) {
         uint curWeek = (now - BIRTHDAY) / 604800;
