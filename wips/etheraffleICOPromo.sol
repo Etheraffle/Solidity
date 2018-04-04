@@ -10,16 +10,19 @@ contract LOTInterface {
     function balanceOf(address _owner) public view returns (uint) {}
 }
 /*
- * @everyone    Welcome to the Etheraffle LOT token promotional contract!
- *              First you should go and play Etheraffle @ https://etheraffle.com
- *              Then you can get free LOT tokens via this very promotion!
- *              Next you should learn about our ICO @ https://etheraffle.com/ico
- *              Then take part by buying some LOT tokens! 
- *              And don't forget to play Etheraffle some more because it's brilliant!
+ * @everyone    Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧 promotional contract!
+ *              First you should go and play 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦
+ *              Then you'll have earnt free 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧𝐬 via this very promotion!
+ *              Next you should learn about our 𝐈𝐂𝐎 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦/𝐢𝐜𝐨
+ *              Then take part by buying even more 𝐋𝐎𝐓 𝐭𝐨𝐤𝐞𝐧𝐬! 
+ *              And don't forget to play 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 some more because it's brilliant!
+ *
  *              If you want to chat to us you have loads of options:
- *              On Telegram @ https://t.me/etheraffle
- *              Or on Twitter @ https://twitter.com/etheraffle
- *              Or on Reddit @ https://etheraffle.reddit.com
+ *              On 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 @ 𝐡𝐭𝐭𝐩𝐬://𝐭.𝐦𝐞/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
+ *              Or on 𝐓𝐰𝐢𝐭𝐭𝐞𝐫 @ 𝐡𝐭𝐭𝐩𝐬://𝐭𝐰𝐢𝐭𝐭𝐞𝐫.𝐜𝐨𝐦/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
+ *              Or on 𝐑𝐞𝐝𝐝𝐢𝐭 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐫𝐞𝐝𝐝𝐢𝐭.𝐜𝐨𝐦
+ *
+ *              𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 - the only 𝐭𝐫𝐮𝐥𝐲 𝐝𝐞𝐜𝐞𝐧𝐭𝐫𝐚𝐥𝐢𝐳𝐞𝐝 & 𝐜𝐡𝐚𝐫𝐢𝐭𝐚𝐛𝐥𝐞 blockchain lottery.
  */
 contract EtheraffleLOTPromo {
     
@@ -58,19 +61,14 @@ contract EtheraffleLOTPromo {
         LOTContract        = LOTInterface(0xAfD9473dfe8a49567872f93c1790b74Ee7D92A9F);
         etheraffleContract = EtheraffleInterface(0x4251139bF01D46884c95b27666C9E317DF68b876);
     }
-/*
- * @everyone    Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧 promotional contract!
- *              First you should go and play 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦
- *              Then you can get free 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧𝐬 via this very promotion!
- *              Next you should learn about our 𝐈𝐂𝐎 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦/𝐢𝐜𝐨
- *              Then take part by buying some 𝐋𝐎𝐓 𝐭𝐨𝐤𝐞𝐧𝐬! 
- *              And don't forget to play 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 some more because it's brilliant!
- *
- *              If you want to chat to us you have loads of options:
- *              On 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 @ 𝐡𝐭𝐭𝐩𝐬://𝐭.𝐦𝐞/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
- *              Or on 𝐓𝐰𝐢𝐭𝐭𝐞𝐫 @ 𝐡𝐭𝐭𝐩𝐬://𝐭𝐰𝐢𝐭𝐭𝐞𝐫.𝐜𝐨𝐦/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
- *              Or on 𝐑𝐞𝐝𝐝𝐢𝐭 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐫𝐞𝐝𝐝𝐢𝐭.𝐜𝐨𝐦
- */
+    /*
+     * @dev     Function used to redeem promotional LOT owed. Use weekNo of 
+     *          0 to get current week number. Requires user not to have already 
+     *          claimed week number in question's earnt promo LOT and for promo 
+     *          to be active. It calculates LOT owed, and sends them to the 
+     *          caller. Should contract's LOT balance fall too low, attempts 
+     *          to redeem will arrest the contract awaiting additional LOT tokens.
+     */
     function redeem(uint _weekNo) public {
         uint week    = _weekNo == 0 ? getWeek() : _weekNo;
         uint entries = getNumEntries(msg.sender, week);
