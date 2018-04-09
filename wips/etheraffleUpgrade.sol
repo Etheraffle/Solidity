@@ -94,7 +94,7 @@ contract newPayoutsWIP {
         raffle[_week].wdrawOpen = true;
         LogPrizePoolsUpdated(prizePool, _week, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
     }
-        /**
+    /**
      * @dev     Manually make an Oraclize API call, incase of automation
      *          failure. Only callable by the Etheraffle address.
      *
@@ -182,11 +182,25 @@ contract possibleTwoMatchWinImplementation {
     }
 
     event LogFreeLOTWin(uint raffleID, address whom, uint entryNum, uint amount, uint atTime);
-    
+
     function winFreeGo(uint _week, uint _entryNum) onlyIfNotPaused external {
         raffle[_week].entries[msg.sender][_entryNum - 1].push(0);// Can't withdraw twice
         FreeLOT.mint(msg.sender, 1);
         emit LogFreeLOTWin(_week, msg.sender, _entryNum, 1, now);
+    }
+}
+contract enterOnBehalfOf {
+    /**
+     * @dev  Function to enter the raffle on behalf of another address. Requires the 
+     *       caller to send ether of amount greater than or equal to the ticket price.
+     *       In the event of a win, only the onBehalfOf address can claim it.
+     *
+     * @param _cNums    Ordered array of entrant's six selected numbers.
+     * @param _affID    Affiliate ID of the source of this entry.
+     */
+    function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable external onlyIfNotPaused {
+        require(msg.value >= tktPrice);
+        buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
 }
 
