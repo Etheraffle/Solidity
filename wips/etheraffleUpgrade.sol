@@ -136,4 +136,58 @@ contract newPayoutsWIP {
     }
 }
 
+contract FreeLOTInterface {
+    function balanceOf(address who) constant public returns (uint) {}
+    function destroy(address _from, uint _amt) external {}
+    function mint(address _to, uint _amt) external {}
+}
+contract possibleTwoMatchWinImplementation {
+
+    //will require the ER contract to be a minter on the FreeLOT contract, plus additional function to the FreeLOT Interface...
+
+    /**
+     * @dev Withdraw Winnings function. User calls this function in order to withdraw
+     *      whatever winnings they are owed. Function can be paused via the modifier
+     *      function "onlyIfNotPaused"
+     *
+     * @param _week        Week number of the raffle the winning entry is from
+     * @param _entryNum    The entrants entry number into this raffle
+     */
+    function withdrawWinnings(uint _week, uint _entryNum) onlyIfNotPaused external {
+        require
+        (
+            raffle[_week].timeStamp > 0 &&
+            now - raffle[_week].timeStamp > weekDur - (weekDur / 7) &&
+            now - raffle[_week].timeStamp < wdrawBfr &&
+            raffle[_week].wdrawOpen == true &&
+            raffle[_week].entries[msg.sender][_entryNum - 1].length == 6
+        );
+        uint matches = getMatches(_week, msg.sender, _entryNum);
+        if (matches == 2) return winFreeGo(_week, _entryNum);
+        require
+        (
+            matches >= 3 &&
+            raffle[_week].winAmts[matches - 3] > 0 &&
+            raffle[_week].winAmts[matches - 3] <= this.balance
+        );
+        raffle[_week].entries[msg.sender][_entryNum - 1].push(0);
+        if (raffle[_week].winAmts[matches - 3] <= raffle[_week].unclaimed) {
+            raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3];
+        } else {
+            raffle[_week].unclaimed = 0;
+            pauseContract(5);
+        }
+        msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
+        LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
+    }
+
+    event LogFreeLOTWin(uint raffleID, address whom, uint entryNum, uint amount, uint atTime);
+    
+    function winFreeGo(uint _week, uint _entryNum) onlyIfNotPaused external {
+        raffle[_week].entries[msg.sender][_entryNum - 1].push(0);// Can't withdraw twice
+        FreeLOT.mint(msg.sender, 1);
+        emit LogFreeLOTWin(_week, msg.sender, _entryNum, 1, now);
+    }
+}
+
 
