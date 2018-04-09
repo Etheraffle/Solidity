@@ -1,8 +1,7 @@
 /*
     Put in odds as readable vars - DONE
     new calc function - DONE
-    all manual oracle calls to unpause contract too
-    implement versioning in the front end. Start tracking which contract address tickets are associated with!
+    all manual oracle calls to unpause contract too - DONE
     2 match win = free token?
 */
 
@@ -94,6 +93,46 @@ contract newPayoutsWIP {
         }
         raffle[_week].wdrawOpen = true;
         LogPrizePoolsUpdated(prizePool, _week, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
+    }
+        /**
+     * @dev     Manually make an Oraclize API call, incase of automation
+     *          failure. Only callable by the Etheraffle address.
+     *
+     * @param _delay      Either a time in seconds before desired callback
+     *                    time for the API call, or a future UTC format time for
+     *                    the desired time for the API callback.
+     * @param _week       The week number this query is for.
+     * @param _isRandom   Whether or not the api call being made is for
+     *                    the random.org results draw, or for the Etheraffle
+     *                    API results call.
+     * @param _isManual   The Oraclize call back is a recursive function in
+     *                    which each call fires off another call in perpetuity.
+     *                    This bool allows that recursiveness for this call to be
+     *                    turned on or off depending on caller's requirements.
+     * @param _status     Toggle the pause status of the contract.
+     */
+    function manuallyMakeOraclizeCall
+    (
+        uint _week,
+        uint _delay,
+        bool _isRandom,
+        bool _isManual,
+        bool _status
+    )
+        onlyEtheraffle external
+    {
+        paused = _status;
+        string memory weekNumStr = uint2str(_week);
+        if (_isRandom == true){
+            bytes32 query = oraclize_query(_delay, "nested", strConcat(randomStr1, weekNumStr, randomStr2), gasAmt);
+            qID[query].weekNo   = _week;
+            qID[query].isRandom = true;
+            qID[query].isManual = _isManual;
+        } else {
+            query = oraclize_query(_delay, "nested", strConcat(apiStr1, weekNumStr, apiStr2), gasAmt);
+            qID[query].weekNo   = _week;
+            qID[query].isManual = _isManual;
+        }
     }
 }
 
