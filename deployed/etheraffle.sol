@@ -89,6 +89,7 @@ contract Etheraffle is usingOraclize {
     event LogUpgrade(address newContract, uint ethTransferred, uint atTime);
     event LogPrizePoolAddition(address fromWhom, uint howMuch, uint atTime);
     event LogOraclizeCallback(bytes32 queryID, string result, uint indexed forRaffle, uint atTime);
+    event LogFreeLOTWin(uint indexed forRaffle, address toWhom, uint entryNumber, uint amount, uint atTime);
     event LogFundsDisbursed(uint indexed forRaffle, uint oraclizeTotal, uint amount, address indexed toAddress, uint atTime);
     event LogWithdraw(uint indexed forRaffle, address indexed toWhom, uint forEntryNumber, uint matches, uint amountWon, uint atTime);
     event LogWinningNumbers(uint indexed forRaffle, uint numberOfEntries, uint[] wNumbers, uint currentPrizePool, uint randomSerialNo, uint atTime);
@@ -247,13 +248,14 @@ contract Etheraffle is usingOraclize {
             raffle[_week].entries[msg.sender][_entryNum - 1].length == 6
         );
         uint matches = getMatches(_week, msg.sender, _entryNum);
+        if (matches == 2) return winFreeGo(_week, _entryNum);
         require
         (
             matches >= 3 &&
             raffle[_week].winAmts[matches - 3] > 0 &&
             raffle[_week].winAmts[matches - 3] <= this.balance
         );
-        raffle[_week].entries[msg.sender][_entryNum - 1].push(0);
+        raffle[_week].entries[msg.sender][_entryNum - 1].push(1);
         if (raffle[_week].winAmts[matches - 3] <= raffle[_week].unclaimed) {
             raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3];
         } else {
@@ -263,7 +265,15 @@ contract Etheraffle is usingOraclize {
         msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
         LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
-
+    /*
+     * @dev     Mints a FreeLOT coupon to a two match winner allowing them 
+     *          a free entry to Etheraffle. Function pausable by pause toggle.
+     */
+    function winFreeGo(uint _week, uint _entryNum) onlyIfNotPaused external {
+        raffle[_week].entries[msg.sender][_entryNum - 1].push(1);
+        FreeLOT.mint(msg.sender, 1);
+        emit LogFreeLOTWin(_week, msg.sender, _entryNum, 1, now);
+    }
     /**
      * @dev    Called by the weekly oraclize callback. Checks raffle 10
      *         weeks older than current raffle for any unclaimed prize
