@@ -141,6 +141,7 @@ contract FreeLOTInterface {
     function destroy(address _from, uint _amt) external {}
     function mint(address _to, uint _amt) external {}
 }
+
 contract possibleTwoMatchWinImplementation {
 
     //will require the ER contract to be a minter on the FreeLOT contract, plus additional function to the FreeLOT Interface...
@@ -189,6 +190,8 @@ contract possibleTwoMatchWinImplementation {
         emit LogFreeLOTWin(_week, msg.sender, _entryNum, 1, now);
     }
 }
+
+
 contract enterOnBehalfOf {
     /**
      * @dev  Function to enter the raffle on behalf of another address. Requires the 
