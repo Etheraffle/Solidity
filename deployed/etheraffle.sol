@@ -485,32 +485,6 @@ contract Etheraffle is usingOraclize {
         }
     }
     /**
-     * @dev Set the gas relevant price parameters for the Oraclize calls, in case
-     *      of future needs for higher gas prices for adequate transaction times,
-     *      or incase of Oraclize price hikes. Only callable be the Etheraffle
-     *      address.
-     *
-     * @param _newAmt    uint - new allowed gas amount for Oraclize.
-     * @param _newPrice  uint - new gas price for Oraclize.
-     * @param _newCost   uint - new cose of Oraclize service.
-     *
-     */
-    function setGasForOraclize
-    (
-        uint _newAmt,
-        uint _newCost,
-        uint _newPrice
-    )
-        onlyEtheraffle external
-    {
-        gasAmt   = _newAmt;
-        oracCost = _newCost;
-        if (_newPrice > 0) {
-            oraclize_setCustomGasPrice(_newPrice);
-            gasPrc = _newPrice;
-        }
-    }
-    /**
      * @dev    Set the Oraclize strings, in case of url changes. Only callable by
      *         the Etheraffle address  .
      *
