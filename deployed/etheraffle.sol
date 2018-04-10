@@ -173,6 +173,19 @@ contract Etheraffle is usingOraclize {
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
+     * @dev  Function to enter the raffle on behalf of another address. Requires the 
+     *       caller to send ether of amount greater than or equal to the ticket price.
+     *       In the event of a win, only the onBehalfOf address can claim it.
+     *
+     * @param _cNums        Ordered array of entrant's six selected numbers.
+     * @param _affID        Affiliate ID of the source of this entry.
+     * @param _onBehalfOf   The address to be entered on behalf of.
+     */
+    function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable external onlyIfNotPaused {
+        require(msg.value >= tktPrice);
+        buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
+    }
+    /**
      * @dev  Function to enter the raffle for free. Requires the caller's
      *       balance of the Etheraffle freeLOT token to be greater than
      *       zero. Function destroys one freeLOT token, increments the
