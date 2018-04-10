@@ -468,10 +468,12 @@ contract Etheraffle is usingOraclize {
         uint _week,
         uint _delay,
         bool _isRandom,
-        bool _isManual
+        bool _isManual,
+        bool _status
     )
         onlyEtheraffle external
     {
+        paused = _status;
         string memory weekNumStr = uint2str(_week);
         if (_isRandom == true){
             bytes32 query = oraclize_query(_delay, "nested", strConcat(randomStr1, weekNumStr, randomStr2), gasAmt);
