@@ -121,7 +121,7 @@ contract Etheraffle is usingOraclize {
         bytes32 query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
         qID[query].weekNo = week;
         qID[query].isRandom = true;
-        LogQuerySent(query, delay, now);
+        emit LogQuerySent(query, delay, now);
     }
     /**
      * @dev   Function using Etheraffle's birthday to calculate the
@@ -159,7 +159,7 @@ contract Etheraffle is usingOraclize {
      */
     function pauseContract(uint _id) internal {
       paused = true;
-      LogFunctionsPaused(_id, now);
+      emit LogFunctionsPaused(_id, now);
     }
     /**
      * @dev  Function to enter the raffle. Requires the caller to send ether
@@ -228,7 +228,7 @@ contract Etheraffle is usingOraclize {
         raffle[week].numEntries++;
         prizePool += _value;
         raffle[week].entries[_entrant].push(_cNums);
-        LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
+        emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
     /**
      * @dev Withdraw Winnings function. User calls this function in order to withdraw
@@ -263,7 +263,7 @@ contract Etheraffle is usingOraclize {
             pauseContract(5);
         }
         msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
-        LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
+        emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
     /*
      * @dev     Mints a FreeLOT coupon to a two match winner allowing them 
@@ -283,7 +283,7 @@ contract Etheraffle is usingOraclize {
     function reclaimUnclaimed() internal {
         uint old = getWeek() - 11;
         prizePool += raffle[old].unclaimed;
-        LogReclaim(old, raffle[old].unclaimed, now);
+        emit LogReclaim(old, raffle[old].unclaimed, now);
     }
     /**
      * @dev  Function totals up oraclize cost for the raffle, subtracts
@@ -308,11 +308,11 @@ contract Etheraffle is usingOraclize {
             uint half = profit / 2;
             ReceiverInterface(disburseAddr).receiveEther.value(half)();
             ReceiverInterface(ethRelief).receiveEther.value(profit - half)();
-            LogFundsDisbursed(_week, oracTot, profit - half, ethRelief, now);
-            LogFundsDisbursed(_week, oracTot, half, disburseAddr, now);
+            emit LogFundsDisbursed(_week, oracTot, profit - half, ethRelief, now);
+            emit LogFundsDisbursed(_week, oracTot, half, disburseAddr, now);
             return;
         }
-        LogFundsDisbursed(_week, oracTot, profit, 0, now);
+        emit LogFundsDisbursed(_week, oracTot, profit, 0, now);
         return;
     }
     /**
@@ -337,7 +337,7 @@ contract Etheraffle is usingOraclize {
      */
     function __callback(bytes32 _myID, string _result) onlyIfNotPaused {
         require(msg.sender == oraclize_cbAddress());
-        LogOraclizeCallback(_myID, _result, qID[_myID].weekNo, now);
+        emit LogOraclizeCallback(_myID, _result, qID[_myID].weekNo, now);
         if (qID[_myID].isRandom == true) {
             reclaimUnclaimed();
             disburseFunds(qID[_myID].weekNo);
@@ -345,7 +345,7 @@ contract Etheraffle is usingOraclize {
             if (qID[_myID].isManual == true) {return;}
             bytes32 query = oraclize_query(matchesDelay, "nested", strConcat(apiStr1, uint2str(qID[_myID].weekNo), apiStr2), gasAmt);
             qID[query].weekNo = qID[_myID].weekNo;
-            LogQuerySent(query, matchesDelay + now, now);
+            emit LogQuerySent(query, matchesDelay + now, now);
         } else {
             newRaffle();
             setPayOuts(qID[_myID].weekNo, _result);
@@ -354,7 +354,7 @@ contract Etheraffle is usingOraclize {
             query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
             qID[query].weekNo = getWeek();
             qID[query].isRandom = true;
-            LogQuerySent(query, delay, now);
+            emit LogQuerySent(query, delay, now);
         }
     }
     /**
@@ -389,7 +389,7 @@ contract Etheraffle is usingOraclize {
             raffle[_week].winNums.push(parseInt(arr[i]));
         }
         uint serialNo = parseInt(arr[6]);
-        LogWinningNumbers(_week, raffle[_week].numEntries, raffle[_week].winNums, prizePool, serialNo, now);
+        emit LogWinningNumbers(_week, raffle[_week].numEntries, raffle[_week].winNums, prizePool, serialNo, now);
     }
 
     /**
@@ -434,7 +434,7 @@ contract Etheraffle is usingOraclize {
             raffle[_week].winAmts.push(payOuts[i]);
         }
         raffle[_week].wdrawOpen = true;
-        LogPrizePoolsUpdated(prizePool, _week, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
+        emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
     }
     /**
      * @dev   Function compares array of entrant's 6 chosen numbers to
@@ -685,7 +685,7 @@ contract Etheraffle is usingOraclize {
         randomStr1  = "";
         require(this.balance >= amt);
         EtheraffleUpgrade(_newAddr).addToPrizePool.value(amt)();
-        LogUpgrade(_newAddr, amt, upgraded);
+        emit LogUpgrade(_newAddr, amt, upgraded);
     }
     /**
      * @dev     Self destruct contract. Only callable by Etheraffle address.
@@ -707,7 +707,7 @@ contract Etheraffle is usingOraclize {
     function addToPrizePool() payable external {
         require(msg.value > 0);
         prizePool += msg.value;
-        LogPrizePoolAddition(msg.sender, msg.value, now);
+        emit LogPrizePoolAddition(msg.sender, msg.value, now);
     }
     /**
      * @dev   Fallback function.
