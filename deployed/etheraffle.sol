@@ -12,11 +12,12 @@ contract EtheraffleUpgrade {
 }
 
 contract FreeLOTInterface {
-    function balanceOf(address who) constant public returns (uint) {}
+    function mint(address _to, uint _amt) external {}
     function destroy(address _from, uint _amt) external {}
+    function balanceOf(address who) constant public returns (uint) {}
 }
 
-contract Etheraffle is EtheraffleUpgrade, FreeLOTInterface, ReceiverInterface, usingOraclize {
+contract Etheraffle is usingOraclize {
     using strings for *;
 
     uint    public week;
@@ -43,9 +44,9 @@ contract Etheraffle is EtheraffleUpgrade, FreeLOTInterface, ReceiverInterface, u
     FreeLOTInterface freeLOT;
 
     string randomStr1 = "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random[\"data\", \"serialNumber\"]','\\n{\"jsonrpc\": \"2.0\",\"method\":\"generateSignedIntegers\",\"id\":\"";
-    string randomStr2 = "\",\"params\":{\"n\":\"6\",\"min\":1,\"max\":49,\"replacement\":false,\"base\":10,\"apiKey\":${[decrypt] BOxU9jP2laZmGPe29WvCh5HY57objD14TTuYv1Y1p7M43mHS8rDupPiIjIq8DNPGm4A8OtbBmBxUZant/WqG0eGgfzb5STSsb44VzOIRrSk2A8r10SxTE5Ysl2HahYHZO18LZmWYCnqjVJ7UTmCBxwRpb5OVIVcp9A==}}']";
+    string randomStr2 = "\",\"params\":{\"n\":\"6\",\"min\":1,\"max\":49,\"replacement\":false,\"base\":10,\"apiKey\":${[decrypt] BIaCXRwykpLeDE9h1dQaAUi0LPTD4Jz0kwh6SVTftO+zromdgBhmdQhFwPsaLEGDHHn8bhQA8ksyjOZJpjDzKcVWlkBx5C07udHFtMnvG9g9VITYGxoMOhpFCTnoIKTBlIbNe5D1rIgl9OYUVX4ibTT8fCEE8TkWqQ==}}']";
     string apiStr1    = "[URL] ['json(https://etheraffle.com/api/a).m','{\"r\":\"";
-    string apiStr2    = "\",\"k\":${[decrypt] BLQNU9ZQxS6ardpB9gmUfVKwKhxSF2MmyB7sh2gmQFH49VewFs52EgaYId5KVEkYuNCP0S2ppzDmiN/5JUzHGTPpkPuTAZdx/ydBCcRMcuuqxg4lSpvtG3oB6zvXfTcCVjGMPbep}}']";
+    string apiStr2    = "\",\"k\":${[decrypt] BDzj/WPcHzGWYRL2cXvMNvInBxhutESn6Xj8pVzUUH+oEeWBoyycp23B7FSjqKJww6uH5AxvD4srlX0D/Rhl678YcKSNX2oMJJ47ciZrCnj6+28GHCLBV+XiA/1GDis9p5Q9NIKI}}']";
 
     mapping (uint => rafStruct) public raffle;
     struct rafStruct {
