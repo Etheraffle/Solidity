@@ -1,15 +1,26 @@
 /*
-    Put in odds as readable vars - DONE
+    all manual oracle calls to unpause contract too - DONE - ADDED
+    REMOVE THE SET GAS PRICE THINGY - DONE - ADDED(removed :P)
+    add mint interface - DONE - ADDED
+    change encryption - DONE - ADDED
+    2 match win = free token? - DONE - ADDED
+    Put in odds as readable vars - DONE - ADDED
+    capitalise constants - DONE - ADDED
+    Enter on behalf of - DONE - ADDED
+    Make callback function callable by Etheraffle too? - DONE - ADDED
+
     new calc function - DONE
-    all manual oracle calls to unpause contract too - DONE
-    2 match win = free token?
+    bump comiler number
+    Split out into separate contracts eventually?
+    Break up the oracle call back function more?
+
 */
 
 pragma solidity^0.4.21;
 
 contract newPayoutsWIP {
 
-    uint[] public odds = [56,1032,54200,13983816]; // Rounded down to nearest dp
+    uint[] public odds = [56,1032,54200,13983816]; // Rounded down to nearest whole number
     
     //pay @ odds ONLY IF odds total < splits total!
     /*
@@ -143,8 +154,6 @@ contract FreeLOTInterface {
 }
 
 contract possibleTwoMatchWinImplementation {
-
-    //will require the ER contract to be a minter on the FreeLOT contract, plus additional function to the FreeLOT Interface...
 
     /**
      * @dev Withdraw Winnings function. User calls this function in order to withdraw

@@ -336,10 +336,7 @@ contract Etheraffle is usingOraclize {
      */
     function disburseFunds(uint _week) internal {
         uint oracTot = 2 * ((gasAmt * gasPrc) + oracCost);//2 queries per draw...
-        if (oracTot > prizePool) {
-          pauseContract(1);
-          return;
-        }
+        if (oracTot > prizePool) return pauseContract(1);
         prizePool -= oracTot;
         uint profit;
         if (raffle[_week].numEntries > 0) {
@@ -353,7 +350,6 @@ contract Etheraffle is usingOraclize {
             return;
         }
         emit LogFundsDisbursed(_week, oracTot, profit, 0, now);
-        return;
     }
     /**
      * @dev   The Oralize call back function. The oracalize api calls are
@@ -376,20 +372,20 @@ contract Etheraffle is usingOraclize {
      * @param _result   string - The result of the api call.
      */
     function __callback(bytes32 _myID, string _result) onlyIfNotPaused {
-        require(msg.sender == oraclize_cbAddress());
+        require(msg.sender == oraclize_cbAddress() || msg.sender == etheraffle);
         emit LogOraclizeCallback(_myID, _result, qID[_myID].weekNo, now);
         if (qID[_myID].isRandom == true) {
             reclaimUnclaimed();
             disburseFunds(qID[_myID].weekNo);
             setWinningNumbers(qID[_myID].weekNo, _result);
-            if (qID[_myID].isManual == true) {return;}
+            if (qID[_myID].isManual == true) return;
             bytes32 query = oraclize_query(matchesDelay, "nested", strConcat(apiStr1, uint2str(qID[_myID].weekNo), apiStr2), gasAmt);
             qID[query].weekNo = qID[_myID].weekNo;
             emit LogQuerySent(query, matchesDelay + now, now);
         } else {
             newRaffle();
             setPayOuts(qID[_myID].weekNo, _result);
-            if (qID[_myID].isManual == true) {return;}
+            if (qID[_myID].isManual == true) return;
             uint delay = (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
             query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
             qID[query].weekNo = getWeek();
@@ -431,7 +427,41 @@ contract Etheraffle is usingOraclize {
         uint serialNo = parseInt(arr[6]);
         emit LogWinningNumbers(_week, raffle[_week].numEntries, raffle[_week].winNums, prizePool, serialNo, now);
     }
-
+    /*  
+     * @dev     Returns TOTAL payout per tier when calculated using the odds method.
+     *
+     * @param _numWinners       Number of X match winners
+     * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
+     */
+    function oddsTotal(uint _numWinners, uint _matchesIndex) internal pure returns (uint) {
+        return oddsSingle(_matchesIndex) * _numWinners';
+    }
+    /*
+     * @dev     Returns TOTAL payout per tier when calculated using the splits method.
+     *
+     * @param _numWinners       Number of X match winners
+     * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
+     */
+    function splitsTotal(uint _numWinners, uint _matchesIndex) internal pure returns (uint) {
+        return splitsSingle(uint _numWinners, uint _matchesIndex) * _numWinners';
+    }
+    /*
+     * @dev     Returns single payout when calculated using the odds method.
+     *
+     * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
+     */
+    function oddsSingle(uint _matchesIndex) internal pure returns (uint) {
+        return tktPrice * odds[_matchesIndex]
+    }
+    /*
+     * @dev     Returns a single payout when calculated using the splits method.
+     *
+     * @param _numWinners       Number of X match winners
+     * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
+     */
+    function splitsSingle(uint _numWinners uint _matchesIndex) internal pure returns (uint) {
+        return (prizePool * pctOfPool[_matchesIndex]) / (_numWinners * 1000)
+    }
     /**
      * @dev   Takes the results of the oraclize Etheraffle api call back
      *        and uses them to calculate the prizes due to each tier
@@ -448,10 +478,7 @@ contract Etheraffle is usingOraclize {
      */
     function setPayOuts(uint _week, string _result) internal {
         string[] memory numWinnersStr = stringToArray(_result);
-        if (numWinnersStr.length < 4) {
-          pauseContract(2);
-          return;
-        }
+        if (numWinnersStr.length < 4) return pauseContract(2);
         uint[] memory numWinnersInt = new uint[](4);
         for (uint i = 0; i < 4; i++) {
             numWinnersInt[i] = parseInt(numWinnersStr[i]);
@@ -465,10 +492,7 @@ contract Etheraffle is usingOraclize {
             }
         }
         raffle[_week].unclaimed = total;
-        if (raffle[_week].unclaimed > prizePool) {
-          pauseContract(3);
-          return;
-        }
+        if (raffle[_week].unclaimed > prizePool) return pauseContract(3);
         prizePool -= raffle[_week].unclaimed;
         for (i = 0; i < payOuts.length; i++) {
             raffle[_week].winAmts.push(payOuts[i]);
