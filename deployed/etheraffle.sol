@@ -28,6 +28,7 @@ pragma solidity^0.4.21;
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 import "github.com/Arachnid/solidity-stringutils/strings.sol";
 
+
 contract ReceiverInterface {
     function receiveEther() external payable {}
 }
@@ -115,7 +116,7 @@ contract Etheraffle is usingOraclize {
     event LogUpgrade(address newContract, uint ethTransferred, uint atTime);
     event LogPrizePoolAddition(address fromWhom, uint howMuch, uint atTime);
     event LogFreeLOTWin(uint indexed forRaffle, address toWhom, uint entryNumber, uint amount, uint atTime);
-    event LogOraclizeCallback(address, functionCaller, bytes32 queryID, string result, uint indexed forRaffle, uint atTime);
+    event LogOraclizeCallback(address functionCaller, bytes32 queryID, string result, uint indexed forRaffle, uint atTime);
     event LogFundsDisbursed(uint indexed forRaffle, uint oraclizeTotal, uint amount, address indexed toAddress, uint atTime);
     event LogWithdraw(uint indexed forRaffle, address indexed toWhom, uint forEntryNumber, uint matches, uint amountWon, uint atTime);
     event LogWinningNumbers(uint indexed forRaffle, uint numberOfEntries, uint[] wNumbers, uint currentPrizePool, uint randomSerialNo, uint atTime);
@@ -308,9 +309,9 @@ contract Etheraffle is usingOraclize {
      * @dev     Mints a FreeLOT coupon to a two match winner allowing them 
      *          a free entry to Etheraffle. Function pausable by pause toggle.
      */
-    function winFreeGo(uint _week, uint _entryNum) onlyIfNotPaused external {
+    function winFreeGo(uint _week, uint _entryNum) onlyIfNotPaused internal {
         raffle[_week].entries[msg.sender][_entryNum - 1].push(1);
-        FreeLOT.mint(msg.sender, 1);
+        freeLOT.mint(msg.sender, 1);
         emit LogFreeLOTWin(_week, msg.sender, _entryNum, 1, now);
     }
     /**
@@ -432,8 +433,8 @@ contract Etheraffle is usingOraclize {
      * @param _numWinners       Number of X match winners
      * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
      */
-    function oddsTotal(uint _numWinners, uint _matchesIndex) internal pure returns (uint) {
-        return oddsSingle(_matchesIndex) * _numWinners';
+    function oddsTotal(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
+        return oddsSingle(_matchesIndex) * _numWinners;
     }
     /*
      * @dev     Returns TOTAL payout per tier when calculated using the splits method.
@@ -441,16 +442,16 @@ contract Etheraffle is usingOraclize {
      * @param _numWinners       Number of X match winners
      * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
      */
-    function splitsTotal(uint _numWinners, uint _matchesIndex) internal pure returns (uint) {
-        return splitsSingle(uint _numWinners, uint _matchesIndex) * _numWinners';
+    function splitsTotal(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
+        return splitsSingle(_numWinners, _matchesIndex) * _numWinners;
     }
     /*
      * @dev     Returns single payout when calculated using the odds method.
      *
      * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
      */
-    function oddsSingle(uint _matchesIndex) internal pure returns (uint) {
-        return tktPrice * odds[_matchesIndex]
+    function oddsSingle(uint _matchesIndex) internal view returns (uint) {
+        return tktPrice * odds[_matchesIndex];
     }
     /*
      * @dev     Returns a single payout when calculated using the splits method.
@@ -458,8 +459,8 @@ contract Etheraffle is usingOraclize {
      * @param _numWinners       Number of X match winners
      * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
      */
-    function splitsSingle(uint _numWinners uint _matchesIndex) internal pure returns (uint) {
-        return (prizePool * pctOfPool[_matchesIndex]) / (_numWinners * 1000)
+    function splitsSingle(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
+        return (prizePool * pctOfPool[_matchesIndex]) / (_numWinners * 1000);
     }
     /**
      * @dev   Takes the results of the oraclize Etheraffle api call back
