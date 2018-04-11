@@ -1,4 +1,4 @@
-pragma solidity^0.4.15;
+pragma solidity^0.4.21emit ;
 
 contract ReceiverInterface {
     function receiveEther() external payable {}
@@ -36,7 +36,7 @@ contract EtheraffleDisbursal is ReceiverInterface {
      */
     function upgrade(address _addr) onlyEtheraffle external {
         upgraded = true;
-        LogUpgrade(_addr, this.balance, now);
+        emit LogUpgrade(_addr, this.balance, now);
         ReceiverInterface(_addr).receiveEther.value(this.balance)();
     }
     /**
@@ -44,7 +44,7 @@ contract EtheraffleDisbursal is ReceiverInterface {
      *        with proposed future disbursal contract.
      */
     function receiveEther() payable external {
-        LogEtherReceived(msg.sender, msg.value, now);
+        emit LogEtherReceived(msg.sender, msg.value, now);
     }
     /**
      * @dev   Set the Etheraffle multisig contract address, in case of future
