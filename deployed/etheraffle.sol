@@ -1,3 +1,29 @@
+/*
+ * @everyone
+ *
+ *      Welcome to the Etheraffle Smart-Contract!
+ *      The ONLY decentralized, charitable blockchain lottery!
+ *      
+ *      ##########################################
+ *      ##########################################
+ *      ###                                    ###
+ *      ###         Play & win ether at        ###
+ *      ###       HTTPS://ETHERAFFLE.COM       ###
+ *      ###                                    ###
+ *      ##########################################
+ *      ##########################################
+ *
+ *      Etheraffle is designed to give huge prizes to 
+ *      players, sustainable ETH dividends to LOT token 
+ *      holders, and life-changing funding to charities.
+ *
+ *      Learn more & take part at https://etheraffle.com/ICO to become 
+ *      a LOT token holder today! Holding LOT tokens automatically makes 
+ *      you a part of the decentralized, autonomous organisation that 
+ *      OWNS Etheraffle. Take your place in this decentralized, altruistic
+ *      vision of the future!
+ *
+ */
 pragma solidity^0.4.15;
 
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
@@ -28,18 +54,19 @@ contract Etheraffle is usingOraclize {
     address public etheraffle;
     address public upgradeAddr;
     address public disburseAddr;
-    uint    public take         = 150;//ppt
+    uint    public take         = 150; // ppt
     uint    public gasAmt       = 500000;
-    uint    public gasPrc       = 20000000000;//20 gwei
-    uint    public rafEnd       = 500400;//7:00pm Saturdays
-    uint    public tktPrice     = 2000000000000000;
-    uint    public oracCost     = 1500000000000000;//$1 @ $700
-    uint    public wdrawBfr     = 6048000;
-    uint[]  public pctOfPool    = [520, 114, 47, 319];//ppt...
     uint    public resultsDelay = 3600;
     uint    public matchesDelay = 3600;
-    uint  constant weekDur      = 604800;
-    uint  constant birthday     = 1500249600;//Etheraffle's birthday <3
+    uint    public rafEnd       = 500400; // 7:00pm Saturdays
+    uint    public wdrawBfr     = 6048000;
+    uint    public gasPrc       = 20000000000; // 20 gwei
+    uint    public tktPrice     = 2000000000000000;
+    uint    public oracCost     = 1500000000000000; // $1 @ $700
+    uint[]  public pctOfPool    = [520, 114, 47, 319]; // ppt...
+    uint[]  public odds         = [56, 1032, 54200, 13983816]; // Rounded down to nearest whole 
+    uint  constant WEEKDUR      = 604800;
+    uint  constant BIRTHDAY     = 1500249600;//Etheraffle's birthday <3
 
     FreeLOTInterface freeLOT;
 
@@ -116,8 +143,8 @@ contract Etheraffle is usingOraclize {
         disburseAddr = _dsbrs;
         ethRelief    = _ethRelief;
         freeLOT      = FreeLOTInterface(_freeLOT);
-        uint delay   = (week * weekDur) + birthday + rafEnd + resultsDelay;
-        raffle[week].timeStamp = (week * weekDur) + birthday;
+        uint delay   = (week * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
+        raffle[week].timeStamp = (week * WEEKDUR) + BIRTHDAY;
         bytes32 query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
         qID[query].weekNo = week;
         qID[query].isRandom = true;
@@ -128,8 +155,8 @@ contract Etheraffle is usingOraclize {
      *        week number since then.
      */
     function getWeek() public constant returns (uint) {
-        uint curWeek = (now - birthday) / weekDur;
-        if (now - ((curWeek * weekDur) + birthday) > rafEnd) {
+        uint curWeek = (now - BIRTHDAY) / WEEKDUR;
+        if (now - ((curWeek * WEEKDUR) + BIRTHDAY) > rafEnd) {
             curWeek++;
         }
         return curWeek;
@@ -148,7 +175,7 @@ contract Etheraffle is usingOraclize {
             return;
         } else {//∴ new raffle...
             week = newWeek;
-            raffle[newWeek].timeStamp = birthday + (newWeek * weekDur);
+            raffle[newWeek].timeStamp = BIRTHDAY + (newWeek * WEEKDUR);
         }
     }
     /**
@@ -255,7 +282,7 @@ contract Etheraffle is usingOraclize {
         require
         (
             raffle[_week].timeStamp > 0 &&
-            now - raffle[_week].timeStamp > weekDur - (weekDur / 7) &&
+            now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7) &&
             now - raffle[_week].timeStamp < wdrawBfr &&
             raffle[_week].wdrawOpen == true &&
             raffle[_week].entries[msg.sender][_entryNum - 1].length == 6
@@ -363,7 +390,7 @@ contract Etheraffle is usingOraclize {
             newRaffle();
             setPayOuts(qID[_myID].weekNo, _result);
             if (qID[_myID].isManual == true) {return;}
-            uint delay = (getWeek() * weekDur) + birthday + rafEnd + resultsDelay;
+            uint delay = (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
             query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
             qID[query].weekNo = getWeek();
             qID[query].isRandom = true;
@@ -710,7 +737,7 @@ contract Etheraffle is usingOraclize {
      *          frame.
      */
     function selfDestruct() onlyEtheraffle external {
-        require(now - upgraded > weekDur * 10);
+        require(now - upgraded > WEEKDUR * 10);
         selfdestruct(ethRelief);
     }
     /**
