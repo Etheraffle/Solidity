@@ -4,7 +4,7 @@ contract ReceiverInterface {
     function receiveEther() external payable {}
 }
 
-contract EthRelief is ReceiverInterface {
+contract EthRelief {
 
     bool    upgraded;
     address etheraffle;
