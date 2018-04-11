@@ -487,7 +487,10 @@ contract Etheraffle is usingOraclize {
         uint total;
         for (i = 0; i < 4; i++) {
             if (numWinnersInt[i] != 0) {
-                payOuts[i] = (prizePool * pctOfPool[i]) / (numWinnersInt[i] * 1000);
+                uint amt = oddsTotal(numWinnersInt[i], i) <= splitsTotal(numWinnersInt[i], i) 
+                         ? oddsSingle(i) 
+                         : splitsSingle(numWinnersInt[i], i); 
+                payOuts[i] = amt;
                 total += payOuts[i] * numWinnersInt[i];
             }
         }
