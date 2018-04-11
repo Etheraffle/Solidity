@@ -17,10 +17,10 @@
  *      holders, and 𝐥𝐢𝐟𝐞-𝐜𝐡𝐚𝐧𝐠𝐢𝐧𝐠 𝐟𝐮𝐧𝐝𝐢𝐧𝐠 to charities.
  *
  *      Learn more & get involved at 𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦/𝐈𝐂𝐎 to become a
- *      𝐋𝐎𝐓 token holder today! Holding 𝐋𝐎𝐓 tokens automatically makes 
- *      you a part of the decentralized, autonomous organisation that 
- *      𝐎𝐖𝐍𝐒 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞. Take your place in this decentralized, altruistic
- *      vision of the future!
+ *      𝐋𝐎𝐓 token holder today! Holding 𝐋𝐎𝐓 tokens automatically  
+ *      makes you a part of the decentralized, autonomous organisation  
+ *      that 𝐎𝐖𝐍𝐒 Etheraffle. Take your place in this decentralized, 
+ *      altruistic vision of the future!
  *
  */
 pragma solidity^0.4.21;
