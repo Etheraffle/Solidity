@@ -1,4 +1,4 @@
-pragma solidity^0.4.21emit ;
+pragma solidity^0.4.21;
 
 contract ReceiverInterface {
     function receiveEther() external payable {}
