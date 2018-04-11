@@ -115,8 +115,8 @@ contract Etheraffle is usingOraclize {
     event LogReclaim(uint indexed fromRaffle, uint amount, uint atTime);
     event LogUpgrade(address newContract, uint ethTransferred, uint atTime);
     event LogPrizePoolAddition(address fromWhom, uint howMuch, uint atTime);
-    event LogOraclizeCallback(bytes32 queryID, string result, uint indexed forRaffle, uint atTime);
     event LogFreeLOTWin(uint indexed forRaffle, address toWhom, uint entryNumber, uint amount, uint atTime);
+    event LogOraclizeCallback(address, functionCaller, bytes32 queryID, string result, uint indexed forRaffle, uint atTime);
     event LogFundsDisbursed(uint indexed forRaffle, uint oraclizeTotal, uint amount, address indexed toAddress, uint atTime);
     event LogWithdraw(uint indexed forRaffle, address indexed toWhom, uint forEntryNumber, uint matches, uint amountWon, uint atTime);
     event LogWinningNumbers(uint indexed forRaffle, uint numberOfEntries, uint[] wNumbers, uint currentPrizePool, uint randomSerialNo, uint atTime);
@@ -373,7 +373,7 @@ contract Etheraffle is usingOraclize {
      */
     function __callback(bytes32 _myID, string _result) onlyIfNotPaused {
         require(msg.sender == oraclize_cbAddress() || msg.sender == etheraffle);
-        emit LogOraclizeCallback(_myID, _result, qID[_myID].weekNo, now);
+        emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
         if (qID[_myID].isRandom == true) {
             reclaimUnclaimed();
             disburseFunds(qID[_myID].weekNo);
