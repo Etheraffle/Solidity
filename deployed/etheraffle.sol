@@ -24,7 +24,7 @@
  *      vision of the future!
  *
  */
-pragma solidity^0.4.15;
+pragma solidity^0.4.21;
 
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 import "github.com/Arachnid/solidity-stringutils/strings.sol";
