@@ -1,3 +1,10 @@
+/*
+Main Chain Address: 
+0x4251139bF01D46884c95b27666C9E317DF68b876
+Deprecated on 11th April 2018
+Eligible for contract destruction on or after:
+10th June 2018
+*/
 pragma solidity^0.4.15;
 
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
