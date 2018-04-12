@@ -5,8 +5,8 @@
 <p align='center'>
   <b>❍ Etheraffle ❍</b>
   <br/>
-  <a href='https://etherscan.io/address/0x4251139bF01D46884c95b27666C9E317DF68b876'>
-    <b>0x4251139bF01D46884c95b27666C9E317DF68b876<b>
+  <a href='https://etherscan.io/address/0x45c58bbd535b8661110ef5296e6987573d0c8276'>
+    <b>0x45c58bbd535b8661110ef5296e6987573d0c8276<b>
   </a>
   <br/>
   <br/>
@@ -26,8 +26,8 @@
   <br/>
   <b>❍ Etheraffle LOT Promotion ❍</b>
   <br/>
-  <a href='https://etherscan.io/address/0xb0991c05510b34aa5386f1c1d87222a3e66c835f'>
-    <b>0xb0991c05510b34aa5386f1c1d87222a3e66c835f<b>
+  <a href='https://etherscan.io/address/0xcca9Fc3289157a3197CE467E253d99e23C2CB19B'>
+    <b>0xcca9Fc3289157a3197CE467E253d99e23C2CB19B<b>
   </a>
   <br/>
   <br/>
@@ -40,15 +40,15 @@
   <br/>
   <b>❍ Disbursal Placeholder ❍</b>
   <br/>
-  <a href='https://etherscan.io/address/0x3bfb12ed112aB833F275Dbf622b7CacC4CBF092b'>
-    <b>0x3bfb12ed112aB833F275Dbf622b7CacC4CBF092b<b>
+  <a href='https://etherscan.io/address/0xb6a5f50B5ce5909A9C75Ce27FEc96e5dE393AF61'>
+    <b>0xb6a5f50B5ce5909A9C75Ce27FEc96e5dE393AF61<b>
   </a>
   <br/>
   <br/>
   <b>❍ EthRelief Placeholder ❍</b>
   <br/>
-  <a href='https://etherscan.io/address/0x63E14Dc47003d87d152eD507DF3F50C20bD88c3e'>
-    <b>0x63E14Dc47003d87d152eD507DF3F50C20bD88c3e<b>
+  <a href='https://etherscan.io/address/0x7eE65fE55ACcD9430F425379851fE768270c6699'>
+    <b>0x7eE65fE55ACcD9430F425379851fE768270c6699<b>
   </a>
 </p>
 
