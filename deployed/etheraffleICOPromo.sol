@@ -1,5 +1,29 @@
 pragma solidity^0.4.21;
-
+/*
+ *      ##########################################
+ *      ##########################################
+ *      ###                                    ###
+ *      ###          𝐏𝐥𝐚𝐲 & 𝐖𝐢𝐧 𝐄𝐭𝐡𝐞𝐫          ###
+ *      ###                 at                 ###
+ *      ###          𝐄𝐓𝐇𝐄𝐑𝐀𝐅𝐅𝐋𝐄.𝐂𝐎𝐌          ###
+ *      ###                                    ###
+ *      ##########################################
+ *      ##########################################
+ *
+ *      Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧 promotional contract!
+ *      First you should go and play 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦
+ *      Then you'll have earnt free 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧𝐬 via this very promotion!
+ *      Next you should learn about our 𝐈𝐂𝐎 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦/𝐢𝐜𝐨
+ *      Then take part by buying even more 𝐋𝐎𝐓 𝐭𝐨𝐤𝐞𝐧𝐬! 
+ *      And don't forget to play 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 some more because it's brilliant!
+ *
+ *      If you want to chat to us you have loads of options:
+ *      On 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 @ 𝐡𝐭𝐭𝐩𝐬://𝐭.𝐦𝐞/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
+ *      Or on 𝐓𝐰𝐢𝐭𝐭𝐞𝐫 @ 𝐡𝐭𝐭𝐩𝐬://𝐭𝐰𝐢𝐭𝐭𝐞𝐫.𝐜𝐨𝐦/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
+ *      Or on 𝐑𝐞𝐝𝐝𝐢𝐭 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐫𝐞𝐝𝐝𝐢𝐭.𝐜𝐨𝐦
+ *
+ *      𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 - the only 𝐭𝐫𝐮𝐥𝐲 𝐝𝐞𝐜𝐞𝐧𝐭𝐫𝐚𝐥𝐢𝐳𝐞𝐝 & 𝐜𝐡𝐚𝐫𝐢𝐭𝐚𝐛𝐥𝐞 blockchain lottery.
+ */
 contract EtheraffleInterface {
     uint public tktPrice;
     function getUserNumEntries(address _entrant, uint _week) public view returns (uint) {}
@@ -9,22 +33,7 @@ contract LOTInterface {
     function transfer(address _to, uint _value) public {}
     function balanceOf(address _owner) public view returns (uint) {}
 }
-/*
- * @everyone    
- *              Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧 promotional contract!
- *              First you should go and play 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦
- *              Then you'll have earnt free 𝐋𝐎𝐓 𝐓𝐨𝐤𝐞𝐧𝐬 via this very promotion!
- *              Next you should learn about our 𝐈𝐂𝐎 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐜𝐨𝐦/𝐢𝐜𝐨
- *              Then take part by buying even more 𝐋𝐎𝐓 𝐭𝐨𝐤𝐞𝐧𝐬! 
- *              And don't forget to play 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 some more because it's brilliant!
- *
- *              If you want to chat to us you have loads of options:
- *              On 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 @ 𝐡𝐭𝐭𝐩𝐬://𝐭.𝐦𝐞/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
- *              Or on 𝐓𝐰𝐢𝐭𝐭𝐞𝐫 @ 𝐡𝐭𝐭𝐩𝐬://𝐭𝐰𝐢𝐭𝐭𝐞𝐫.𝐜𝐨𝐦/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
- *              Or on 𝐑𝐞𝐝𝐝𝐢𝐭 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐫𝐞𝐝𝐝𝐢𝐭.𝐜𝐨𝐦
- *
- *              𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 - the only 𝐭𝐫𝐮𝐥𝐲 𝐝𝐞𝐜𝐞𝐧𝐭𝐫𝐚𝐥𝐢𝐳𝐞𝐝 & 𝐜𝐡𝐚𝐫𝐢𝐭𝐚𝐛𝐥𝐞 blockchain lottery.
- */
+
 contract EtheraffleLOTPromo {
     
     bool    public isActive;
@@ -34,7 +43,7 @@ contract EtheraffleLOTPromo {
     uint    constant public TIER1END   = 1523491200; // Thur 12th April 2018
     uint    constant public TIER2END   = 1525305600; // Thur 3rd May 2018
     uint    constant public TIER3END   = 1527724800; // Thur 31st May 2018
-    address constant public ETHERAFFLE = 0x97f535e98cf250CDd7Ff0cb9B29E4548b609A0bd;
+    address constant public ETHERAFFLE = 0x97f535e98cf250CDd7Ff0cb9B29E4548b609A0bd; // ER multisig wallet address
     
     LOTInterface LOTContract;
     EtheraffleInterface etheraffleContract;
@@ -56,12 +65,16 @@ contract EtheraffleLOTPromo {
     /*
      * @dev     Constructor - sets promo running and instantiates required
      *          contracts.
+     *
+     * @param _LOT      Address of the LOT token contract
+     * @param _ER       Address of the Etheraffle contract
      */
-    function EtheraffleLOTPromo() public {
+    function EtheraffleLOTPromo(address _LOT, address _ER) public {
         isActive           = true;
-        LOTContract        = LOTInterface(0xAfD9473dfe8a49567872f93c1790b74Ee7D92A9F);
-        etheraffleContract = EtheraffleInterface(0x4251139bF01D46884c95b27666C9E317DF68b876);
+        LOTContract        = LOTInterface(_LOT);
+        etheraffleContract = EtheraffleInterface(_ER);
     }
+    
     /*
      * @dev     Function used to redeem promotional LOT owed. Use weekNo of 
      *          0 to get current week number. Requires user not to have already 
@@ -174,6 +187,17 @@ contract EtheraffleLOTPromo {
      */
     function getPromoLOTEarnt(uint _entries) public view returns (uint) {
         return (_entries * getRate() * getTktPrice()) / (1 * 10 ** 18);
+    }
+    /*
+     * @dev     Allows contract addresses to be changed in the event of 
+     *          future contract upgrades.
+     *
+     * @param _LOT      Address of the LOT token contract
+     * @param _ER       Address of the Etheraffle contract
+     */
+    function updateAddresses(address _LOT, address _ER) external onlyEtheraffle {
+        LOTContract        = LOTInterface(_LOT);
+        etheraffleContract = EtheraffleInterface(_ER);
     }
     /*
      * @dev     Scuttles contract, sending any remaining LOT tokens back 
