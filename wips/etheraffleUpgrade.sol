@@ -1,17 +1,16 @@
 /*
-    all manual oracle calls to unpause contract too - DONE - ADDED
-    REMOVE THE SET GAS PRICE THINGY - DONE - ADDED(removed :P)
-    add mint interface - DONE - ADDED
-    change encryption - DONE - ADDED
+    Allow manual oracle calls to unpause contract too - DONE - ADDED
+    Remove set gas price function - DONE - ADDED(removed :P)
+    Add mint interface - DONE - ADDED
+    Change encryption strings - DONE - ADDED
     2 match win = free token? - DONE - ADDED
-    Put in odds as readable vars - DONE - ADDED
-    capitalise constants - DONE - ADDED
-    Enter on behalf of - DONE - ADDED
+    Put in odds as array - DONE - ADDED
+    Capitalise constants - DONE - ADDED
+    Enter on behalf of functionality - DONE - ADDED
     Make callback function callable by Etheraffle too? - DONE - ADDED
+    Bump compiler number - DONE - ADDED
+    New payouts calc function - DONE - ADDED
 
-    new calc function - DONE
-    bump comiler number
-    Split out into separate contracts eventually?
     Break up the oracle call back function more?
 
 */
