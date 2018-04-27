@@ -1,4 +1,4 @@
-pragma solidity^0.4.21;
+pragma solidity^0.4.23;
 
 contract FreeLOTInterface {
 	function balanceOf(address _owner) constant external returns (uint balance) {}
@@ -7,7 +7,18 @@ contract FreeLOTInterface {
 
 contract ERDeprecated {
 	function getChosenNumbers(address _entrant, uint _week, uint _entryNum) constant external returns (uint[]) {}
-	function getWinningDetails(uint _week) constant external returns (uint[], uint[]) {}
+	// function getWinningDetails(uint _week) constant external returns (uint[], uint[]) {}
+	mapping (uint => rafStruct) public raffle;
+    struct rafStruct {
+        mapping (address => uint[][]) entries;
+        uint unclaimed;
+        uint[] winNums;
+        uint[] winAmts;
+        uint timeStamp;
+        bool wdrawOpen;
+        uint numEntries;
+        uint freeEntries;
+    }
 }
 
 contract FreeLOTWin {
@@ -19,6 +30,7 @@ contract FreeLOTWin {
 
 	event LogPauseStatus(bool currentStatus, uint atTime);
     event LogTokenDeposit(address fromWhom, uint tokenAmount, bytes data);
+	event LogWithdraw(address toWhom, uint forRaffle, uint entryNumber, uint atTime);
 
 	FreeLOTInterface freeLOT;
 	ERDeprecatedInterface erDeprecated;
@@ -43,45 +55,46 @@ contract FreeLOTWin {
 		emit LogPauseStatus(_status, atTime);
 	}
 
+	function getWinNums(uint _week) internal view returns (uint[]) {
+		return erDeprecated.raffle[_week].winNums;
+	}
+
+	function getChosen(address _entrant, uint _week, uint _entryNum) internal view returns (uint[]) {
+		return getChosenNumbers(_entrant, _week, _entryNum);
+	}
+    /**
+     * @dev   Function compares array of entrant's 6 chosen numbers to
+      *       the raffle in question's winning numbers, counting how
+      *       many matches there are.
+      *
+      * @param _week         The week number of the Raffle in question
+      * @param _entrant      Entrant's ethereum address
+      * @param _entryNum     number of entrant's entry in question.
+     */
+    function getMatches(uint _week, address _entrant, uint _entryNum) view internal returns (uint) {
+		uint[] chosen  = getChosen(_entrant, _week, _entryNum);
+		uint[] winNums = getWinNums(_week);
+        uint matches;
+        for (uint i = 0; i < 6; i++) {
+            for (uint j = 0; j < 6; j++) {
+                if (chosen[i] == winNums[j]) {
+                    matches++;
+                    break;
+                }
+            }
+        }
+        return matches;
+    }
+
 	function withdraw(uint _week, uint _entryNum) onlyIfNotPaused external {
 
-		// Check erDeprecated contract
-		// set claimed[msg.sender][_week][_entryNum] = true
-		// require the above to be !
-		// require _week < 38
-		// get winning details
-		// get chosen numbers
-		// calc matches
-		// if two, send token
-		// log it
-
-
-		// Etheraffles w.draw function...
-		// 	require
-		// 	(
-		// 			raffle[_week].timeStamp > 0 &&
-		// 			now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7) &&
-		// 			now - raffle[_week].timeStamp < wdrawBfr &&
-		// 			raffle[_week].wdrawOpen == true &&
-		// 			raffle[_week].entries[msg.sender][_entryNum - 1].length == 6
-		// 	);
-		// 	uint matches = getMatches(_week, msg.sender, _entryNum);
-		// 	if (matches == 2) return winFreeGo(_week, _entryNum);
-		// 	require
-		// 	(
-		// 			matches >= 3 &&
-		// 			raffle[_week].winAmts[matches - 3] > 0 &&
-		// 			raffle[_week].winAmts[matches - 3] <= this.balance
-		// 	);
-		// 	raffle[_week].entries[msg.sender][_entryNum - 1].push(1);
-		// 	if (raffle[_week].winAmts[matches - 3] <= raffle[_week].unclaimed) {
-		// 			raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3];
-		// 	} else {
-		// 			raffle[_week].unclaimed = 0;
-		// 			pauseContract(5);
-		// 	}
-		// 	msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
-		// 	emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
+		// require(!claimed[msg.sender][_week][_entryNum], 'Already withdrawn!')
+		// claimed[msg.sender][_week][_entryNum] = true
+		// require(_week < 38, 'Not an eligible week number!')
+		// uint matches = getMatches(_week, msg.sender, _entryNum)
+		// require(matches == 2, 'Not a two match win!');
+		// FreeLOT.transfer(msg.sender, 1);
+		// emit LogWithdraw(msg.sender, _week, _entryNum, now);
 	}
 
 	function scuttle() onlyEtheraffle public {
