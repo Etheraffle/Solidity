@@ -1,4 +1,4 @@
-pragma solidity^0.4.21;7
+pragma solidity^0.4.21;
 
 contract FreeLOTInterface {
 	function balanceOf(address _owner) constant external returns (uint balance) {}
