@@ -32,24 +32,23 @@ contract StoreHash {
 
   event LogTicketBought(uint indexed forRaffle, uint indexed entryNumber, address indexed theEntrant, uint[] chosenNumbers, uint personalEntryNumber, uint tktCost, uint atTime, uint affiliateID);
 
-
   constructor() {
     // TODO: Lower gas prices by storing hashes of arrays rather than arrays...
     // NB: will no longer be able to retrieve chosen numbers from contract
     // DB will store them having picked them up from events
   }
 
-  function storeNumbers(uint[] _cNums) public {
+  function storeNumbers(uint[] _cNums) public payable {
     raffle[1].numEntries++;
     prizePool += msg.value;
-    raffle[1].entries[_entrant].push(_cNums);
+    raffle[1].entries[msg.sender].push(_cNums);
     emit LogTicketBought(1, raffle[1].numEntries, msg.sender, _cNums, raffle[1].entries[msg.sender].length, msg.value, now, 0);
   }
 
-  function storeHash(uint[] _cNums) public {
+  function storeHash(uint[] _cNums) public payable {
     raffleHash[1].numEntries++;
     prizePool += msg.value;
-    raffleHash[1].entries[_entrant].push(keccak256(_cNums));
+    raffleHash[1].entries[msg.sender].push(keccak256(_cNums));
     emit LogTicketBought(1, raffle[1].numEntries, msg.sender, _cNums, raffle[1].entries[msg.sender].length, msg.value, now, 0);
   }
 
