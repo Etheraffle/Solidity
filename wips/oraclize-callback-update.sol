@@ -2,6 +2,7 @@
  * Need to account for the edge case scenarios of a replay. Check for the struct already
  * being in place and revert should that be so.
  *
+ * Can we also remove gas amount?
  */
 
 contract OraclizeUpdate {
@@ -17,19 +18,26 @@ contract OraclizeUpdate {
         disburseFunds(qID[_myID].weekNo);
         setWinningNumbers(qID[_myID].weekNo, _result);
         if (qID[_myID].isManual == true) return;
-        bytes32 query = oraclize_query(matchesDelay, "nested", strConcat(apiStr1, uint2str(qID[_myID].weekNo), apiStr2), gasAmt);
-        qID[query].weekNo = qID[_myID].weekNo;
-        emit LogQuerySent(query, matchesDelay + now, now);
+        createQuery(true, _myID);
     }
 
     apiCallback(bytes32 _myID, string _result) internal {
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
         if (qID[_myID].isManual == true) return;
-        uint delay = (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
-        query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
+        createQuery(false, _myID);
+    }
+
+    createQuery(bool _isRandom, bytes32 _myID) {
+        uint delay = _isRandom 
+                   ? matchesDelay 
+                   : (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
+        string memory str = _isRandom 
+                   ? strConcat(apiStr1, uint2str(qID[_myID].weekNo), apiStr2)
+                   : strConcat(randomStr1, uint2str(getWeek()), randomStr2);
+        bytes32 query = oraclize_query(delay, "nested", str, gasAmt);
         qID[query].weekNo = getWeek();
-        qID[query].isRandom = true;
+        qID[query].isRandom = _isRandom;
         emit LogQuerySent(query, delay, now);
     }
 }
