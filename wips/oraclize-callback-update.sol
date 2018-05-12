@@ -1,8 +1,10 @@
 /**
  * Need to account for the edge case scenarios of a replay. Check for the struct already
- * being in place and revert should that be so.
+ * being in place and revert should that be the case
  *
  * NB: Will the MANUAL oraclize queries still work? Can they in fact use the new createQuery func?
+ *
+ * TODO: Update the manuallyMakeOraclize() method use the new createQuery thingy here.
  */
 
 contract OraclizeUpdate {
