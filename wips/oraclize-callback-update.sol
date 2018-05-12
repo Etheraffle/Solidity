@@ -77,36 +77,21 @@ contract OraclizeUpdate {
     //     }
     // }
 
-
-
-
-    // Refactor to use new createQuery thingy (in which the new check for duplicates will take place!)
-    // Need to pass in isManual bool to createQuery()
-    // Need to pass in weekNo as well
-    // basically should make it as close to a pure function as possible...
-
-    // function manuallyMakeOraclizeCall
-    // (
-    //     uint _week,
-    //     uint _delay,
-    //     bool _isRandom,
-    //     bool _isManual,
-    //     bool _status
-    // )
-    //     onlyEtheraffle external
-    // {
-    //     paused = _status;
-    //     string memory weekNumStr = uint2str(_week);
-    //     if (_isRandom == true){
-    //         bytes32 query = oraclize_query(_delay, "nested", strConcat(randomStr1, weekNumStr, randomStr2), gasAmt);
-    //         qID[query].weekNo   = _week;
-    //         qID[query].isRandom = true;
-    //         qID[query].isManual = _isManual;
-    //     } else {
-    //         query = oraclize_query(_delay, "nested", strConcat(apiStr1, weekNumStr, apiStr2), gasAmt);
-    //         qID[query].weekNo   = _week;
-    //         qID[query].isManual = _isManual;
-    //     }
-    // }
+    function manuallyMakeOraclizeCall
+    (
+        uint _week,
+        uint _delay,
+        bool _isRandom,
+        bool _isManual,
+        bool _status
+    )
+        onlyEtheraffle external
+    {
+        paused = _status;
+        string memory str = _isRandom 
+            ? strConcat(randomStr1, uint2str(_week), randomStr2)
+            : strConcat(apiStr1, uint2str(_week), apiStr2):
+        sendQuery(_delay, str, _week, _isRandom, _isManual);
+    }
 
 }
