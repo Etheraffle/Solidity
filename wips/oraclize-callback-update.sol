@@ -17,14 +17,14 @@ contract OraclizeUpdate {
         reclaimUnclaimed();
         disburseFunds(qID[_myID].weekNo);
         setWinningNumbers(qID[_myID].weekNo, _result);
-        if (qID[_myID].isManual == true) return;
+        if (qID[_myID].isManual) return;
         createQuery(true, _myID);
     }
 
     function apiCallback(bytes32 _myID, string _result) internal {
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
-        if (qID[_myID].isManual == true) return;
+        if (qID[_myID].isManual) return;
         createQuery(false, _myID);
     }
 
