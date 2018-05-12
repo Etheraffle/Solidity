@@ -13,7 +13,7 @@ contract OraclizeUpdate {
         qID[_myID].isRandom ? randomCallback(_myID, _result) : apiCallback(_myId, _result);
     }
 
-    randomCallback(bytes32 _myID, string _result) internal {
+    function randomCallback(bytes32 _myID, string _result) internal {
         reclaimUnclaimed();
         disburseFunds(qID[_myID].weekNo);
         setWinningNumbers(qID[_myID].weekNo, _result);
@@ -21,14 +21,14 @@ contract OraclizeUpdate {
         createQuery(true, _myID);
     }
 
-    apiCallback(bytes32 _myID, string _result) internal {
+    function apiCallback(bytes32 _myID, string _result) internal {
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
         if (qID[_myID].isManual == true) return;
         createQuery(false, _myID);
     }
 
-    createQuery(bool _isRandom, bytes32 _myID) {
+    function createQuery(bool _isRandom, bytes32 _myID) {
         uint delay = _isRandom 
                    ? matchesDelay 
                    : (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
