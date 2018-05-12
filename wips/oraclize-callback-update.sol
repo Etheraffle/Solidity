@@ -8,13 +8,30 @@
  */
 
 contract OraclizeUpdate {
-
+    /**
+     * @dev   The Oralize call back function. Only callable by Etheraffle 
+     *        or the Oraclize address. Emits an event detailing the callback, 
+     *        before running the relevant method that acts on the callback.
+     * 
+     * @param _myID     bytes32 - Unique id oraclize provides with their
+     *                            callbacks.
+     * @param _result   string - The result of the api call.
+     */
     function __callback(bytes32 _myID, string _result) onlyIfNotPaused {
         require(msg.sender == oraclize_cbAddress() || msg.sender == etheraffle);
         emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
         qID[_myID].isRandom ? randomCallback(_myID, _result) : apiCallback(_myID, _result);
     }
-
+    /**
+     * @dev     Called when a random.org api callback comes in. It first 
+     *          reclaims unclaimed prizes from the raffle ten weeks previous,
+     *          disburses this week's raffle's profits, sets the winning 
+     *          numbers from the callback in this raffle's struct and finally 
+     *          prepares the next Oraclize query to call the Etheraffle API.
+     *
+     * @param   _myID       The hash of the Oraclize query
+     * @param   _result     The resutl of the Oraclize query
+     */
     function randomCallback(bytes32 _myID, string _result) internal {
         reclaimUnclaimed();
         disburseFunds(qID[_myID].weekNo);
@@ -22,7 +39,14 @@ contract OraclizeUpdate {
         if (qID[_myID].isManual) return;
         sendQuery(matchesDelay, getQueryString(false, qID[_myID].weekNo), qID[_myID].weekNo, false, false);
     }
-
+    /**
+     * @dev     Called when the Etheraffle API callback is received. It sets 
+     *          up the next raffle's struct, calculates this raffle's payouts 
+     *          then makes the next Oraclize query to call the Random.org api.
+     *
+     * @param   _myID       The hash of the Oraclize query
+     * @param   _result     The resutl of the Oraclize query
+     */
     function apiCallback(bytes32 _myID, string _result) internal {
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
@@ -30,13 +54,29 @@ contract OraclizeUpdate {
         uint delay = (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
         sendQuery(delay, getQueryString(true, getWeek()), getWeek(), true, false);
     }
-
+    /**
+     * @dev     Prepares the correct Oraclize query string using Oraclize's 
+     *          contract's string concat function.
+     *
+     * @param   _isRandom   Whether the query is to the Random.org api, or Etheraffle's.
+     * @param   _weekNo     Raffle number the call is being made on behalf of.
+     */
     function getQueryString(bool _isRandom, uint _weekNo) internal returns (string) {
         return _isRandom 
                ? strConcat(randomStr1, uint2str(_weekNo), randomStr2)
                : strConcat(apiStr1, uint2str(_weekNo), apiStr2);
     }
-
+    /**
+     * @dev     Sends an Oraclize query, stores info w/r/t that query in a
+     *          struct mapped to by the hash of the query, and logs the 
+     *          pertinent details.
+     *
+     * @param   _delay      Desired return time for query from sending (in seconds).
+     * @param   _str        The Oraclize call string.
+     * @param   _weekNo     Week number for raffle in question.
+     * @param   _isRandom   Whether the call is destined for Random.org or Etheraffle.
+     * @param   _isManual   Whether the call is being made manually or recursively.
+     */
     function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) internal {
         bytes32 query = oraclize_query(_delay, "nested", _str, gasAmt);
         qID[query].weekNo   = _weekNo;
