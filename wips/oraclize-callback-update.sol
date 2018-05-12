@@ -2,7 +2,7 @@
  * Need to account for the edge case scenarios of a replay. Check for the struct already
  * being in place and revert should that be so.
  *
- * Can we also remove gas amount?
+ * NB: Will the MANUAL oraclize queries still work? Can they in fact use the new createQuery func?
  */
 
 contract OraclizeUpdate {
