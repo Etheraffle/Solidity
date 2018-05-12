@@ -28,7 +28,7 @@ contract OraclizeUpdate {
         createQuery(false, _myID);
     }
 
-    function createQuery(bool _isRandom, bytes32 _myID) {
+    function createQuery(bool _isRandom, bytes32 _myID) internal {
         uint delay = _isRandom 
                    ? matchesDelay 
                    : (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
