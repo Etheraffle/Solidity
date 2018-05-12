@@ -4,7 +4,7 @@
  *
  * NB: Will the MANUAL oraclize queries still work? Can they in fact use the new createQuery func?
  *
- * TODO: Update the manuallyMakeOraclize() method use the new createQuery thingy here.
+ * TODO: Test the new methods work!
  */
 
 contract OraclizeUpdate {
@@ -12,7 +12,7 @@ contract OraclizeUpdate {
     function __callback(bytes32 _myID, string _result) onlyIfNotPaused {
         require(msg.sender == oraclize_cbAddress() || msg.sender == etheraffle);
         emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
-        qID[_myID].isRandom ? randomCallback(_myID, _result) : apiCallback(_myId, _result);
+        qID[_myID].isRandom ? randomCallback(_myID, _result) : apiCallback(_myID, _result);
     }
 
     function randomCallback(bytes32 _myID, string _result) internal {
@@ -20,29 +20,21 @@ contract OraclizeUpdate {
         disburseFunds(qID[_myID].weekNo);
         setWinningNumbers(qID[_myID].weekNo, _result);
         if (qID[_myID].isManual) return;
-        createQuery(true, _myID);
+        sendQuery(matchesDelay, getQueryString(false, qID[_myID].weekNo), qID[_myID].weekNo, false, false);
     }
 
     function apiCallback(bytes32 _myID, string _result) internal {
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
         if (qID[_myID].isManual) return;
-        createQuery(false, _myID);
+        uint delay = (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
+        sendQuery(delay, getQueryString(true, getWeek()), getWeek(), true, false);
     }
 
-    function createQuery(bool _isRandom, bytes32 _myID) internal {
-        uint delay = _isRandom 
-                   ? matchesDelay 
-                   : (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
-        string memory str = _isRandom 
-                   ? strConcat(apiStr1, uint2str(qID[_myID].weekNo), apiStr2)
-                   : strConcat(randomStr1, uint2str(getWeek()), randomStr2);
-        uint weekNo = _isRandom ? qID[_myID].weekNo : getWeek();
-        sendQuery(delay, str, weekNo, !_isRandom, false); // invert the random boolean!
-        // bytes32 query = oraclize_query(delay, "nested", str, gasAmt);
-        // qID[query].weekNo = _isRandom ? qID[_myID].weekNo : getWeek();
-        // qID[query].isRandom = !_isRandom; // Invert the boolean 
-        // emit LogQuerySent(query, delay, now);
+    function getQueryString(bool _isRandom, uint _weekNo) internal returns (string) {
+        return _isRandom 
+               ? strConcat(randomStr1, uint2str(_weekNo), randomStr2)
+               : strConcat(apiStr1, uint2str(_weekNo), apiStr2);
     }
 
     function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) internal {
@@ -88,10 +80,7 @@ contract OraclizeUpdate {
         onlyEtheraffle external
     {
         paused = _status;
-        string memory str = _isRandom 
-            ? strConcat(randomStr1, uint2str(_week), randomStr2)
-            : strConcat(apiStr1, uint2str(_week), apiStr2):
-        sendQuery(_delay, str, _week, _isRandom, _isManual);
+        sendQuery(_delay, getQueryString(_isRandom, _week), _week, _isRandom, _isManual);
     }
 
 }
