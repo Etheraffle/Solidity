@@ -6,13 +6,7 @@
  */
 
 contract OraclizeUpdate {
-	// So we can manually call any of the oraclize functions as Etheraffle too, crafting a
-	// correct qid to make possible?
-    function createQID(bytes32 _ID, uint _weekNo, bool _isRandom, bool _isManual) onlyEtheraffle {
-		qID[_ID].weekNo   = _weekNo;
-        qID[_ID].isRandom = _isRandom;
-        qID[_ID].isManual = _isManual;
-    }
+
     /**
     * @dev  Modifier to prepend to functions adding the additional
     *       conditional requiring caller of the method to be either
@@ -126,6 +120,21 @@ contract OraclizeUpdate {
     {
         paused = _status;
         sendQuery(_delay, getQueryString(_isRandom, _week), _week, _isRandom, _isManual);
+    }
+	// So we can manually call any of the oraclize functions as Etheraffle too, crafting a
+	// correct qid to make possible?
+    function manuallyCreateQID
+	(
+		bytes32 _ID, 
+		uint _weekNo, 
+		bool _isRandom, 
+		bool _isManual
+	) 
+		onlyEtheraffle external 
+	{
+		qID[_ID].weekNo   = _weekNo;
+        qID[_ID].isRandom = _isRandom;
+        qID[_ID].isManual = _isManual;
     }
 }
 // Original Oraclize callback megafunction!
