@@ -13,7 +13,7 @@
    	function manuallyMakeNewRaffle(uint _week, bool _paused) onlyEtheraffle external {
 	   if (paused != _paused) paused = _paused;
 	   week = _week;
-	   raffle[_week].timeStamp = BIRTHDAY + (_weel * WEEKDUR);
+	   raffle[_week].timeStamp = BIRTHDAY + (_week * WEEKDUR);
    	}
 }
 
