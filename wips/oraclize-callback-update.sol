@@ -45,7 +45,7 @@ contract OraclizeUpdate {
      * @param   _myID       The hash of the Oraclize query
      * @param   _result     The resutl of the Oraclize query
      */
-    function randomCallback(bytes32 _myID, string _result) internal {
+    function randomCallback(bytes32 _myID, string _result) onlyOraclize {
         reclaimUnclaimed();
         disburseFunds(qID[_myID].weekNo);
         setWinningNumbers(qID[_myID].weekNo, _result);
@@ -60,7 +60,7 @@ contract OraclizeUpdate {
      * @param   _myID       The hash of the Oraclize query
      * @param   _result     The resutl of the Oraclize query
      */
-    function apiCallback(bytes32 _myID, string _result) internal {
+    function apiCallback(bytes32 _myID, string _result) onlyOraclize {
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
         if (qID[_myID].isManual) return;
@@ -74,7 +74,7 @@ contract OraclizeUpdate {
      * @param   _isRandom   Whether the query is to the Random.org api, or Etheraffle's.
      * @param   _weekNo     Raffle number the call is being made on behalf of.
      */
-    function getQueryString(bool _isRandom, uint _weekNo) internal returns (string) {
+    function getQueryString(bool _isRandom, uint _weekNo) onlyOraclize returns (string) {
         return _isRandom 
                ? strConcat(randomStr1, uint2str(_weekNo), randomStr2)
                : strConcat(apiStr1, uint2str(_weekNo), apiStr2);
@@ -90,7 +90,7 @@ contract OraclizeUpdate {
      * @param   _isRandom   Whether the call is destined for Random.org or Etheraffle.
      * @param   _isManual   Whether the call is being made manually or recursively.
      */
-    function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) internal {
+    function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) onlyOraclize {
         bytes32 query = oraclize_query(_delay, "nested", _str, gasAmt);
         qID[query].weekNo   = _weekNo;
         qID[query].isRandom = _isRandom;
