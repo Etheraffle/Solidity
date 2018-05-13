@@ -4,8 +4,8 @@
  contract ExposeNewRaffle {
 	/**
 	 * @dev		Allows manual creation of a new raffle struct, plus can
-	 * 			toggle paused status of contract if needs be. Can only 
-	 *			be called by the Etheraffle address.
+	 * 			  toggle paused status of contract if needs be. Can only 
+	 *			  be called by the Etheraffle address.
 	 *
 	 * @param _week		Desired week number for new raffle struct.
 	 * @param _paused	Desired pause status of contract.
