@@ -4,13 +4,9 @@ pragma solidity^0.4.23;
  * Changes will only affect the odds single calcs since splits singles will only take affect
  * when splits singles become SMALLER than odds singles.
  *
- * Make these functions pure? Pass in ALL args? Can the arrays be made CONSTANT?
+ * Make these functions pure? Pass in ALL args? Can the arrays be made CONSTANT? (Apparently not!)
  */
 contract PayoutUpgrade {
-
-	uint[] public constant PCTOFPOOL = [520, 114, 47, 319]; // ppt...
-	uint[] public constant ODDS      = [56, 1032, 54200, 13983816]; // Rounded down to nearest whole 
-	uint   public          take      = 150; // ppt
     // /*  
     //  * @dev     Returns TOTAL payout per tier when calculated using the odds method.
     //  *
