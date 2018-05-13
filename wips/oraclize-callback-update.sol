@@ -43,7 +43,7 @@ contract OraclizeUpdate {
      *          prepares the next Oraclize query to call the Etheraffle API.
      *
      * @param   _myID       The hash of the Oraclize query
-     * @param   _result     The resutl of the Oraclize query
+     * @param   _result     The result of the Oraclize query
      */
     function randomCallback(bytes32 _myID, string _result) onlyOraclize {
         reclaimUnclaimed();
@@ -58,7 +58,7 @@ contract OraclizeUpdate {
      *          then makes the next Oraclize query to call the Random.org api.
      *
      * @param   _myID       The hash of the Oraclize query
-     * @param   _result     The resutl of the Oraclize query
+     * @param   _result     The result of the Oraclize query
      */
     function apiCallback(bytes32 _myID, string _result) onlyOraclize {
         newRaffle();
