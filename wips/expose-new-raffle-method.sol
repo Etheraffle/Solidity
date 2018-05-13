@@ -1,7 +1,6 @@
 /**
- * Need to expose the newRaffle() method externall & only callable by Etheraffle
+ * Need to make a newRaffle() method & have it only callable by Etheraffle
  */
-
  contract ExposeNewRaffle {
 	/**
 	 * @dev		Allows manual creation of a new raffle struct, plus can
