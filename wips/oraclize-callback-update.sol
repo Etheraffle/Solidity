@@ -8,7 +8,7 @@
 contract OraclizeUpdate {
 	// So we can manually call any of the oraclize functions as Etheraffle too, crafting a
 	// correct qid to make possible?
-    function createQID(bytes32 _ID, uint _weekNo, bool _isRandom, bool _isManual) {
+    function createQID(bytes32 _ID, uint _weekNo, bool _isRandom, bool _isManual) onlyEtheraffle {
 		qID[_ID].weekNo   = _weekNo;
         qID[_ID].isRandom = _isRandom;
         qID[_ID].isManual = _isManual;
