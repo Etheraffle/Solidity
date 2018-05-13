@@ -6,6 +6,11 @@
  */
 
 contract OraclizeUpdate {
+
+    function createQID() {
+		// So we can manually call any of the oraclize functions as Etheraffle too, crafting a
+		// correct qid to make possible?
+    }
     /**
     * @dev  Modifier to prepend to functions adding the additional
     *       conditional requiring caller of the method to be either
