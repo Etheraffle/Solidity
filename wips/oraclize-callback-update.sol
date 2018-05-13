@@ -1,13 +1,20 @@
 /**
- * Need to account for the edge case scenarios of a replay. Check for the struct already
- * being in place and revert should that be the case
- *
- * NB: Will the MANUAL oraclize queries still work? Can they in fact use the new createQuery func?
- *
  * TODO: Test the new methods work!
+ * TODO: Need to account for the edge case scenarios of a replay. Check for the struct already
+ * being in place and revert should that be the case? Would need a new param in struct...
+ * Could save the last query somewhere and check for that?
  */
 
 contract OraclizeUpdate {
+    /**
+    * @dev  Modifier to prepend to functions adding the additional
+    *       conditional requiring caller of the method to be either
+    *       the Oraclize or Etheraffle address.
+    */
+    modifier onlyOraclize() {
+        require(msg.sender == oraclize_cbAddress() || msg.sender == etheraffle);
+        _;
+    }
     /**
      * @dev   The Oralize call back function. Only callable by Etheraffle 
      *        or the Oraclize address. Emits an event detailing the callback, 
@@ -17,8 +24,7 @@ contract OraclizeUpdate {
      *                            callbacks.
      * @param _result   string - The result of the api call.
      */
-    function __callback(bytes32 _myID, string _result) onlyIfNotPaused {
-        require(msg.sender == oraclize_cbAddress() || msg.sender == etheraffle);
+    function __callback(bytes32 _myID, string _result) onlyIfNotPaused onlyOraclize {
         emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
         qID[_myID].isRandom ? randomCallback(_myID, _result) : apiCallback(_myID, _result);
     }
