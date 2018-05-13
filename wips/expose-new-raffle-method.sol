@@ -10,7 +10,7 @@
 	 * @param _week		Desired week number for new raffle struct.
 	 * @param _paused	Desired pause status of contract.
 	 */
-   	function manuallyMakeNewRaffle(uint _week, bool _paused) onlyEtheraffle {
+   	function manuallyMakeNewRaffle(uint _week, bool _paused) onlyEtheraffle external {
 	   if (paused != _paused) paused = _paused;
 	   week = _week;
 	   raffle[_week].timeStamp = BIRTHDAY + (_weel * WEEKDUR);
