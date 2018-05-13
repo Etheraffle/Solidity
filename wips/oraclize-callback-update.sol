@@ -125,16 +125,17 @@ contract OraclizeUpdate {
 	// correct qid to make possible?
     function manuallyCreateQID
 	(
-		bytes32 _ID, 
+		string _anID, 
 		uint _weekNo, 
 		bool _isRandom, 
 		bool _isManual
 	) 
 		onlyEtheraffle external 
 	{
-		qID[_ID].weekNo   = _weekNo;
-        qID[_ID].isRandom = _isRandom;
-        qID[_ID].isManual = _isManual;
+		bytes32 memory ID = keccak256(_anID);
+		qID[ID].weekNo    = _weekNo;
+        qID[ID].isRandom  = _isRandom;
+        qID[ID].isManual  = _isManual;
     }
 }
 // Original Oraclize callback megafunction!
