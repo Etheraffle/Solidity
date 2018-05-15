@@ -52,8 +52,11 @@ contract StoreHash {
   function storeHash(uint[] _cNums) public payable {
     raffleHash[1].numEntries++;
     prizePool += msg.value;
-    raffleHash[1].entries[msg.sender].push(keccak256(_cNums));
+    raffleHash[1].entries[msg.sender].push(hashEntry(_cNums));
     emit LogTicketBought(1, raffle[1].numEntries, msg.sender, _cNums, raffle[1].entries[msg.sender].length, msg.value, now, 0);
+  
+  function hashEntry(uint[] _cNums) pure public returns (bytes32) {
+    return keccak256(_nums);
   }
   /**
    * Getter for the hashes stored in the raffle struct
