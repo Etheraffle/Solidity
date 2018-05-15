@@ -2,6 +2,8 @@ pragma solidity^0.4.23;
 /*
 TODO: Implement new withdraw method that requires user to provide their chosen numbers (front end will take care of this), then those numbers can be verified via the struct before the number of matches are ascertained.
 
+TODO: Make the hash getter pure?
+
 */
 contract StoreHash {
 
