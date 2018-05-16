@@ -3,7 +3,6 @@
  * TODO: Need to account for the edge case scenarios of a replay. Check for the struct already
  * being in place and revert should that be the case? Would need a new param in struct...
  * Could save the last query somewhere and check for that?
- * TODO: Should put all ORACLIZE stuff in its own section really.
  *
  */
 
@@ -14,6 +13,9 @@ contract OraclizeUpdate {
      *         #########################################
      */
     
+    uint    public gasAmt = 500000;
+    uint    public gasPrc = 20000000000; // 20 gwei
+
     mapping (bytes32 => qIDStruct) public qID;
 
     struct qIDStruct {
