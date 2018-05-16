@@ -123,8 +123,24 @@ contract OraclizeUpdate {
         paused = _status;
         sendQuery(_delay, getQueryString(_isRandom, _week), _week, _isRandom, _isManual);
     }
-	// So we can manually call any of the oraclize functions as Etheraffle too, crafting a
-	// correct qid to make possible? This way we can switch the manual toggle too, arresting the recursive Oraclize calls.
+    /**
+     * @dev     Manually edit (or make!) a query ID struct, that Oraclize callbacks 
+     *          can reference.
+     *
+     * @param _ID         Desired keccak hash key for the struct
+     *
+     * @param _weekNo     Desired week/raffle number the struct refers to. 
+     *
+     * @param _isRandom   Whether or not the api call being made is for
+     *                    the random.org results draw, or for the Etheraffle
+     *                    API results call.
+     *
+     * @param _isManual   The Oraclize call back is a recursive function in
+     *                    which each call fires off another call in perpetuity.
+     *                    This bool allows that recursiveness for this call to be
+     *                    turned on or off depending on caller's requirements.
+     *
+     */
     function manuallyEditQID
 	(
 		bytes32 _ID, 
