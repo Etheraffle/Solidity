@@ -45,7 +45,9 @@
      *       of amount greater than or equal to the ticket price.
      *
      * @param _cNums    Ordered array of entrant's six selected numbers.
+     *
      * @param _affID    Affiliate ID of the source of this entry.
+     *
      */
     function enterRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
         require(msg.value >= tktPrice);
@@ -57,8 +59,11 @@
      *       In the event of a win, only the onBehalfOf address can claim it.
      *
      * @param _cNums        Ordered array of entrant's six selected numbers.
+     *
      * @param _affID        Affiliate ID of the source of this entry.
+     *
      * @param _onBehalfOf   The address to be entered on behalf of.
+     *
      */
     function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable external onlyIfNotPaused {
         require(msg.value >= tktPrice);
