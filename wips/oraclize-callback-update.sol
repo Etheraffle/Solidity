@@ -3,6 +3,8 @@
  * TODO: Need to account for the edge case scenarios of a replay. Check for the struct already
  * being in place and revert should that be the case? Would need a new param in struct...
  * Could save the last query somewhere and check for that?
+ * TODO: Should put all ORACLIZE stuff in its own section really.
+ *
  */
 
 contract OraclizeUpdate {
@@ -122,20 +124,19 @@ contract OraclizeUpdate {
         sendQuery(_delay, getQueryString(_isRandom, _week), _week, _isRandom, _isManual);
     }
 	// So we can manually call any of the oraclize functions as Etheraffle too, crafting a
-	// correct qid to make possible?
-    function manuallyCreateQID
+	// correct qid to make possible? This way we can switch the manual toggle too, arresting the recursive Oraclize calls.
+    function manuallyEditQID
 	(
-		string _anID, 
-		uint _weekNo, 
-		bool _isRandom, 
-		bool _isManual
+		bytes32 _ID, 
+		uint    _weekNo, 
+		bool    _isRandom, 
+		bool    _isManual
 	) 
 		onlyEtheraffle external 
 	{
-		bytes32 memory ID = keccak256(_anID);
-		qID[ID].weekNo    = _weekNo;
-        qID[ID].isRandom  = _isRandom;
-        qID[ID].isManual  = _isManual;
+		qID[_ID].weekNo    = _weekNo;
+        qID[_ID].isRandom  = _isRandom;
+        qID[_ID].isManual  = _isManual;
     }
 }
 // Original Oraclize callback megafunction!
