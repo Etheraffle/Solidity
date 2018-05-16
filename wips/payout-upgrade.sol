@@ -8,8 +8,8 @@ pragma solidity^0.4.23;
  */
 contract PayoutUpgrade {
 
-    event LogPrizePoolsUpdated(uint newMainPrizePool, uint indexed forRaffle, uint unclaimedPrizePool, uint threeMatchWinAmt, uint fourMatchWinAmt, uint fiveMatchWinAmt, uint sixMatchwinAmt, uint atTime);
-    
+    event LogPrizePoolsUpdated(uint newMainPrizePool, uint indexed forRaffle, uint ticketPrice, uint unclaimedPrizePool, uint threeMatchWinAmt, uint fourMatchWinAmt, uint fiveMatchWinAmt, uint sixMatchwinAmt, uint atTime);
+
     /*  
      * @dev     Returns TOTAL payout per tier when calculated using the odds method.
      *
@@ -84,6 +84,6 @@ contract PayoutUpgrade {
             raffle[_week].winAmts.push(payOuts[i]);
         }
         raffle[_week].wdrawOpen = true;
-        emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
+        emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
     }
 }   
