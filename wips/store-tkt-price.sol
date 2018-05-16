@@ -2,7 +2,6 @@
  * Store tkt price in raffle struct to remedy the potential game theoretic ramifications 
  * or the tkt price changes w/r/t withdrawal time of a won prize?
  *
- * Need to reference it now in all tktPrice things!
  * Need the new raffle to bake the tkt price in - DONE
  * Need the ticket purchases to reference that price
  * Need the withdraw to calculate prize based off that price.
@@ -40,5 +39,29 @@
             raffle[newWeek].tktPrice = tktPrice;
             raffle[newWeek].timeStamp = BIRTHDAY + (newWeek * WEEKDUR);
         }
+    }
+    /**
+     * @dev  Function to enter the raffle. Requires the caller to send ether
+     *       of amount greater than or equal to the ticket price.
+     *
+     * @param _cNums    Ordered array of entrant's six selected numbers.
+     * @param _affID    Affiliate ID of the source of this entry.
+     */
+    function enterRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
+        require(msg.value >= tktPrice);
+        buyTicket(_cNums, msg.sender, msg.value, _affID);
+    }
+    /**
+     * @dev  Function to enter the raffle on behalf of another address. Requires the 
+     *       caller to send ether of amount greater than or equal to the ticket price.
+     *       In the event of a win, only the onBehalfOf address can claim it.
+     *
+     * @param _cNums        Ordered array of entrant's six selected numbers.
+     * @param _affID        Affiliate ID of the source of this entry.
+     * @param _onBehalfOf   The address to be entered on behalf of.
+     */
+    function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable external onlyIfNotPaused {
+        require(msg.value >= tktPrice);
+        buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
  }
