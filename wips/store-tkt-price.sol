@@ -50,7 +50,7 @@
      *
      */
     function enterRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
-        require(msg.value >= tktPrice);
+        require(raffle[getWeek()].tktPrice > 0 && msg.value >= raffle[getWeek()].tktPrice);
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
@@ -66,7 +66,7 @@
      *
      */
     function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable external onlyIfNotPaused {
-        require(msg.value >= tktPrice);
+        require(raffle[getWeek()].tktPrice > 0 && msg.value >= raffle[getWeek()].tktPrice);
         buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
  }
