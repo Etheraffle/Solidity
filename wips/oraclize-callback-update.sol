@@ -9,10 +9,25 @@
 
 contract OraclizeUpdate {
     /**
-     *            #########################################
-     *            ##         Oraclize Functions          ##
-     *            #########################################
-     *
+     *         #########################################
+     *         ##         Oraclize Functions          ##
+     *         #########################################
+     */
+    
+    mapping (bytes32 => qIDStruct) public qID;
+
+    struct qIDStruct {
+        uint weekNo;
+        bool isRandom;
+        bool isManual;
+    }
+
+    string randomStr1 = "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random[\"data\", \"serialNumber\"]','\\n{\"jsonrpc\": \"2.0\",\"method\":\"generateSignedIntegers\",\"id\":\"";
+    string randomStr2 = "\",\"params\":{\"n\":\"6\",\"min\":1,\"max\":49,\"replacement\":false,\"base\":10,\"apiKey\":${[decrypt] BIaCXRwykpLeDE9h1dQaAUi0LPTD4Jz0kwh6SVTftO+zromdgBhmdQhFwPsaLEGDHHn8bhQA8ksyjOZJpjDzKcVWlkBx5C07udHFtMnvG9g9VITYGxoMOhpFCTnoIKTBlIbNe5D1rIgl9OYUVX4ibTT8fCEE8TkWqQ==}}']";
+    string apiStr1    = "[URL] ['json(https://etheraffle.com/api/a).m','{\"r\":\"";
+    string apiStr2    = "\",\"k\":${[decrypt] BDzj/WPcHzGWYRL2cXvMNvInBxhutESn6Xj8pVzUUH+oEeWBoyycp23B7FSjqKJww6uH5AxvD4srlX0D/Rhl678YcKSNX2oMJJ47ciZrCnj6+28GHCLBV+XiA/1GDis9p5Q9NIKI}}']";
+
+    /**
      * @dev  Modifier to prepend to functions adding the additional
      *       conditional requiring caller of the method to be either
      *       the Oraclize or Etheraffle address.
@@ -26,9 +41,9 @@ contract OraclizeUpdate {
      *        or the Oraclize address. Emits an event detailing the callback, 
      *        before running the relevant method that acts on the callback.
      * 
-     * @param _myID     bytes32 - Unique id oraclize provides with their
-     *                            callbacks.
-     * @param _result   string - The result of the api call.
+     * @param _myID    Unique id oraclize provides with their callbacks.
+     *                            
+     * @param _result  The result of the api call.
      */
     function __callback(bytes32 _myID, string _result) onlyIfNotPaused onlyOraclize {
         emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
