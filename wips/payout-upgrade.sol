@@ -7,6 +7,9 @@ pragma solidity^0.4.23;
  * Make these functions pure? Pass in ALL args? Can the arrays be made CONSTANT? (Apparently not!)
  */
 contract PayoutUpgrade {
+
+    event LogPrizePoolsUpdated(uint newMainPrizePool, uint indexed forRaffle, uint unclaimedPrizePool, uint threeMatchWinAmt, uint fourMatchWinAmt, uint fiveMatchWinAmt, uint sixMatchwinAmt, uint atTime);
+    
     /*  
      * @dev     Returns TOTAL payout per tier when calculated using the odds method.
      *
