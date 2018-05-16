@@ -42,7 +42,7 @@
     }
     /**
      * @dev  Function to enter the raffle. Requires the caller to send ether
-     *       of amount greater than or equal to the ticket price.
+     *       of amount greater than or equal to the current raffle's tkt price.
      *
      * @param _cNums    Ordered array of entrant's six selected numbers.
      *
@@ -55,8 +55,9 @@
     }
     /**
      * @dev  Function to enter the raffle on behalf of another address. Requires the 
-     *       caller to send ether of amount greater than or equal to the ticket price.
-     *       In the event of a win, only the onBehalfOf address can claim it.
+     *       caller to send ether of amount greater than or equal to the current 
+     *       raffle's ticket price. In the event of a win, only the onBehalfOf 
+     *       address can claim it.
      *
      * @param _cNums        Ordered array of entrant's six selected numbers.
      *
