@@ -44,6 +44,7 @@ contract OraclizeUpdate {
      * @param _myID    Unique id oraclize provides with their callbacks.
      *                            
      * @param _result  The result of the api call.
+     *
      */
     function __callback(bytes32 _myID, string _result) onlyIfNotPaused onlyOraclize {
         emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
@@ -57,7 +58,9 @@ contract OraclizeUpdate {
      *          prepares the next Oraclize query to call the Etheraffle API.
      *
      * @param   _myID       The hash of the Oraclize query
+     *
      * @param   _result     The result of the Oraclize query
+     *
      */
     function randomCallback(bytes32 _myID, string _result) onlyOraclize {
         reclaimUnclaimed();
@@ -72,7 +75,9 @@ contract OraclizeUpdate {
      *          then makes the next Oraclize query to call the Random.org api.
      *
      * @param   _myID       The hash of the Oraclize query
+     *
      * @param   _result     The result of the Oraclize query
+     *
      */
     function apiCallback(bytes32 _myID, string _result) onlyOraclize {
         newRaffle();
@@ -86,7 +91,9 @@ contract OraclizeUpdate {
      *          contract's string concat function.
      *
      * @param   _isRandom   Whether the query is to the Random.org api, or Etheraffle's.
+     *
      * @param   _weekNo     Raffle number the call is being made on behalf of.
+     *
      */
     function getQueryString(bool _isRandom, uint _weekNo) onlyOraclize returns (string) {
         return _isRandom 
@@ -99,10 +106,15 @@ contract OraclizeUpdate {
      *          pertinent details.
      *
      * @param   _delay      Desired return time for query from sending (in seconds).
+     *
      * @param   _str        The Oraclize call string.
+     *
      * @param   _weekNo     Week number for raffle in question.
+     *
      * @param   _isRandom   Whether the call is destined for Random.org or Etheraffle.
+     *
      * @param   _isManual   Whether the call is being made manually or recursively.
+     *
      */
     function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) onlyOraclize {
         bytes32 query = oraclize_query(_delay, "nested", _str, gasAmt);
@@ -118,15 +130,20 @@ contract OraclizeUpdate {
      * @param _delay      Either a time in seconds before desired callback
      *                    time for the API call, or a future UTC format time for
      *                    the desired time for the API callback.
+     *
      * @param _week       The week number this query is for.
+     *
      * @param _isRandom   Whether or not the api call being made is for
      *                    the random.org results draw, or for the Etheraffle
      *                    API results call.
+     *
      * @param _isManual   The Oraclize call back is a recursive function in
      *                    which each call fires off another call in perpetuity.
      *                    This bool allows that recursiveness for this call to be
      *                    turned on or off depending on caller's requirements.
+     *
      * @param _status     The desired paused status of the contract.
+     *
      */
     function manuallyMakeOraclizeCall
     (
