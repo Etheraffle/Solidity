@@ -8,12 +8,15 @@
  */
 
 contract OraclizeUpdate {
-
     /**
-    * @dev  Modifier to prepend to functions adding the additional
-    *       conditional requiring caller of the method to be either
-    *       the Oraclize or Etheraffle address.
-    */
+     *            #########################################
+     *            ##         Oraclize Functions          ##
+     *            #########################################
+     *
+     * @dev  Modifier to prepend to functions adding the additional
+     *       conditional requiring caller of the method to be either
+     *       the Oraclize or Etheraffle address.
+     */
     modifier onlyOraclize() {
         require(msg.sender == oraclize_cbAddress() || msg.sender == etheraffle);
         _;
