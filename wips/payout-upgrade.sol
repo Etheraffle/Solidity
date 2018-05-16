@@ -7,15 +7,15 @@ pragma solidity^0.4.23;
  * Make these functions pure? Pass in ALL args? Can the arrays be made CONSTANT? (Apparently not!)
  */
 contract PayoutUpgrade {
-    // /*  
-    //  * @dev     Returns TOTAL payout per tier when calculated using the odds method.
-    //  *
-    //  * @param _numWinners       Number of X match winners
-    //  * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
-    //  */
-    // function oddsTotal(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
-    //     return oddsSingle(_matchesIndex) * _numWinners;
-    // }
+    /*  
+     * @dev     Returns TOTAL payout per tier when calculated using the odds method.
+     *
+     * @param _numWinners       Number of X match winners
+     * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
+     */
+    function oddsTotal(uint _numWinners, uint _matchesIndex, uint _week) internal view returns (uint) {
+        return oddsSingle(_matchesIndex, _week) * _numWinners;
+    }
     // /*
     //  * @dev     Returns TOTAL payout per tier when calculated using the splits method.
     //  *
@@ -30,8 +30,8 @@ contract PayoutUpgrade {
      *
      * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
      */
-    function oddsSingle(uint _matchesIndex) internal view returns (uint) {
-        return (tktPrice * odds[_matchesIndex] * (1000 - take)) / 1000;
+    function oddsSingle(uint _matchesIndex, uint _week) internal view returns (uint) {
+        return (raffle[_week].tktPrice * odds[_matchesIndex] * (1000 - take)) / 1000;
     }
     // /*
     //  * @dev     Returns a single payout when calculated using the splits method.
@@ -67,8 +67,8 @@ contract PayoutUpgrade {
         uint total;
         for (i = 0; i < 4; i++) {
             if (numWinnersInt[i] != 0) {
-                uint amt = oddsTotal(numWinnersInt[i], i) <= splitsTotal(numWinnersInt[i], i) 
-                         ? oddsSingle(i) 
+                uint amt = oddsTotal(numWinnersInt[i], i, _week) <= splitsTotal(numWinnersInt[i], i) 
+                         ? oddsSingle(i, _week) 
                          : splitsSingle(numWinnersInt[i], i); 
                 payOuts[i] = amt;
                 total += payOuts[i] * numWinnersInt[i];
@@ -83,4 +83,4 @@ contract PayoutUpgrade {
         raffle[_week].wdrawOpen = true;
         emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
     }
-}
+}   
