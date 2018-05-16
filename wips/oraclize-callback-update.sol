@@ -29,6 +29,9 @@ contract OraclizeUpdate {
     string apiStr1    = "[URL] ['json(https://etheraffle.com/api/a).m','{\"r\":\"";
     string apiStr2    = "\",\"k\":${[decrypt] BGQljYtTQ+yq9TZztMcWycMiaAezwNm3ppmcBvdh37ZJVJiTFbQw+h+WycbJtaklSFe2+S228NTf9eOh+6y06dlVpbJ3S28JhDOg50j4wqAIXdtCWDZLkAgyjXI3pOa3SJY3RV2b}}']";
 
+    event LogQuerySent(bytes32 queryID, uint dueAt, uint sendTime);
+    event LogOraclizeCallback(address functionCaller, bytes32 queryID, string result, uint indexed forRaffle, uint atTime);
+
     /**
      * @dev  Modifier to prepend to functions adding the additional
      *       conditional requiring caller of the method to be either
