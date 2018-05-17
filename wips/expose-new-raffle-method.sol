@@ -1,6 +1,5 @@
 /**
- * Need to make a newRaffle() method & have it only callable by Etheraffle. Make sure this will allow
- * manual creation of the raffle struct ready for the first oraclize call that'll be set off.
+ * TODO: The set payouts function can now use the setWithdraw() in here!
  */
  contract ExposeNewRaffle {
     /**
@@ -16,7 +15,7 @@
             pauseContract(4);
         } else { // ∴ new raffle...
             setWeek(newWeek);
-            setupRaffleStruct(newWeek, tktPrice, BIRTHDAY + (_week * WEEKDUR));
+            setupRaffleStruct(newWeek, tktPrice, BIRTHDAY + (newWeek * WEEKDUR));
         }
     }
 	/**
@@ -36,16 +35,16 @@
         raffle[_week].timeStamp = _timeStamp;
    	}
 
-    function manuallySetWithdraw(uint _week, bool _status) onlyEtheraffle external {
-        setWithdraw(_week, _status);
-    }
-
     function setWithdraw(uint _week, bool _status) internal {
         raffle[_week].wdrawOpen = _status;
     }
 
     function setWeek(uint _week) internal {
         week = _week;
+    }
+    
+    function manuallySetWithdraw(uint _week, bool _status) onlyEtheraffle external {
+        setWithdraw(_week, _status);
     }
 
     function manuallySetWeek(uint _week) onlyEtheraffle external {
