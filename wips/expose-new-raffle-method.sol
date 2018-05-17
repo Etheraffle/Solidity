@@ -16,8 +16,7 @@
             pauseContract(4);
         } else { // ∴ new raffle...
             setWeek(newWeek);
-            raffle[newWeek].tktPrice = tktPrice;
-            raffle[newWeek].timeStamp = BIRTHDAY + (newWeek * WEEKDUR);
+            setupRaffleStruct(newWeek, tktPrice, BIRTHDAY + (_week * WEEKDUR));
         }
     }
 	/**
@@ -34,22 +33,19 @@
      * @param _wdraw        Whether or not the raffle is open for withdraw         
      *
 	 */
-   	function manuallyMakeNewRaffle
+   	function setupRaffleStruct
     (
         uint _week, 
-        bool _paused, 
         uint _tktPrice, 
-        bool _wdraw
+        uint _timeStamp
     ) 
         internal 
     {
-        // week = _week;
-        // if (paused != _paused) paused = _paused;
-        // tktPrice != _tktPrice ? raffle[tktPrice].tktPrice = _tktPrice : raffle[tktPrice].tktPrice = tktPrice;
         raffle[_week].tktPrice = _tktPrice
-        raffle[_week].timeStamp = BIRTHDAY + (_week * WEEKDUR);
-        // raffle[_week].wdrawOpen = _wdraw
+        raffle[_week].timeStamp = _timeStamp;
    	}
+
+    
 
     function setWeek(uint _week) internal {
         week = _week;
