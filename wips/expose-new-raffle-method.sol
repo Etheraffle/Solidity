@@ -44,7 +44,12 @@
     function setWithdraw(uint _week, bool _status) internal {
         raffle[_week].wdrawOpen = _status;
     }
-
+    /**
+	 * @dev		Sets the global week variable.
+	 *
+	 * @param _week	    Desired week number.
+     *
+	 */
     function setWeek(uint _week) internal {
         week = _week;
     }
@@ -75,7 +80,13 @@
     function manuallySetWithdraw(uint _week, bool _status) onlyEtheraffle external {
         setWithdraw(_week, _status);
     }
-
+    /**
+	 * @dev		Manually sets the global week variable. Only callable
+     *          by the Etheraffle multisig wallet.
+	 *
+	 * @param _week	    Desired week number.
+     *
+	 */
     function manuallySetWeek(uint _week) onlyEtheraffle external {
         setWeek(_week);
     }
