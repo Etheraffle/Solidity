@@ -26,8 +26,6 @@
 	 *
 	 * @param _week		    Desired week number for new raffle struct.
      *
-	 * @param _paused	    Desired pause status of contract.
-     *
      * @param _tktPrice     Desired ticket price for the raffle
      *
      * @param _timeStamp    Timestamp of Mon 00:00 of the week of this raffle
