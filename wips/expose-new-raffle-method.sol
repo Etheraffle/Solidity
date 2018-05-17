@@ -32,13 +32,24 @@
      *
      * @param _tktPrice     Desired ticket price for the raffle
      *
+     * @param _wdraw        Whether or not the raffle is open for withdraw         
+     *
 	 */
-   	function manuallyMakeNewRaffle(uint _week, bool _paused, uint _tktPrice) onlyEtheraffle external {
-        week = _week;
+   	function manuallyMakeNewRaffle
+    (
+        uint _week, 
+        bool _paused, 
+        uint _tktPrice, 
+        bool _wdraw
+    ) 
+        onlyEtheraffle external 
+    {
+        // week = _week;
         if (paused != _paused) paused = _paused;
         tktPrice != _tktPrice ? raffle[tktPrice].tktPrice = _tktPrice : raffle[tktPrice].tktPrice = tktPrice;
         raffle[_week].tktPrice = _tktPrice
         raffle[_week].timeStamp = BIRTHDAY + (_week * WEEKDUR);
+        raffle[_week].wdrawOpen = _wdraw
    	}
 }
 
@@ -58,4 +69,16 @@
 //         week = newWeek;
 //         raffle[newWeek].timeStamp = BIRTHDAY + (newWeek * WEEKDUR);
 //     }
+// }
+
+// mapping (uint => rafStruct) public raffle;
+// struct rafStruct {
+//     mapping (address => uint[][]) entries;
+//     uint unclaimed;
+//     uint[] winNums;
+//     uint[] winAmts;
+//     uint timeStamp;
+//     bool wdrawOpen;
+//     uint numEntries;
+//     uint freeEntries;
 // }
