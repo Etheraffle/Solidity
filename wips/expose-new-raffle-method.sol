@@ -3,7 +3,23 @@
  * manual creation of the raffle struct ready for the first oraclize call that'll be set off.
  */
  contract ExposeNewRaffle {
-
+    /**
+     * @dev   Function which gets current week number and if different
+     *        from the global var week number, it updates that and sets
+     *        up the new raffle struct. Should only be called once a
+     *        week after the raffle is closed. Should it get called
+     *        sooner, the contract is paused for inspection.
+     */
+    function newRaffle() internal {
+        uint newWeek = getWeek();
+        if (newWeek == week) {
+            pauseContract(4);
+            return;
+        } else {//∴ new raffle...
+            week = newWeek;
+            raffle[newWeek].timeStamp = BIRTHDAY + (newWeek * WEEKDUR);
+        }
+    }
 	/**
 	 * @dev		Allows manual creation of a new raffle struct, plus can
 	 * 			  toggle paused status of contract if needs be. Can only 
