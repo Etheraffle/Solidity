@@ -33,14 +33,7 @@
      * @param _timeStamp    Timestamp of Mon 00:00 of the week of this raffle
      *
 	 */
-   	function setupRaffleStruct
-    (
-        uint _week, 
-        uint _tktPrice, 
-        uint _timeStamp
-    ) 
-        internal 
-    {
+   	function setupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) internal {
         raffle[_week].tktPrice = _tktPrice
         raffle[_week].timeStamp = _timeStamp;
    	}
