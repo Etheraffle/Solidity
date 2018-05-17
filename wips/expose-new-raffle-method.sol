@@ -16,7 +16,7 @@
             pauseContract(4);
             return;
         } else { // ∴ new raffle...
-            week = newWeek;
+            setWeek(newWeek);
             raffle[newWeek].tktPrice = tktPrice;
             raffle[newWeek].timeStamp = BIRTHDAY + (newWeek * WEEKDUR);
         }
@@ -53,7 +53,7 @@
    	}
 
     function setWeek(uint _week) internal {
-        week = _week
+        week = _week;
     }
 
     function manuallySetWeek(uint _week) onlyEtheraffle external {
