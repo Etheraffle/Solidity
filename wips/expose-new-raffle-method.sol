@@ -42,7 +42,11 @@
     function setWeek(uint _week) internal {
         week = _week;
     }
-    
+
+    function manuallysetupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) onlyEtheraffle external {
+        setupRaffleStruct(_week, _tktPrice, _timeStamp);
+    }
+
     function manuallySetWithdraw(uint _week, bool _status) onlyEtheraffle external {
         setWithdraw(_week, _status);
     }
