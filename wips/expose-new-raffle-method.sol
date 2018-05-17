@@ -46,6 +46,10 @@
    	}
 
     function manuallySetWithdraw(uint _week, bool _status) onlyEtheraffle external {
+        setWithdraw(_week, _status);
+    }
+
+    function setWithdraw(uint _week, bool _status) internal {
         raffle[_week].wdrawOpen = _status;
     }
 
