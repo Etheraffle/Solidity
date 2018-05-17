@@ -42,18 +42,22 @@
         uint _tktPrice, 
         bool _wdraw
     ) 
-        onlyEtheraffle external 
+        internal 
     {
         // week = _week;
-        if (paused != _paused) paused = _paused;
-        tktPrice != _tktPrice ? raffle[tktPrice].tktPrice = _tktPrice : raffle[tktPrice].tktPrice = tktPrice;
+        // if (paused != _paused) paused = _paused;
+        // tktPrice != _tktPrice ? raffle[tktPrice].tktPrice = _tktPrice : raffle[tktPrice].tktPrice = tktPrice;
         raffle[_week].tktPrice = _tktPrice
         raffle[_week].timeStamp = BIRTHDAY + (_week * WEEKDUR);
-        raffle[_week].wdrawOpen = _wdraw
+        // raffle[_week].wdrawOpen = _wdraw
    	}
 
+    function setWeek(uint _week) internal {
+        week = _week
+    }
+
     function manuallySetWeek(uint _week) onlyEtheraffle external {
-        week = _week;
+        setWeek(_week);
     }
 }
 
