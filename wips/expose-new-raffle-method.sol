@@ -51,6 +51,10 @@
         raffle[_week].timeStamp = BIRTHDAY + (_week * WEEKDUR);
         raffle[_week].wdrawOpen = _wdraw
    	}
+
+    function manuallySetWeek(uint _week) onlyEtheraffle external {
+        week = _week;
+    }
 }
 
 //  /**
