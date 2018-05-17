@@ -33,7 +33,14 @@
         raffle[_week].tktPrice = _tktPrice
         raffle[_week].timeStamp = _timeStamp;
    	}
-
+	/**
+	 * @dev		Sets the withdraw status of a raffle.
+	 *
+	 * @param _week		 Week number for raffle in question.
+     *
+     * @param _status    Desired withdraw status for raffle.
+     *
+	 */
     function setWithdraw(uint _week, bool _status) internal {
         raffle[_week].wdrawOpen = _status;
     }
@@ -56,7 +63,15 @@
     function manuallysetupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) onlyEtheraffle external {
         setupRaffleStruct(_week, _tktPrice, _timeStamp);
     }
-
+	/**
+	 * @dev		Manually sets the withdraw status of a raffle. Only
+     *          callable by the Etheraffle multisig.
+	 *
+	 * @param _week		 Week number for raffle in question.
+     *
+     * @param _status    Desired withdraw status for raffle.
+     *
+	 */
     function manuallySetWithdraw(uint _week, bool _status) onlyEtheraffle external {
         setWithdraw(_week, _status);
     }
