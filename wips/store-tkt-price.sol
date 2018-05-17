@@ -23,23 +23,17 @@
         uint numEntries;
         uint freeEntries;
     }
-    /**
-     * @dev   Function which gets current week number and if different
-     *        from the global var week number, it updates that and sets
-     *        up the new raffle struct. Should only be called once a
-     *        week after the raffle is closed. Should it get called
-     *        sooner, the contract is paused for inspection.
-     */
-    function newRaffle() internal {
-        uint newWeek = getWeek();
-        if (newWeek == week) {
-            pauseContract(4);
-        } else {//∴ new raffle...
-            week = newWeek;
-            raffle[newWeek].tktPrice = tktPrice;
-            raffle[newWeek].timeStamp = BIRTHDAY + (newWeek * WEEKDUR);
-        }
-    }
+    // NEW VERSION OF THIS FUNC EXISTS, DEFINITELY SETS TICKET PRICE SO DON'T WORRY
+    // function newRaffle() internal {
+    //     uint newWeek = getWeek();
+    //     if (newWeek == week) {
+    //         pauseContract(4);
+    //     } else {//∴ new raffle...
+    //         week = newWeek;
+    //         raffle[newWeek].tktPrice = tktPrice;
+    //         raffle[newWeek].timeStamp = BIRTHDAY + (newWeek * WEEKDUR);
+    //     }
+    // }
     /**
      * @dev  Function to enter the raffle. Requires the caller to send ether
      *       of amount greater than or equal to the current raffle's tkt price.
@@ -50,7 +44,7 @@
      *
      */
     function enterRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
-        require(raffle[getWeek()].tktPrice > 0 && msg.value >= raffle[getWeek()].tktPrice);
+        require(raffle[week].tktPrice > 0 && msg.value >= raffle[week].tktPrice);
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
@@ -67,7 +61,7 @@
      *
      */
     function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable external onlyIfNotPaused {
-        require(raffle[getWeek()].tktPrice > 0 && msg.value >= raffle[getWeek()].tktPrice);
+        require(raffle[week].tktPrice > 0 && msg.value >= raffle[week].tktPrice);
         buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
  }
