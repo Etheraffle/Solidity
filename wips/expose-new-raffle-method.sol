@@ -14,7 +14,6 @@
         uint newWeek = getWeek();
         if (newWeek == week) {
             pauseContract(4);
-            return;
         } else { // ∴ new raffle...
             setWeek(newWeek);
             raffle[newWeek].tktPrice = tktPrice;
