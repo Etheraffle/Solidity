@@ -10,36 +10,26 @@ contract NewConstructor {
      *        function.
      *
      * @param _freeLOT    The address of the Etheraffle FreeLOT special token.
+     *
      * @param _dsbrs      The address of the Etheraffle disbursal contract.
+     *
      * @param _msig       The address of the Etheraffle managerial multisig wallet.
+     *
      * @param _ethRelief  The address of the EthRelief charity contract.
+     *
      */
     constructor(address _freeLOT, address _dsbrs, address _msig, address _ethRelief) payable {
-        week         = getWeek();
         etheraffle   = _msig;
         disburseAddr = _dsbrs;
+        week         = getWeek();
         ethRelief    = _ethRelief;
         freeLOT      = FreeLOTInterface(_freeLOT);
-        // uint delay   = (week * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
         raffle[week].timeStamp = (week * WEEKDUR) + BIRTHDAY;
+        raffle[week].tktPrice = 2500000000000000;
+        // uint delay   = (week * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
         // bytes32 query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
         // qID[query].weekNo = week;
         // qID[query].isRandom = true;
         // emit LogQuerySent(query, delay, now);
     }
 }
-
-
-// function Etheraffle(address _freeLOT, address _dsbrs, address _msig, address _ethRelief) payable {
-//     week         = getWeek();
-//     etheraffle   = _msig;
-//     disburseAddr = _dsbrs;
-//     ethRelief    = _ethRelief;
-//     freeLOT      = FreeLOTInterface(_freeLOT);
-//     uint delay   = (week * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
-//     raffle[week].timeStamp = (week * WEEKDUR) + BIRTHDAY;
-//     bytes32 query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
-//     qID[query].weekNo = week;
-//     qID[query].isRandom = true;
-//     emit LogQuerySent(query, delay, now);
-// }

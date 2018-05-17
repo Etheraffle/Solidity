@@ -3,10 +3,10 @@
  * or the tkt price changes w/r/t withdrawal time of a won prize?
  *
  * Need the new raffle to bake the tkt price in - DONE
- * Need the ticket purchases to reference that price
- * Need the withdraw to calculate prize based off that price.
+ * Need the ticket purchases to reference that price - DONE
+ * Need the setPayouts to calculate prize based off that price.- DONE
  * Front end won't matter since that references prizes based off array stored in db
- * Might need to capture the tktPrice into the db too, add it into an event?
+ * Might need to capture the tktPrice into the db too, add it into an event? - DONE
  */
 
  contract StoreTktPrice {

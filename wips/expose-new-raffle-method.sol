@@ -1,19 +1,26 @@
 /**
- * Need to make a newRaffle() method & have it only callable by Etheraffle
+ * Need to make a newRaffle() method & have it only callable by Etheraffle. Make sure this will allow
+ * manual creation of the raffle struct ready for the first oraclize call that'll be set off.
  */
  contract ExposeNewRaffle {
+
 	/**
 	 * @dev		Allows manual creation of a new raffle struct, plus can
 	 * 			  toggle paused status of contract if needs be. Can only 
 	 *			  be called by the Etheraffle address.
 	 *
-	 * @param _week		Desired week number for new raffle struct.
-	 * @param _paused	Desired pause status of contract.
+	 * @param _week		    Desired week number for new raffle struct.
+     *
+	 * @param _paused	    Desired pause status of contract.
+     *
+     * @param _tktPrice     Desired ticket price for the raffle
+     *
 	 */
-   	function manuallyMakeNewRaffle(uint _week, bool _paused) onlyEtheraffle external {
+   	function manuallyMakeNewRaffle(uint _week, bool _paused, uint _tktPrice) onlyEtheraffle external {
+       week = _week;
 	   if (paused != _paused) paused = _paused;
-	   week = _week;
-       raffle[tktPrice].tktPrice = tktPrice;
+       tktPrice != _tktPrice ? raffle[tktPrice].tktPrice = _tktPrice : raffle[tktPrice].tktPrice = tktPrice;
+       raffle[tktPrice].tktPrice = _tktPrice
 	   raffle[_week].timeStamp = BIRTHDAY + (_week * WEEKDUR);
    	}
 }
