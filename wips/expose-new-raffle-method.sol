@@ -19,9 +19,8 @@
         }
     }
 	/**
-	 * @dev		Allows manual creation of a new raffle struct, plus can
-	 * 			  toggle paused status of contract if needs be. Can only 
-	 *			  be called by the Etheraffle address.
+	 * @dev		Sets up new raffle via creating a struct with the correct 
+     *          timestamp and ticket price. 
 	 *
 	 * @param _week		    Desired week number for new raffle struct.
      *
@@ -42,7 +41,18 @@
     function setWeek(uint _week) internal {
         week = _week;
     }
-
+	/**
+	 * @dev		Allows manual set up of a new raffle via creating a struct
+     *          with the correct timestamp and ticket price. Only callable
+     *          by the Etheraffle multisig address.
+	 *
+	 * @param _week		    Desired week number for new raffle struct.
+     *
+     * @param _tktPrice     Desired ticket price for the raffle
+     *
+     * @param _timeStamp    Timestamp of Mon 00:00 of the week of this raffle
+     *
+	 */
     function manuallysetupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) onlyEtheraffle external {
         setupRaffleStruct(_week, _tktPrice, _timeStamp);
     }
