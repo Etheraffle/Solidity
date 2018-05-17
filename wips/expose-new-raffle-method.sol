@@ -30,7 +30,7 @@
      *
      * @param _tktPrice     Desired ticket price for the raffle
      *
-     * @param _wdraw        Whether or not the raffle is open for withdraw         
+     * @param _timeStamp    Timestamp of Mon 00:00 of the week of this raffle
      *
 	 */
    	function setupRaffleStruct
@@ -45,7 +45,9 @@
         raffle[_week].timeStamp = _timeStamp;
    	}
 
-    
+    function manuallySetWithdraw(uint _week, bool _status) onlyEtheraffle external {
+        raffle[_week].wdrawOpen = _status;
+    }
 
     function setWeek(uint _week) internal {
         week = _week;
