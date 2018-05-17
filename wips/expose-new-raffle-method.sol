@@ -15,8 +15,9 @@
         if (newWeek == week) {
             pauseContract(4);
             return;
-        } else {//∴ new raffle...
+        } else { // ∴ new raffle...
             week = newWeek;
+            raffle[newWeek].tktPrice = tktPrice;
             raffle[newWeek].timeStamp = BIRTHDAY + (newWeek * WEEKDUR);
         }
     }
@@ -33,11 +34,11 @@
      *
 	 */
    	function manuallyMakeNewRaffle(uint _week, bool _paused, uint _tktPrice) onlyEtheraffle external {
-       week = _week;
-	   if (paused != _paused) paused = _paused;
-       tktPrice != _tktPrice ? raffle[tktPrice].tktPrice = _tktPrice : raffle[tktPrice].tktPrice = tktPrice;
-       raffle[tktPrice].tktPrice = _tktPrice
-	   raffle[_week].timeStamp = BIRTHDAY + (_week * WEEKDUR);
+        week = _week;
+        if (paused != _paused) paused = _paused;
+        tktPrice != _tktPrice ? raffle[tktPrice].tktPrice = _tktPrice : raffle[tktPrice].tktPrice = tktPrice;
+        raffle[_week].tktPrice = _tktPrice
+        raffle[_week].timeStamp = BIRTHDAY + (_week * WEEKDUR);
    	}
 }
 
