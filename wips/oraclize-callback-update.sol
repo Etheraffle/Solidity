@@ -66,6 +66,7 @@ contract OraclizeUpdate {
      *
      */
     function randomCallback(bytes32 _myID, string _result) onlyOraclize {
+        require(raffle[qID[_myID].weekNo].winNums.length == 0);
         reclaimUnclaimed();
         disburseFunds(qID[_myID].weekNo);
         setWinningNumbers(qID[_myID].weekNo, _result);
@@ -83,6 +84,7 @@ contract OraclizeUpdate {
      *
      */
     function apiCallback(bytes32 _myID, string _result) onlyOraclize {
+        require(raffle[qID[_myID].weekNo].winAmts.length == 0);
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
         if (qID[_myID].isManual) return;
