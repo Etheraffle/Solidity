@@ -59,6 +59,8 @@ contract OraclizeUpdate {
      *          disburses this week's raffle's profits, sets the winning 
      *          numbers from the callback in this raffle's struct and finally 
      *          prepares the next Oraclize query to call the Etheraffle API.
+     *          Function requires the winning numbers to not already have been
+     *          set which stops Oraclize replays causing havoc!
      *
      * @param   _myID       The hash of the Oraclize query
      *
@@ -77,6 +79,8 @@ contract OraclizeUpdate {
      * @dev     Called when the Etheraffle API callback is received. It sets 
      *          up the next raffle's struct, calculates this raffle's payouts 
      *          then makes the next Oraclize query to call the Random.org api.
+     *          Function requires the winning amounts to not already have been
+     *          set which stops Oraclize replays causing havoc!
      *
      * @param   _myID       The hash of the Oraclize query
      *
