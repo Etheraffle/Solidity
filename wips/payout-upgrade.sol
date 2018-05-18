@@ -83,7 +83,7 @@ contract PayoutUpgrade {
         for (i = 0; i < payOuts.length; i++) {
             raffle[_week].winAmts.push(payOuts[i]);
         }
-        setWithdraw(_week, true); // TODO: remove: Can use this new setter.
+        setWithdraw(_week, true);
         emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
     }
 }   
