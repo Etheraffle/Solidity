@@ -1,9 +1,7 @@
 /**
  * TODO: Test the new methods work!
- * TODO: Need to account for the edge case scenarios of a replay. Check for the struct already
- * being in place and revert should that be the case? Would need a new param in struct...
- * Could save the last query somewhere and check for that?
  *
+ * TODO: Perform a check in the callback functions and arrest them if they stuff they're setting has already  * been set? Cheap, surely? Having it as a require?
  */
 
 contract OraclizeUpdate {
