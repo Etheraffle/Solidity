@@ -1,7 +1,6 @@
 /**
  * TODO: Test the new methods work!
  *
- * TODO: Perform a check in the callback functions and arrest them if they stuff they're setting has already  * been set? Cheap, surely? Having it as a require?
  */
 
 contract OraclizeUpdate {
