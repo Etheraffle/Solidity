@@ -128,7 +128,7 @@
             isValidEntry(_week, _entryNum, _cNums, msg.sender) &&
             openForWithdraw(_week)
         );
-        uint matches = getMatches(_week, msg.sender, _entryNum);
+        uint matches = getMatches(_cNums, raffle[_week].winNums);
         if (matches == 2) return winFreeGo(_week, _entryNum);
         require
         (
@@ -169,7 +169,7 @@
     //     return raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums, 0);
     // }
 
-        /**
+    /**
      * @dev   Function compares array of entrant's 6 chosen numbers to
       *       the raffle in question's winning numbers, counting how
       *       many matches there are.
@@ -178,11 +178,11 @@
       * @param _entrant      Entrant's ethereum address
       * @param _entryNum     number of entrant's entry in question.
      */
-    function getMatches(uint _week, address _entrant, uint _entryNum) constant internal returns (uint) {
+    function getMatches(uint[] _cNums, uint[] _wNums) pure internal returns (uint) {
         uint matches;
         for (uint i = 0; i < 6; i++) {
             for (uint j = 0; j < 6; j++) {
-                if (raffle[_week].entries[_entrant][_entryNum - 1][i] == raffle[_week].winNums[j]) {
+                if (_cNums[i] == _wNums[j]) {
                     matches++;
                     break;
                 }
