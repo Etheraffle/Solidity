@@ -136,8 +136,7 @@
             raffle[_week].winAmts[matches - 3] > 0 &&
             raffle[_week].winAmts[matches - 3] <= this.balance
         );
-        // raffle[_week].entries[msg.sender][_entryNum - 1].push(1); // TODO: overwrite the hash with same numbers and a zero?
-        raffle[_week].entries[msg.sender][_entryNum - 1] = 0; // entry no longer valid
+        invalidateEntry(_week, msg.sender, _entryNum);
         if (raffle[_week].winAmts[matches - 3] <= raffle[_week].unclaimed) {
             raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3];
         } else {
@@ -148,12 +147,18 @@
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
 
+    
+
     // will be 0 after a correct withdraw therefore won't pass validity checks
     function isValidEntry(uint _week, uint _entryNum, uint[] _cNums, address _entrant) view internal returns (bool) {
         return (
-            _cNums.length == 6 &&
+            _cNums.length == 6 && //don't really need to heck for these being ordered etc, since if they're wrong the hashes won't match. Do we even need to check for an empty or wrong length array?? An empty array has a hash but it's valid, and so won't match a user's entry?!
             raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums)
         );
+    }
+
+    function invalidateEntry(uint _week, address _entrant, uint _entryNum) internal {
+        raffle[_week].entries[_entrant][_entryNum - 1] = 0; // entry no longer valid
     }
 
     function openForWithdraw(uint _week) view internal returns (bool) {
