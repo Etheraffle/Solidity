@@ -125,12 +125,12 @@
     function withdrawWinnings(uint _week, uint _entryNum, uint[] _cNums) onlyIfNotPaused external {
         require
         (
-            areChosenNumbers(_week, _entryNum, _cNums, msg.sender) &&
+            isValidEntry(_week, _entryNum, _cNums, msg.sender) &&
             raffle[_week].timeStamp > 0 &&
             now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7) &&
             now - raffle[_week].timeStamp < wdrawBfr &&
             raffle[_week].wdrawOpen == true &&
-            raffle[_week].entries[msg.sender][_entryNum - 1].length == 6 // TODO: This is the broken bit! Seperate require to test for hashed with zero? Then can pass string saying 'Already withdrawn' or something?
+            raffle[_week].entries[msg.sender][_entryNum - 1].length == 6 // TODO: This is the broken bit! Seperate require to test for hashed with zero? Then can pass string saying 'Already withdrawn' or something? Or better, if the value is zeroed it won't even get this far anyway. Plus no withdrawals for anything else since the whole array is zeroed anyway.
         );
         uint matches = getMatches(_week, msg.sender, _entryNum);
         if (matches == 2) return winFreeGo(_week, _entryNum);
@@ -152,7 +152,7 @@
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
 
-    function areChosenNumbers(uint _week, uint _entryNum, uint[] _cNums, _entrant) view internal returns (bool) {
+    function isValidEntry(uint _week, uint _entryNum, uint[] _cNums, _entrant) view internal returns (bool) {
         return raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums);
     }
 
