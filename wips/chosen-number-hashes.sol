@@ -132,9 +132,7 @@
         if (matches == 2) return winFreeGo(_week, _entryNum);
         require
         (
-            matches >= 3 &&
-            raffle[_week].winAmts[matches - 3] > 0 &&
-            raffle[_week].winAmts[matches - 3] <= this.balance
+            eligibleForWithdraw(_week, matches)
         );
         invalidateEntry(_week, msg.sender, _entryNum);
         if (raffle[_week].winAmts[matches - 3] <= raffle[_week].unclaimed) {
@@ -147,7 +145,13 @@
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
 
-    
+    function eligibleForWithdraw(uint _week, uint _matches) internal view returns (bool) {
+        return (
+            _matches >= 3 &&
+            raffle[_week].winAmts[_matches - 3] > 0 &&
+            raffle[_week].winAmts[_matches - 3] <= this.balance
+        );
+    }
 
     // will be 0 after a correct withdraw therefore won't pass validity checks
     function isValidEntry(uint _week, uint _entryNum, uint[] _cNums, address _entrant) view internal returns (bool) {
