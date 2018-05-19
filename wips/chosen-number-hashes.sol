@@ -110,7 +110,7 @@
         );
         raffle[week].numEntries++;
         prizePool += _value;
-        raffle[week].entries[_entrant].push(_cNums);
+        raffle[week].entries[_entrant].push(keccak256(_cNums);
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
 
