@@ -1,4 +1,5 @@
  //TODO: Make the back end event watchers will have to consume the new event!
+ // Oops. Using hashes breaks the stop-withdraw-twice mechanism. We have no array to push zero onto! Can we rehash with a zero? Something like that?
  
  contract ChosenNumberHashes {
 
@@ -121,14 +122,15 @@
      * @param _week        Week number of the raffle the winning entry is from
      * @param _entryNum    The entrants entry number into this raffle
      */
-    function withdrawWinnings(uint _week, uint _entryNum) onlyIfNotPaused external {
+    function withdrawWinnings(uint _week, uint _entryNum, uint[] _cNums) onlyIfNotPaused external {
         require
         (
+            areChosenNumbers(_week, _entryNum, _cNums, msg.sender) &&
             raffle[_week].timeStamp > 0 &&
             now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7) &&
             now - raffle[_week].timeStamp < wdrawBfr &&
             raffle[_week].wdrawOpen == true &&
-            raffle[_week].entries[msg.sender][_entryNum - 1].length == 6
+            raffle[_week].entries[msg.sender][_entryNum - 1].length == 6 // TODO: This is the broken bit! Seperate require to test for hashed with zero? Then can pass string saying 'Already withdrawn' or something?
         );
         uint matches = getMatches(_week, msg.sender, _entryNum);
         if (matches == 2) return winFreeGo(_week, _entryNum);
@@ -138,7 +140,8 @@
             raffle[_week].winAmts[matches - 3] > 0 &&
             raffle[_week].winAmts[matches - 3] <= this.balance
         );
-        raffle[_week].entries[msg.sender][_entryNum - 1].push(1);
+        // Or even just reset it to zero? (does resetting an array element to zero cost cheap gas? TEST SAYS YES)
+        raffle[_week].entries[msg.sender][_entryNum - 1].push(1); // TODO: overwrite the hash with same numbers and a zero?
         if (raffle[_week].winAmts[matches - 3] <= raffle[_week].unclaimed) {
             raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3];
         } else {
@@ -148,6 +151,18 @@
         msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
+
+    function areChosenNumbers(uint _week, uint _entryNum, uint[] _cNums, _entrant) view internal returns (bool) {
+        return raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums);
+    }
+
+    // If we zero the entry number in the entries array we know it's withdraw.
+    // TODO: Make sure the getters for entries still work? Or make new one to check if wdrawn?
+    // Make one to get entrant array.length so we can get the entries themselves. Any zeroes == withdrawn already.
+
+    // function isAlreadyWithdrawn(uint _week, uint _entryNum, uint[] _cNums, _entrant) view internal returns (bool) {
+    //     return raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums, 0);
+    // }
  }
 
      
