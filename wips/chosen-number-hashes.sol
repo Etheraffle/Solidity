@@ -1,5 +1,5 @@
  //TODO: Make the back end event watchers will have to consume the new event!
- // Oops. Using hashes breaks the stop-withdraw-twice mechanism. We have no array to push zero onto! Can we rehash with a zero? Something like that?
+// TODO: Make sure the getters for entries still work? Or make new one to check if wdrawn?!
  
  contract ChosenNumberHashes {
 
@@ -136,8 +136,8 @@
             raffle[_week].winAmts[matches - 3] > 0 &&
             raffle[_week].winAmts[matches - 3] <= this.balance
         );
-        // Or even just reset it to zero? (does resetting an array element to zero cost cheap gas? TEST SAYS YES)
-        raffle[_week].entries[msg.sender][_entryNum - 1].push(1); // TODO: overwrite the hash with same numbers and a zero?
+        // raffle[_week].entries[msg.sender][_entryNum - 1].push(1); // TODO: overwrite the hash with same numbers and a zero?
+        raffle[_week].entries[msg.sender][_entryNum - 1] = 0; // entry no longer valid
         if (raffle[_week].winAmts[matches - 3] <= raffle[_week].unclaimed) {
             raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3];
         } else {
@@ -148,9 +148,12 @@
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
 
-    // notWithdrawn() ? eligibleForWithdraw() 
-    function isValidEntry(uint _week, uint _entryNum, uint[] _cNums, _entrant) view internal returns (bool) {
-        return raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums);
+    // will be 0 after a correct withdraw therefore won't pass validity checks
+    function isValidEntry(uint _week, uint _entryNum, uint[] _cNums, address _entrant) view internal returns (bool) {
+        return (
+            _cNums.length == 6 &&
+            raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums)
+        );
     }
 
     function openForWithdraw(uint _week) view internal returns (bool) {
@@ -161,13 +164,6 @@
             raffle[_week].wdrawOpen == true &&
         );
     }
-    // If we zero the entry number in the entries array we know it's withdraw.
-    // TODO: Make sure the getters for entries still work? Or make new one to check if wdrawn?
-    // Make one to get entrant array.length so we can get the entries themselves. Any zeroes == withdrawn already.
-
-    // function isAlreadyWithdrawn(uint _week, uint _entryNum, uint[] _cNums, _entrant) view internal returns (bool) {
-    //     return raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums, 0);
-    // }
 
     /**
      * @dev   Function compares array of entrant's 6 chosen numbers to
