@@ -1,8 +1,10 @@
+ //TODO: Make the back end event watchers will have to consume the new event!
+ 
  contract ChosenNumberHashes {
 
     mapping (uint => rafStruct) public raffle;
     struct rafStruct {
-        mapping (address => uint[][]) entries;
+        mapping (address => bytes32[]) entries;
         uint tktPrice;
         uint unclaimed;
         uint[] winNums;
