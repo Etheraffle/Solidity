@@ -13,6 +13,7 @@ contract StoreHash {
 
   struct rafStruct {
     mapping (address => uint[][]) entries;
+    uint tktPrice;
     uint unclaimed;
     uint[] winNums;
     uint[] winAmts;
@@ -26,6 +27,7 @@ contract StoreHash {
 
   struct rafStructHash {
     mapping (address => bytes32[]) entries;
+    uint tktPrice;
     uint unclaimed;
     uint[] winNums;
     uint[] winAmts;
