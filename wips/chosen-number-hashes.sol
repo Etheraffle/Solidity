@@ -98,14 +98,20 @@
     {
         require
         (
-            raffle[week].timeStamp > 0 &&
-            now < raffle[week].timeStamp + rafEnd &&
+            raffleOpenForEntry() &&
             validNumbers(_cNums)
         );
         raffle[week].numEntries++;
         prizePool += _value;
         raffle[week].entries[_entrant].push(keccak256(_cNums);
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
+    }
+
+    function raffleOpenForEntry() interal view returns (bool) {
+        return (
+            raffle[week].timeStamp > 0 &&
+            now < raffle[week].timeStamp + rafEnd
+        );
     }
 
     function validNumbers(uint[] _cNums) internal pure returns (bool) {
