@@ -144,9 +144,14 @@
         if (matches == 2) return winFreeGo(_week, _entryNum);
         require (isEligibleForWithdraw(_week, matches));
         invalidateEntry(_week, msg.sender, _entryNum);
-        raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3]; // Can't underflow due to isEligible
+        subtractFromUnclaimed(_week, matches);
         msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
+    }
+
+    function subtractFromUnclaimed(uint _week, uint _matches) private {
+        require (raffle[_week].winAmts[_matches - 3] <= raffle[_week].unclaimed, 'Prize > Unclaimed!');
+        raffle[_week].unclaimed -= raffle[_week].winAmts[_matches - 3];
     }
 
     function isEligibleForWithdraw(uint _week, uint _matches) internal view returns (bool) {
@@ -154,7 +159,7 @@
             _matches >= 3 &&
             raffle[_week].winAmts[_matches - 3] > 0 &&
             raffle[_week].winAmts[_matches - 3] <= this.balance &&
-            raffle[_week].winAmts[_matches - 3] <= raffle[_week].unclaimed
+            // raffle[_week].winAmts[_matches - 3] <= raffle[_week].unclaimed //dup in subtractFrom...()
         );
     }
 
@@ -167,7 +172,7 @@
     }
 
     function invalidateEntry(uint _week, address _entrant, uint _entryNum) internal {
-        raffle[_week].entries[_entrant][_entryNum - 1] = 0; // entry no longer valid
+        raffle[_week].entries[_entrant][_entryNum - 1] = 0;
     }
 
     function openForWithdraw(uint _week) view internal returns (bool) {
