@@ -182,7 +182,6 @@
             raffle[_week].wdrawOpen == true &&
         );
     }
-
     /**
      * @dev   Function compares array of entrant's 6 chosen numbers to
       *       the raffle in question's winning numbers, counting how
@@ -205,6 +204,4 @@
         return matches;
     }
  }
-
-     
 
