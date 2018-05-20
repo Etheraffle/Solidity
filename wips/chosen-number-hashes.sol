@@ -115,6 +115,15 @@
         );
     }
     /**
+     * @dev     Function allowing manual addition to the global prizepool.
+     *          Requires the caller to send ether.
+     */
+    function addToPrizePool() payable external {
+        require(msg.value > 0);
+        prizePool += msg.value;
+        emit LogPrizePoolAddition(msg.sender, msg.value, now);
+    }
+    /**
      * @dev Withdraw Winnings function. User calls this function in order to withdraw
      *      whatever winnings they are owed. Function can be paused via the modifier
      *      function "onlyIfNotPaused"
