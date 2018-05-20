@@ -15,17 +15,6 @@
         uint numEntries;
         uint freeEntries;
     }
-    // NEW VERSION OF THIS FUNC EXISTS, DEFINITELY SETS TICKET PRICE SO DON'T WORRY
-    // function newRaffle() internal {
-    //     uint newWeek = getWeek();
-    //     if (newWeek == week) {
-    //         pauseContract(4);
-    //     } else {//∴ new raffle...
-    //         week = newWeek;
-    //         raffle[newWeek].tktPrice = tktPrice;
-    //         raffle[newWeek].timeStamp = BIRTHDAY + (newWeek * WEEKDUR);
-    //     }
-    // }
     /**
      * @dev  Function to enter the raffle. Requires the caller to send ether
      *       of amount greater than or equal to the current raffle's tkt price.
@@ -35,10 +24,12 @@
      * @param _affID    Affiliate ID of the source of this entry.
      *
      */
-    function enterRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
+    function enterRaffle(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
         require (validTktPrice(week));
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
+
+
     /**
      * @dev     Checks whether msg.value is enough to cover the raffle for 
      *          the week in question's ticket price.
@@ -65,7 +56,7 @@
      * @param _onBehalfOf   The address to be entered on behalf of.
      *
      */
-    function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable external onlyIfNotPaused {
+    function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable public onlyIfNotPaused {
         require (validTktPrice(week));
         buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
@@ -79,7 +70,7 @@
      * @param _cNums    Ordered array of entrant's six selected numbers.
      * @param _affID    Affiliate ID of the source of this entry.
      */
-    function enterFreeRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
+    function enterFreeRaffle(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
         freeLOT.destroy(msg.sender, 1);
         raffle[week].freeEntries++;
         buyTicket(_cNums, msg.sender, msg.value, _affID);
