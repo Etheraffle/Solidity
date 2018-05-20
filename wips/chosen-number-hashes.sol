@@ -90,7 +90,7 @@
     function buyTicket (uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
         require(raffleOpenForEntry() && validNumbers(_cNums));
         raffle[week].numEntries++;
-        prizePool += _value; // can function this out and have the add to prizepool method call it too?
+        addToPrizePool(_value);
         raffle[week].entries[_entrant].push(keccak256(_cNums);
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
@@ -114,13 +114,16 @@
             _cNums[5] <= 49
         );
     }
+    function addToPrizePool(uint _amt) private {
+        prizePool += msg.value;
+    }
     /**
      * @dev     Function allowing manual addition to the global prizepool.
      *          Requires the caller to send ether.
      */
-    function addToPrizePool() payable external {
+    function manuallyAddToPrizePool() payable external {
         require(msg.value > 0);
-        prizePool += msg.value;
+        addToPrizePool(msg.value);
         emit LogPrizePoolAddition(msg.sender, msg.value, now);
     }
     /**
