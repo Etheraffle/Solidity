@@ -49,7 +49,7 @@
     function validTktPrice(uint _week) internal view returns (bool) {
         return (
             raffle[_week].tktPrice > 0 && 
-            msg.value >= raffle[week].tktPrice
+            msg.value >= raffle[_week].tktPrice
         );
     }
     /**
