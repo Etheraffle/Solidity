@@ -98,9 +98,19 @@
     {
         require
         (
-            _cNums.length == 6 &&
             raffle[week].timeStamp > 0 &&
             now < raffle[week].timeStamp + rafEnd &&
+            areValidNumbers(_cNums)
+        );
+        raffle[week].numEntries++;
+        prizePool += _value;
+        raffle[week].entries[_entrant].push(keccak256(_cNums);
+        emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
+    }
+
+    function areValidNumbers(uint[] _cNums) internal pure returns (bool) {
+        return (
+            _cNums.length == 6 &&
             0         < _cNums[0] &&
             _cNums[0] < _cNums[1] &&
             _cNums[1] < _cNums[2] &&
@@ -109,10 +119,6 @@
             _cNums[4] < _cNums[5] &&
             _cNums[5] <= 49
         );
-        raffle[week].numEntries++;
-        prizePool += _value;
-        raffle[week].entries[_entrant].push(keccak256(_cNums);
-        emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
     /**
      * @dev Withdraw Winnings function. User calls this function in order to withdraw
