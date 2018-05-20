@@ -16,8 +16,8 @@
         uint freeEntries;
     }
     /**
-     * @dev  Function to enter the raffle. Requires the caller to send ether
-     *       of amount greater than or equal to the current raffle's tkt price.
+     * @dev     Function to enter a raffle. Checks for correct ticket price.
+     *          Only callable when the contract is not paused.
      *
      * @param _cNums    Ordered array of entrant's six selected numbers.
      *
@@ -29,10 +29,10 @@
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
-     * @dev     Checks whether msg.value is enough to cover the raffle for 
-     *          the week in question's ticket price.
+     * @dev     Checks that a raffle struct has a ticket price set and whether 
+     *          the caller's msg.value is enough to cover that price.
      *
-     * @param _week     Week number for raffle in question
+     * @param _week     Week number for raffle in question.
      *
      */
     function validTktPrice(uint _week) internal view returns (bool) {
@@ -42,11 +42,11 @@
         );
     }
     /**
-     * @dev  Function to enter the raffle on behalf of another address. Requires the 
-     *       caller to send ether of amount greater than or equal to the current 
-     *       raffle's ticket price. In the event of a win, only the onBehalfOf 
-     *       address can claim it.
-     *
+     * @dev     Function to enter the raffle on behalf of another address.  
+     *          Checks for correct ticket price. Only callable when the 
+     *          contract is not paused. In the event of a win, only the 
+     *          onBehalfOf address can claim it.
+     *  
      * @param _cNums        Ordered array of entrant's six selected numbers.
      *
      * @param _affID        Affiliate ID of the source of this entry.
@@ -59,15 +59,16 @@
         buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
     /**
-     * @dev  Function to enter the raffle for free. Requires the caller's
-     *       balance of the Etheraffle freeLOT token to be greater than
-     *       zero. Function destroys one freeLOT token, increments the
-     *       freeEntries variable in the raffle struct then purchases the
-     *       ticket.
+     * @dev     Function to enter the raffle for free. Requires the caller's
+     *          balance of the Etheraffle freeLOT token to be greater than
+     *          zero. Function destroys one freeLOT token, increments the
+     *          freeEntries variable in the raffle struct then purchases the
+     *          ticket.
      *
      * @param _cNums    Ordered array of entrant's six selected numbers.
      *
      * @param _affID    Affiliate ID of the source of this entry.
+     *
      */
     function enterFreeRaffle(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
         freeLOT.destroy(msg.sender, 1);
@@ -75,15 +76,11 @@
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
-     * @dev   Function to buy tickets. Internal. Requires the entry number
-     *        array to be of length 6, requires the timestamp of the current
-     *        raffle struct to have been set, and for this time this function
-     *        is call to be before the end of the raffle. Then requires that
-     *        the chosen numbers are ordered lowest to highest & bound between
-     *        1 and 49. Function increments the total number of entries in the
-     *        current raffle's struct, increments the prize pool accordingly
-     *        and pushes the chosen number array into the entries map and then
-     *        logs the ticket purchase.
+     * @dev     Internal function that purchases raffle tickets. Requires the 
+     *          raffle be open for entry and the chosen numbers be valid. 
+     *          Increments number of entries in the raffle strut, adds the ticket 
+     *          price to the prize pool and stores a hash of the entrants chosen 
+     *          numbers before logging the purchase.   
      *
      * @param _cNums       Array of users selected numbers.
      *
@@ -91,7 +88,7 @@
      *
      * @param _value       The ticket purchase price.
      *
-     * @param _affID       The affiliate ID of the source of this entry.
+     * @param _affID       Affiliate ID of the source of this entry.
      *
      */
     function buyTicket (uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
