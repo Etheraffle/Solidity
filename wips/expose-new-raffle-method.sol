@@ -8,6 +8,7 @@
      *        up the new raffle struct. Should only be called once a
      *        week after the raffle is closed. Should it get called
      *        sooner, the contract is paused for inspection.
+     *
      */
     function newRaffle() internal {
         uint newWeek = getWeek();
@@ -22,11 +23,11 @@
 	 * @dev		Sets up new raffle via creating a struct with the correct 
      *          timestamp and ticket price. 
 	 *
-	 * @param _week		    Desired week number for new raffle struct.
+	 * @param   _week       Desired week number for new raffle struct.
      *
-     * @param _tktPrice     Desired ticket price for the raffle
+     * @param   _tktPrice   Desired ticket price for the raffle
      *
-     * @param _timeStamp    Timestamp of Mon 00:00 of the week of this raffle
+     * @param    _timeStamp Timestamp of Mon 00:00 of the week of this raffle
      *
 	 */
    	function setupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) internal {
@@ -36,9 +37,9 @@
 	/**
 	 * @dev		Sets the withdraw status of a raffle.
 	 *
-	 * @param _week		 Week number for raffle in question.
+	 * @param   _week   Week number for raffle in question.
      *
-     * @param _status    Desired withdraw status for raffle.
+     * @param   _status Desired withdraw status for raffle.
      *
 	 */
     function setWithdraw(uint _week, bool _status) internal {
@@ -47,7 +48,7 @@
     /**
 	 * @dev		Sets the global week variable.
 	 *
-	 * @param _week	    Desired week number.
+	 * @param   _week   Desired week number.
      *
 	 */
     function setWeek(uint _week) internal {
@@ -58,11 +59,11 @@
      *          with the correct timestamp and ticket price. Only callable
      *          by the Etheraffle multisig address.
 	 *
-	 * @param _week		    Desired week number for new raffle struct.
+	 * @param   _week       Desired week number for new raffle struct.
      *
-     * @param _tktPrice     Desired ticket price for the raffle
+     * @param   _tktPrice   Desired ticket price for the raffle
      *
-     * @param _timeStamp    Timestamp of Mon 00:00 of the week of this raffle
+     * @param   _timeStamp  Timestamp of Mon 00:00 of the week of this raffle
      *
 	 */
     function manuallysetupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) onlyEtheraffle external {
@@ -72,9 +73,9 @@
 	 * @dev		Manually sets the withdraw status of a raffle. Only
      *          callable by the Etheraffle multisig.
 	 *
-	 * @param _week		 Week number for raffle in question.
+	 * @param   _week   Week number for raffle in question.
      *
-     * @param _status    Desired withdraw status for raffle.
+     * @param   _status Desired withdraw status for raffle.
      *
 	 */
     function manuallySetWithdraw(uint _week, bool _status) onlyEtheraffle external {
@@ -84,7 +85,7 @@
 	 * @dev		Manually sets the global week variable. Only callable
      *          by the Etheraffle multisig wallet.
 	 *
-	 * @param _week	    Desired week number.
+	 * @param   _week   Desired week number.
      *
 	 */
     function manuallySetWeek(uint _week) onlyEtheraffle external {

@@ -14,7 +14,9 @@ contract PayoutUpgrade {
      * @dev     Returns TOTAL payout per tier when calculated using the odds method.
      *
      * @param _numWinners       Number of X match winners
+     *
      * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
+     *
      */
     function oddsTotal(uint _numWinners, uint _matchesIndex, uint _week) internal view returns (uint) {
         return oddsSingle(_matchesIndex, _week) * _numWinners;
