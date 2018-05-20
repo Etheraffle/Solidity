@@ -182,12 +182,13 @@
     }
     /**
      * @dev   Function compares array of entrant's 6 chosen numbers to
-      *       the raffle in question's winning numbers, counting how
-      *       many matches there are.
-      *
-      * @param _week         The week number of the Raffle in question
-      * @param _entrant      Entrant's ethereum address
-      * @param _entryNum     number of entrant's entry in question.
+     *        the raffle in question's winning numbers and returns the 
+     *        number of matches.
+     *
+     * @param _cNums      Array of entrant's chosen numbers 
+     *
+     * @param _wNums      Array of winning numbers
+     *
      */
     function getMatches(uint[] _cNums, uint[] _wNums) pure internal returns (uint) {
         uint matches;
