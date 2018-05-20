@@ -36,7 +36,7 @@
      *
      */
     function enterRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
-        require(validTktPrice(week));
+        require (validTktPrice(week));
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
@@ -66,7 +66,7 @@
      *
      */
     function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable external onlyIfNotPaused {
-        require(validTktPrice(week));
+        require (validTktPrice(week));
         buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
     /**
@@ -101,7 +101,7 @@
      * @param _affID       The affiliate ID of the source of this entry.
      */
     function buyTicket (uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
-        require(raffleOpenForEntry() && validNumbers(_cNums));
+        require (raffleOpenForEntry() && validNumbers(_cNums));
         raffle[week].numEntries++;
         addToPrizePool(_value);
         raffle[week].entries[_entrant].push(keccak256(_cNums);
@@ -135,7 +135,7 @@
      *          Requires the caller to send ether.
      */
     function manuallyAddToPrizePool() payable external {
-        require(msg.value > 0);
+        require (msg.value > 0);
         addToPrizePool(msg.value);
         emit LogPrizePoolAddition(msg.sender, msg.value, now);
     }
@@ -155,10 +155,7 @@
         );
         uint matches = getMatches(_cNums, raffle[_week].winNums);
         if (matches == 2) return winFreeGo(_week, _entryNum);
-        require
-        (
-            isEligibleForWithdraw(_week, matches)
-        );
+        require (isEligibleForWithdraw(_week, matches));
         invalidateEntry(_week, msg.sender, _entryNum);
 
         // Put following block into the isEligible bit too? Can have that pause contract and return false if not...
