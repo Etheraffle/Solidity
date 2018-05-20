@@ -162,12 +162,9 @@
         );
     }
 
-    // will be 0 after a correct withdraw therefore won't pass validity checks
+    // will be 0 after a correct withdraw therefore won't pass validity checks plus if empty array is sent, 
     function validEntry(uint _week, uint _entryNum, uint[] _cNums, address _entrant) view internal returns (bool) {
-        return (
-            _cNums.length == 6 && //don't really need to heck for these being ordered etc, since if they're wrong the hashes won't match. Do we even need to check for an empty or wrong length array?? An empty array has a hash but it's valid, and so won't match a user's entry?!
-            raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums)
-        );
+        return raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums);
     }
 
     function invalidateEntry(uint _week, address _entrant, uint _entryNum) private {
@@ -177,6 +174,7 @@
     function openForWithdraw(uint _week) view internal returns (bool) {
         return (
             raffle[_week].timeStamp > 0 &&
+            raffle[_week].winNums.length > 0 &&
             now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7) &&
             now - raffle[_week].timeStamp < wdrawBfr &&
             raffle[_week].wdrawOpen == true &&
