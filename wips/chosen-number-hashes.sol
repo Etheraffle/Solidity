@@ -28,8 +28,6 @@
         require (validTktPrice(week));
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
-
-
     /**
      * @dev     Checks whether msg.value is enough to cover the raffle for 
      *          the week in question's ticket price.
@@ -68,6 +66,7 @@
      *       ticket.
      *
      * @param _cNums    Ordered array of entrant's six selected numbers.
+     *
      * @param _affID    Affiliate ID of the source of this entry.
      */
     function enterFreeRaffle(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
@@ -87,9 +86,13 @@
      *        logs the ticket purchase.
      *
      * @param _cNums       Array of users selected numbers.
+     *
      * @param _entrant     Entrant's ethereum address.
+     *
      * @param _value       The ticket purchase price.
+     *
      * @param _affID       The affiliate ID of the source of this entry.
+     *
      */
     function buyTicket (uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
         require (raffleOpenForEntry() && validNumbers(_cNums));
@@ -98,14 +101,24 @@
         raffle[week].entries[_entrant].push(keccak256(_cNums);
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
-
+    /**
+     * @dev     Temporal & raffle struct setup requirements that need to be 
+     *          satisfied before a raffle ticket can be purchased.
+     */
     function raffleOpenForEntry() internal view returns (bool) {
         return (
             raffle[week].timeStamp > 0 &&
             now < raffle[week].timeStamp + rafEnd
         );
     }
-
+    /**
+     * @dev     Series of requirements a raffle ticket's chosen numbers must 
+     *          pass in order to qualify as valid. Ensures that there are six 
+     *          numbers, in ascending order, between one and 49.
+     *
+     * @param _cNums    Array of a ticket's proposed numbers in question.
+     *
+     */
     function validNumbers(uint[] _cNums) internal pure returns (bool) {
         return (
             _cNums.length == 6 &&
@@ -118,12 +131,19 @@
             _cNums[5] <= 49
         );
     }
+    /**
+     * @dev     Adds a given amount to the global prize pool variable.
+     *
+     * @param _amt    Amount to be added to the prize pool.
+     *
+     */
     function addToPrizePool(uint _amt) private {
         prizePool += msg.value;
     }
     /**
      * @dev     Function allowing manual addition to the global prizepool.
      *          Requires the caller to send ether.
+     *
      */
     function manuallyAddToPrizePool() payable external {
         require (msg.value > 0);
@@ -131,12 +151,14 @@
         emit LogPrizePoolAddition(msg.sender, msg.value, now);
     }
     /**
-     * @dev Withdraw Winnings function. User calls this function in order to withdraw
-     *      whatever winnings they are owed. Function can be paused via the modifier
-     *      function "onlyIfNotPaused"
+     * @dev     Withdraw Winnings function. User calls this function in order to withdraw
+     *          whatever winnings they are owed. Function can be paused via the modifier
+     *          function "onlyIfNotPaused"
      *
-     * @param _week        Week number of the raffle the winning entry is from
-     * @param _entryNum    The entrants entry number into this raffle
+     * @param _week        Week number of the raffle the winning entry is from.
+     *
+     * @param _entryNum    The entrant's entry number into this raffle.
+     *
      */
     function withdrawWinnings(uint _week, uint _entryNum, uint[] _cNums) onlyIfNotPaused external {
         require (validEntry(_week, _entryNum, _cNums, msg.sender) && openForWithdraw(_week));
@@ -148,12 +170,30 @@
         msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
-
+    /**
+     * @dev     Subtracts a given amount from a raffle struct's unclaimed
+     *          variable. First checks the minuend is smaller than the 
+     *          subtrahend.   
+     *
+     * @param _week     Week number for raffle in question.
+     *
+     * @param _matches  Number of matches the entry in question has made.
+     *
+     */
     function subtractFromUnclaimed(uint _week, uint _matches) private {
         require (raffle[_week].winAmts[_matches - 3] <= raffle[_week].unclaimed, 'Prize > Unclaimed!');
         raffle[_week].unclaimed -= raffle[_week].winAmts[_matches - 3];
     }
-
+    /**
+     * @dev     Various requirements w/r/t number of matches, win amounts 
+     *          being set in the raffle struct and contract balance that 
+     *          need to be passed before withdrawal can be processed.
+     *
+     * @param _week     Week number for raffle in question.
+     *
+     * @param _matches  Number of matches the entry in question has made.
+     *
+     */
     function eligibleForWithdraw(uint _week, uint _matches) internal view returns (bool) {
         return (
             _matches >= 3 &&
@@ -161,16 +201,43 @@
             raffle[_week].winAmts[_matches - 3] <= this.balance &&
         );
     }
-
-    // will be 0 after a correct withdraw therefore won't pass validity checks plus if empty array is sent, 
+    /**
+     * @dev     Compares has of provided entry numbers to previously bought 
+     *          ticket's hashed entry numbers.
+     *
+     * @param _week         Week number for raffle in question.
+     *
+     * @param _entryNum     Entry number in question.
+     *
+     * @param _cNums        Propsed entry numbers for entry in question.
+     *
+     * @param _entrant      Address of entrant in question.
+     *
+     */
     function validEntry(uint _week, uint _entryNum, uint[] _cNums, address _entrant) view internal returns (bool) {
         return raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums);
     }
-
+    /**
+     * @dev     Function zeroes the previously stored hash of an entrant's 
+     *          ticket's chosen numbers.
+     *
+     * @param _week         Week number for raffle in question.
+     *
+     * @param _entrant      Address of the entrant in question.
+     *
+     * @param _entryNum     Entry number in question.
+     *
+     */
     function invalidateEntry(uint _week, address _entrant, uint _entryNum) private {
         raffle[_week].entries[_entrant][_entryNum - 1] = 0;
     }
-
+    /**
+     * @dev     Various temporal requirements plus struct setup requirements 
+     *          that need to be met before a prize withdrawal can be processed.
+     *
+     * @param _week     Week number for the raffle in question.
+     *
+     */
     function openForWithdraw(uint _week) view internal returns (bool) {
         return (
             raffle[_week].timeStamp > 0 &&
