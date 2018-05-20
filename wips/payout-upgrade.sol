@@ -11,55 +11,70 @@ contract PayoutUpgrade {
     event LogPrizePoolsUpdated(uint newMainPrizePool, uint indexed forRaffle, uint ticketPrice, uint unclaimedPrizePool, uint threeMatchWinAmt, uint fourMatchWinAmt, uint fiveMatchWinAmt, uint sixMatchwinAmt, uint atTime);
 
     /*  
-     * @dev     Returns TOTAL payout per tier when calculated using the odds method.
+     * @dev     Returns TOTAL payout per tier when calculated using 
+     *          the odds method.
      *
-     * @param _numWinners       Number of X match winners
+     * @param   _numWinners     Number of X match winners.
      *
-     * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
+     * @param   _matchesIndex   Index of matches array (∴ 3 match win,
+     *                          4 match win etc).
      *
      */
     function oddsTotal(uint _numWinners, uint _matchesIndex, uint _week) internal view returns (uint) {
         return oddsSingle(_matchesIndex, _week) * _numWinners;
     }
-    // /*
-    //  * @dev     Returns TOTAL payout per tier when calculated using the splits method.
-    //  *
-    //  * @param _numWinners       Number of X match winners
-    //  * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
-    //  */
-    // function splitsTotal(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
-    //     return splitsSingle(_numWinners, _matchesIndex) * _numWinners;
-    // }
     /*
-     * @dev     Returns single payout when calculated using the odds method.
+     * @dev     Returns TOTAL payout per tier when calculated using
+     *          the splits method.
      *
-     * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
+     * @param    _numWinners     Number of X match winners.
+     *
+     * @param    _matchesIndex   Index of matches array (∴ 3 match win,
+     *                           4 match win etc).
+     *
+     */
+    function splitsTotal(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
+        return splitsSingle(_numWinners, _matchesIndex) * _numWinners;
+    }
+    /*
+     * @dev     Returns single payout when calculated using the odds
+     *          method.
+     *
+     * @param   _matchesIndex   Index of matches array (∴ 3 match win,
+     *                          4 match win etc).
+     *
      */
     function oddsSingle(uint _matchesIndex, uint _week) internal view returns (uint) {
         return (raffle[_week].tktPrice * odds[_matchesIndex] * (1000 - take)) / 1000;
     }
-    // /*
-    //  * @dev     Returns a single payout when calculated using the splits method.
-    //  *
-    //  * @param _numWinners       Number of X match winners
-    //  * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
-    //  */
-    // function splitsSingle(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
-    //     return (prizePool * pctOfPool[_matchesIndex]) / (_numWinners * 1000);
-    // }
-    /**
-     * @dev   Takes the results of the oraclize Etheraffle api call back
-     *        and uses them to calculate the prizes due to each tier
-     *        (3 matches, 4 matches etc) then pushes them into the winning
-     *        amounts array in the raffle in question's struct. Calculates
-     *        the total winnings of the raffle, subtracts it from the
-     *        global prize pool sequesters that amount into the raffle's
-     *        struct "unclaimed" variable, ∴ "rolling over" the unwon
-     *        ether. Enables winner withdrawals by setting the withdraw
-     *        open bool to true.
+    /*
+     * @dev     Returns a single payout when calculated using the 
+     *          splits method.
      *
-     * @param _week    The week number of the raffle in question.
-     * @param _result  The results string from oraclize callback.
+     * @param   _numWinners     Number of X match winners.
+     *
+     * @param   _matchesIndex   Index of matches array (∴ 3 match win,
+     *                          4 match win etc).
+     *
+     */
+    function splitsSingle(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
+        return (prizePool * pctOfPool[_matchesIndex]) / (_numWinners * 1000);
+    }
+    /**
+     * @dev     Takes the results of the oraclize Etheraffle api call back
+     *          and uses them to calculate the prizes due to each tier
+     *          (3 matches, 4 matches etc) then pushes them into the winning
+     *          amounts array in the raffle in question's struct. Calculates
+     *          the total winnings of the raffle, subtracts it from the
+     *          global prize pool sequesters that amount into the raffle's
+     *          struct "unclaimed" variable, ∴ "rolling over" the unwon
+     *          ether. Enables winner withdrawals by setting the withdraw
+     *          open bool to true.
+     *
+     * @param   _week       The week number of the raffle in question.
+     *
+     * @param   _result     The results string from oraclize callback.
+     *
      */
     function setPayOuts(uint _week, string _result) internal {
         string[] memory numWinnersStr = stringToArray(_result);
