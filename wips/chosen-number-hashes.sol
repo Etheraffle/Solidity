@@ -197,7 +197,7 @@
     }
 
     function openForWithdraw(uint _week) view internal returns (bool) {
-        return(
+        return (
             raffle[_week].timeStamp > 0 &&
             now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7) &&
             now - raffle[_week].timeStamp < wdrawBfr &&
