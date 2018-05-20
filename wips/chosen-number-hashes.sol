@@ -139,27 +139,12 @@
      * @param _entryNum    The entrants entry number into this raffle
      */
     function withdrawWinnings(uint _week, uint _entryNum, uint[] _cNums) onlyIfNotPaused external {
-        require
-        (
-            isValidEntry(_week, _entryNum, _cNums, msg.sender) &&
-            openForWithdraw(_week)
-        );
+        require (isValidEntry(_week, _entryNum, _cNums, msg.sender) && openForWithdraw(_week));
         uint matches = getMatches(_cNums, raffle[_week].winNums);
         if (matches == 2) return winFreeGo(_week, _entryNum);
         require (isEligibleForWithdraw(_week, matches));
         invalidateEntry(_week, msg.sender, _entryNum);
-
-        // Put following block into the isEligible bit too? Can have that pause contract and return false if not...
-
-        if (raffle[_week].winAmts[matches - 3] <= raffle[_week].unclaimed) {
-            raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3];
-        } else {
-            raffle[_week].unclaimed = 0;
-            pauseContract(5);
-        }
-
-        // The block above here!
-
+        raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3]; // Can't underflow due to isEligible
         msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
@@ -168,7 +153,8 @@
         return (
             _matches >= 3 &&
             raffle[_week].winAmts[_matches - 3] > 0 &&
-            raffle[_week].winAmts[_matches - 3] <= this.balance
+            raffle[_week].winAmts[_matches - 3] <= this.balance &&
+            raffle[_week].winAmts[_matches - 3] <= raffle[_week].unclaimed
         );
     }
 
