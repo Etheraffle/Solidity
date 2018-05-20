@@ -39,7 +39,13 @@
         require(validTktPrice(week));
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
-    
+    /**
+     * @dev     Checks whether msg.value is enough to cover the raffle for 
+     *          the week in question's ticket price.
+     *
+     * @param _week     Week number for raffle in question
+     *
+     */
     function validTktPrice(uint _week) internal view returns (bool) {
         return (
             raffle[_week].tktPrice > 0 && 
