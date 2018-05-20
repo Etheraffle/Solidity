@@ -171,7 +171,7 @@
         );
     }
 
-    function invalidateEntry(uint _week, address _entrant, uint _entryNum) internal {
+    function invalidateEntry(uint _week, address _entrant, uint _entryNum) private {
         raffle[_week].entries[_entrant][_entryNum - 1] = 0;
     }
 
