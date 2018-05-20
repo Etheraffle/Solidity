@@ -30,22 +30,22 @@ contract OraclizeUpdate {
     event LogOraclizeCallback(address functionCaller, bytes32 queryID, string result, uint indexed forRaffle, uint atTime);
 
     /**
-     * @dev  Modifier to prepend to functions adding the additional
-     *       conditional requiring caller of the method to be either
-     *       the Oraclize or Etheraffle address.
+     * @dev     Modifier to prepend to functions adding the additional
+     *          conditional requiring caller of the method to be either
+     *          the Oraclize or Etheraffle address.
      */
     modifier onlyOraclize() {
         require(msg.sender == oraclize_cbAddress() || msg.sender == etheraffle);
         _;
     }
     /**
-     * @dev   The Oralize call back function. Only callable by Etheraffle 
-     *        or the Oraclize address. Emits an event detailing the callback, 
-     *        before running the relevant method that acts on the callback.
+     * @dev     The Oralize call back function. Only callable by Etheraffle 
+     *          or the Oraclize address. Emits an event detailing the callback, 
+     *          before running the relevant method that acts on the callback.
      * 
-     * @param _myID    Unique id oraclize provides with their callbacks.
+     * @param   _myID    Unique id oraclize provides with their callbacks.
      *                            
-     * @param _result  The result of the api call.
+     * @param   _result  The result of the api call.
      *
      */
     function __callback(bytes32 _myID, string _result) onlyIfNotPaused onlyOraclize {
@@ -135,22 +135,22 @@ contract OraclizeUpdate {
      * @dev     Manually make an Oraclize API call, incase of automation
      *          failure. Only callable by the Etheraffle address.
      *
-     * @param _delay      Either a time in seconds before desired callback
-     *                    time for the API call, or a future UTC format time for
-     *                    the desired time for the API callback.
+     * @param   _delay      Either a time in seconds before desired callback
+     *                      time for the API call, or a future UTC format time
+     *                      for the desired time for the API callback.
      *
-     * @param _week       The week number this query is for.
+     * @param   _week       The week number this query is for.
      *
-     * @param _isRandom   Whether or not the api call being made is for
-     *                    the random.org results draw, or for the Etheraffle
-     *                    API results call.
+     * @param   _isRandom   Whether or not the api call being made is for
+     *                      the random.org results draw, or for the 
+     *                      Etheraffle API results call.
      *
-     * @param _isManual   The Oraclize call back is a recursive function in
-     *                    which each call fires off another call in perpetuity.
-     *                    This bool allows that recursiveness for this call to be
-     *                    turned on or off depending on caller's requirements.
+     * @param   _isManual   The Oraclize call back is a recursive function in
+     *                      which each call fires off another call in perpetuity.
+     *                      This bool allows that recursiveness for this call to
+     *                      be turned on or off depending on caller's requirements.
      *
-     * @param _status     The desired paused status of the contract.
+     * @param   _status     The desired paused status of the contract.
      *
      */
     function manuallyMakeOraclizeCall
@@ -170,18 +170,18 @@ contract OraclizeUpdate {
      * @dev     Manually edit (or make!) a query ID struct, that Oraclize callbacks 
      *          can reference.
      *
-     * @param _ID         Desired keccak hash key for the struct
+     * @param   _ID         Desired keccak hash key for the struct
      *
-     * @param _weekNo     Desired week/raffle number the struct refers to. 
+     * @param   _weekNo     Desired week/raffle number the struct refers to. 
      *
-     * @param _isRandom   Whether or not the api call being made is for
-     *                    the random.org results draw, or for the Etheraffle
-     *                    API results call.
+     * @param   _isRandom   Whether or not the api call being made is for
+     *                      the random.org results draw, or for the Etheraffle
+     *                      API results call.
      *
-     * @param _isManual   The Oraclize call back is a recursive function in
-     *                    which each call fires off another call in perpetuity.
-     *                    This bool allows that recursiveness for this call to be
-     *                    turned on or off depending on caller's requirements.
+     * @param   _isManual   The Oraclize call back is a recursive function in
+     *                      which each call fires off another call in perpetuity.
+     *                      This bool allows that recursiveness for this call to be
+     *                      turned on or off depending on caller's requirements.
      *
      */
     function manuallyEditQID
