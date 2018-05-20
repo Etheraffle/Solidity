@@ -159,7 +159,6 @@
             _matches >= 3 &&
             raffle[_week].winAmts[_matches - 3] > 0 &&
             raffle[_week].winAmts[_matches - 3] <= this.balance &&
-            // raffle[_week].winAmts[_matches - 3] <= raffle[_week].unclaimed //dup in subtractFrom...()
         );
     }
 
