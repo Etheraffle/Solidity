@@ -139,7 +139,7 @@
      * @param _entryNum    The entrants entry number into this raffle
      */
     function withdrawWinnings(uint _week, uint _entryNum, uint[] _cNums) onlyIfNotPaused external {
-        require (isValidEntry(_week, _entryNum, _cNums, msg.sender) && openForWithdraw(_week));
+        require (validEntry(_week, _entryNum, _cNums, msg.sender) && openForWithdraw(_week));
         uint matches = getMatches(_cNums, raffle[_week].winNums);
         if (matches == 2) return winFreeGo(_week, _entryNum);
         require (isEligibleForWithdraw(_week, matches));
@@ -163,7 +163,7 @@
     }
 
     // will be 0 after a correct withdraw therefore won't pass validity checks
-    function isValidEntry(uint _week, uint _entryNum, uint[] _cNums, address _entrant) view internal returns (bool) {
+    function validEntry(uint _week, uint _entryNum, uint[] _cNums, address _entrant) view internal returns (bool) {
         return (
             _cNums.length == 6 && //don't really need to heck for these being ordered etc, since if they're wrong the hashes won't match. Do we even need to check for an empty or wrong length array?? An empty array has a hash but it's valid, and so won't match a user's entry?!
             raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums)
