@@ -87,27 +87,15 @@
      * @param _value       The ticket purchase price.
      * @param _affID       The affiliate ID of the source of this entry.
      */
-    function buyTicket
-    (
-        uint[]  _cNums,
-        address _entrant,
-        uint    _value,
-        uint    _affID
-    )
-        internal
-    {
-        require
-        (
-            raffleOpenForEntry() &&
-            validNumbers(_cNums)
-        );
+    function buyTicket (uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
+        require(raffleOpenForEntry() && validNumbers(_cNums));
         raffle[week].numEntries++;
-        prizePool += _value;
+        prizePool += _value; // can function this out and have the add to prizepool method call it too?
         raffle[week].entries[_entrant].push(keccak256(_cNums);
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
 
-    function raffleOpenForEntry() interal view returns (bool) {
+    function raffleOpenForEntry() internal view returns (bool) {
         return (
             raffle[week].timeStamp > 0 &&
             now < raffle[week].timeStamp + rafEnd
