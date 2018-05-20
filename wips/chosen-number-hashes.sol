@@ -36,13 +36,13 @@
      *
      */
     function enterRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
-        require(validTktPrice());
+        require(validTktPrice(week));
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
-
-    function validTktPrice() internal view returns (bool) {
+    
+    function validTktPrice(uint _week) internal view returns (bool) {
         return (
-            raffle[week].tktPrice > 0 && 
+            raffle[_week].tktPrice > 0 && 
             msg.value >= raffle[week].tktPrice
         );
     }
@@ -60,7 +60,7 @@
      *
      */
     function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable external onlyIfNotPaused {
-        require(validTktPrice());
+        require(validTktPrice(week));
         buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
     /**
