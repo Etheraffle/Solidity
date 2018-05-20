@@ -142,7 +142,7 @@
         require (validEntry(_week, _entryNum, _cNums, msg.sender) && openForWithdraw(_week));
         uint matches = getMatches(_cNums, raffle[_week].winNums);
         if (matches == 2) return winFreeGo(_week, _entryNum);
-        require (isEligibleForWithdraw(_week, matches));
+        require (eligibleForWithdraw(_week, matches));
         invalidateEntry(_week, msg.sender, _entryNum);
         subtractFromUnclaimed(_week, matches);
         msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
@@ -154,7 +154,7 @@
         raffle[_week].unclaimed -= raffle[_week].winAmts[_matches - 3];
     }
 
-    function isEligibleForWithdraw(uint _week, uint _matches) internal view returns (bool) {
+    function eligibleForWithdraw(uint _week, uint _matches) internal view returns (bool) {
         return (
             _matches >= 3 &&
             raffle[_week].winAmts[_matches - 3] > 0 &&
