@@ -100,7 +100,7 @@
         (
             raffle[week].timeStamp > 0 &&
             now < raffle[week].timeStamp + rafEnd &&
-            areValidNumbers(_cNums)
+            validNumbers(_cNums)
         );
         raffle[week].numEntries++;
         prizePool += _value;
@@ -108,7 +108,7 @@
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
 
-    function areValidNumbers(uint[] _cNums) internal pure returns (bool) {
+    function validNumbers(uint[] _cNums) internal pure returns (bool) {
         return (
             _cNums.length == 6 &&
             0         < _cNums[0] &&
