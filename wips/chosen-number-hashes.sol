@@ -132,20 +132,26 @@
         if (matches == 2) return winFreeGo(_week, _entryNum);
         require
         (
-            eligibleForWithdraw(_week, matches)
+            isEligibleForWithdraw(_week, matches)
         );
         invalidateEntry(_week, msg.sender, _entryNum);
+
+        // Put following block into the isEligible bit too? Can have that pause contract and return false if not...
+
         if (raffle[_week].winAmts[matches - 3] <= raffle[_week].unclaimed) {
             raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3];
         } else {
             raffle[_week].unclaimed = 0;
             pauseContract(5);
         }
+
+        // The block above here!
+
         msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
 
-    function eligibleForWithdraw(uint _week, uint _matches) internal view returns (bool) {
+    function isEligibleForWithdraw(uint _week, uint _matches) internal view returns (bool) {
         return (
             _matches >= 3 &&
             raffle[_week].winAmts[_matches - 3] > 0 &&
