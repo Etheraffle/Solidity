@@ -61,6 +61,20 @@ contract PayoutUpgrade {
         return (prizePool * pctOfPool[_matchesIndex]) / (_numWinners * 1000);
     }
     /**
+     * @dev     Calculates the total prizes for a given tier using the 
+     *          splits method & the odds method, and returns the singular 
+     *          prize using whichever method returned from the preceeding.
+     *
+     * @param _numWinners   Number of winners in this tier
+     *
+     * @param _i            Index this tier corresponds to in odds/splits arrays
+     *
+     * @param _week         The week number of the raffle in question.
+     */
+    function calcPrize(uint _numWinners, uint _i, uint _week) internal view returns (uint) {
+        return oddsTotal(_numWinners, _i, _week) <= splitsTotal(_numWinners, _i) ? oddsSingle(_i, _week) : splitsSingle(_numWinners, _i); 
+    }
+    /**
      * @dev     Takes the results of the oraclize Etheraffle api call back
      *          and uses them to calculate the prizes due to each tier
      *          (3 matches, 4 matches etc) then pushes them into the winning
@@ -79,25 +93,17 @@ contract PayoutUpgrade {
     function setPayOuts(uint _week, string _result) internal {
         string[] memory numWinnersStr = stringToArray(_result);
         if (numWinnersStr.length < 4) return pauseContract(2);
-        uint[] memory numWinnersInt = new uint[](4);
         for (uint i = 0; i < 4; i++) {
-            numWinnersInt[i] = parseInt(numWinnersStr[i]);
-        }
-        uint[] memory payOuts = new uint[](4);
-        for (i = 0; i < 4; i++) {
-            if (numWinnersInt[i] != 0) {
-                uint amt = oddsTotal(numWinnersInt[i], i, _week) <= splitsTotal(numWinnersInt[i], i) 
-                         ? oddsSingle(i, _week) 
-                         : splitsSingle(numWinnersInt[i], i); 
-                payOuts[i] = amt;
-                raffle[_week].unclaimed += payOuts[i] * numWinnersInt[i];
+            uint amt = 0;
+            uint numWinners = parseInt(numWinnersStr[i]);
+            if (numWinners != 0) {
+                amt = calcPrize(numWinners, i, _week);
+                raffle[_week].unclaimed += amt * numWinners;
             }
+            raffle[_week].winAmts.push(amt);
         }
         if (raffle[_week].unclaimed > prizePool) return pauseContract(3);
         prizePool -= raffle[_week].unclaimed;
-        for (i = 0; i < payOuts.length; i++) {
-            raffle[_week].winAmts.push(payOuts[i]);
-        }
         setWithdraw(_week, true);
         emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
     }
