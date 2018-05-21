@@ -84,17 +84,15 @@ contract PayoutUpgrade {
             numWinnersInt[i] = parseInt(numWinnersStr[i]);
         }
         uint[] memory payOuts = new uint[](4);
-        uint total;
         for (i = 0; i < 4; i++) {
             if (numWinnersInt[i] != 0) {
                 uint amt = oddsTotal(numWinnersInt[i], i, _week) <= splitsTotal(numWinnersInt[i], i) 
                          ? oddsSingle(i, _week) 
                          : splitsSingle(numWinnersInt[i], i); 
                 payOuts[i] = amt;
-                total += payOuts[i] * numWinnersInt[i];
+                raffle[_week].unclaimed += payOuts[i] * numWinnersInt[i];
             }
         }
-        raffle[_week].unclaimed = total;
         if (raffle[_week].unclaimed > prizePool) return pauseContract(3);
         prizePool -= raffle[_week].unclaimed;
         for (i = 0; i < payOuts.length; i++) {
