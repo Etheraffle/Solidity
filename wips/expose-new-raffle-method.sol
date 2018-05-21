@@ -12,12 +12,9 @@
      */
     function newRaffle() internal {
         uint newWeek = getWeek();
-        if (newWeek == week) {
-            pauseContract(4);
-        } else { // ∴ new raffle...
-            setWeek(newWeek);
-            setupRaffleStruct(newWeek, tktPrice, BIRTHDAY + (newWeek * WEEKDUR));
-        }
+        if (newWeek == week) return pauseContract(4);
+        setWeek(newWeek);
+        setupRaffleStruct(newWeek, tktPrice, BIRTHDAY + (newWeek * WEEKDUR));
     }
 	/**
 	 * @dev		Sets up new raffle via creating a struct with the correct 
