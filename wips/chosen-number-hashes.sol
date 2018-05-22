@@ -163,7 +163,7 @@
         if (matches == 2) return winFreeGo(_week, _entryNum);
         require (eligibleForWithdraw(_week, matches));
         invalidateEntry(_week, msg.sender, _entryNum);
-        subtractFromUnclaimed(_week, matches);
+        subtractFromUnclaimed(_week, raffle[_week].winAmts[_matches - 3]);
         msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
@@ -177,9 +177,9 @@
      * @param _matches  Number of matches the entry in question has made.
      *
      */
-    function subtractFromUnclaimed(uint _week, uint _matches) private {
-        require (raffle[_week].winAmts[_matches - 3] <= raffle[_week].unclaimed, 'Prize > Unclaimed!');
-        raffle[_week].unclaimed -= raffle[_week].winAmts[_matches - 3];
+    function subtractFromUnclaimed(uint _week, uint _amt) private {
+        require (_amt <= raffle[_week].unclaimed, 'Prize > Unclaimed!');
+        raffle[_week].unclaimed -= _amt;
     }
     /**
      * @dev     Various requirements w/r/t number of matches, win amounts 
