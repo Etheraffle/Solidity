@@ -163,23 +163,26 @@
         if (matches == 2) return winFreeGo(_week, _entryNum);
         require (eligibleForWithdraw(_week, matches));
         invalidateEntry(_week, msg.sender, _entryNum);
-        subtractFromUnclaimed(_week, raffle[_week].winAmts[_matches - 3]);
+        modifyUnclaimed(false, _week, raffle[_week].winAmts[_matches - 3]);
         msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
     /**
-     * @dev     Subtracts a given amount from a raffle struct's unclaimed
-     *          variable. First checks the minuend is smaller than the 
-     *          subtrahend.   
+     * @dev     Modifies the unclaimed variable in a struct. If true passed 
+     *          in as first argument, unclaimed is incremented by _amt, if 
+     *          false, decremented. In which latter case, it requires the 
+     *          minuend is smaller than the subtrahend.   
+     *
+     * @param _bool     Boolean signifying addtion if true otherwise subtraction.
      *
      * @param _week     Week number for raffle in question.
      *
-     * @param _matches  Number of matches the entry in question has made.
+     * @param _amt      Amount unclaimed is to be modified by.
      *
      */
-    function subtractFromUnclaimed(uint _week, uint _amt) private {
-        require (_amt <= raffle[_week].unclaimed, 'Prize > Unclaimed!');
-        raffle[_week].unclaimed -= _amt;
+    function modifyUnclaimed(bool _bool, uint _week, uint _amt) private {
+        if (!_bool) require (_amt <= raffle[_week].unclaimed, 'Prize amt > Unclaimed!');
+        raffle[_week].unclaimed = _bool ? raffle[_week].unclaimed + _amt : raffle[_week].unclaimed - _amt;
     }
     /**
      * @dev     Various requirements w/r/t number of matches, win amounts 
