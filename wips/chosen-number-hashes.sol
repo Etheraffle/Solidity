@@ -154,9 +154,9 @@
         emit LogPrizePoolAddition(msg.sender, msg.value, now);
     }
     /**
-     * @dev     Withdraw Winnings function. User calls this function in order to withdraw
-     *          whatever winnings they are owed. Function can be paused via the modifier
-     *          function "onlyIfNotPaused"
+     * @dev     Withdraw Winnings function. User calls this function in order
+     *          to withdraw whatever winnings they are owed. Function can be 
+     *          paused via the modifier function "onlyIfNotPaused"
      *
      * @param _week        Week number of the raffle the winning entry is from.
      *
