@@ -98,13 +98,14 @@ contract PayoutUpgrade {
             uint numWinners = parseInt(numWinnersStr[i]);
             if (numWinners != 0) {
                 amt = calcPrize(numWinners, i, _week);
-                raffle[_week].unclaimed += amt * numWinners;
+                modifyUnclaimed(true, _week, amt * numWinners);
             }
             raffle[_week].winAmts.push(amt);
         }
         if (raffle[_week].unclaimed > prizePool) return pauseContract(3);
-        prizePool -= raffle[_week].unclaimed;
+        prizePool -= raffle[_week].unclaimed; // function out like other? Share other func? If bool add, else subtracts? Call it editPrizePool?
         setWithdraw(_week, true);
         emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
     }
+
 }   
