@@ -129,22 +129,28 @@
         );
     }
     /**
-     * @dev     Adds a given amount to the global prize pool variable.
+     * @dev     Modifies prizePool var. If true passed is in as first 
+     *          argument, prizePool is incremented by _amt, if  false, 
+     *          decremented. In which latter case, it requires the minuend 
+     *          is smaller than the subtrahend.  
      *
-     * @param _amt    Amount to be added to the prize pool.
+     * @param _bool     Boolean signifying addtion or subtraction. 
+     *
+     * @param _amt      Amount to modify the prize pool by.
      *
      */
-    function addToPrizePool(uint _amt) private {
-        prizePool += msg.value;
+    function modifyPrizePool(bool _bool, uint _amt) private {
+        if (!_bool) require (_amt <= prizePool, '_amt > prizePool!');
+        prizePool = _bool ? prizePool + _amt : prizePool - _amt;
     }
     /**
      * @dev     Function allowing manual addition to the global prizepool.
      *          Requires the caller to send ether.
      *
      */
-    function manuallyAddToPrizePool() payable external {
+    function manuallyAddToPrizePool() payable public {
         require (msg.value > 0);
-        addToPrizePool(msg.value);
+        modifyPrizePool(true, msg.value);
         emit LogPrizePoolAddition(msg.sender, msg.value, now);
     }
     /**
@@ -173,7 +179,7 @@
      *          false, decremented. In which latter case, it requires the 
      *          minuend is smaller than the subtrahend.   
      *
-     * @param _bool     Boolean signifying addtion if true otherwise subtraction.
+     * @param _bool     Boolean signifying addtion or subtraction.
      *
      * @param _week     Week number for raffle in question.
      *
