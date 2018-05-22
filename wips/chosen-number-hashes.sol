@@ -208,7 +208,7 @@
         );
     }
     /**
-     * @dev     Compares has of provided entry numbers to previously bought 
+     * @dev     Compares hash of provided entry numbers to previously bought 
      *          ticket's hashed entry numbers.
      *
      * @param _week         Week number for raffle in question.
