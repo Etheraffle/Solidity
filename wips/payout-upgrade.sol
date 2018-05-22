@@ -3,8 +3,6 @@ pragma solidity^0.4.23;
  * New version of payouts must reflect the ticket price minus the take. 
  * Changes will only affect the odds single calcs since splits singles will only take affect
  * when splits singles become SMALLER than odds singles.
- *
- * Make these functions pure? Pass in ALL args? Can the arrays be made CONSTANT? (Apparently not!)
  */
 contract PayoutUpgrade {
 
@@ -102,10 +100,9 @@ contract PayoutUpgrade {
             }
             raffle[_week].winAmts.push(amt);
         }
-        if (raffle[_week].unclaimed > prizePool) return pauseContract(3);
-        prizePool -= raffle[_week].unclaimed; // function out like other? Share other func? If bool add, else subtracts? Call it editPrizePool?
+        if (raffle[_week].unclaimed > prizePool) return pauseContract(3); // now a double check, is this bad?
+        modifyPrizePool(false, raffle[_week].unclaimed);
         setWithdraw(_week, true);
         emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
     }
-
 }   
