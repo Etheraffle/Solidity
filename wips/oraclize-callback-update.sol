@@ -35,8 +35,7 @@ contract OraclizeUpdate {
      *          the Oraclize or Etheraffle address.
      *
      */
-    modifier onlyOraclize() 
-    {
+    modifier onlyOraclize() {
         require(msg.sender == oraclize_cbAddress() || msg.sender == etheraffle);
         _;
     }
@@ -50,13 +49,7 @@ contract OraclizeUpdate {
      * @param   _result  The result of the api call.
      *
      */
-    function __callback
-    (
-        bytes32 _myID, 
-        string _result
-    )
-        onlyIfNotPaused onlyOraclize 
-    {
+    function __callback(bytes32 _myID, string _result) onlyIfNotPaused onlyOraclize {
         emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
         qID[_myID].isRandom ? randomCallback(_myID, _result) : apiCallback(_myID, _result);
     }
@@ -74,13 +67,7 @@ contract OraclizeUpdate {
      * @param   _result     The result of the Oraclize query
      *
      */
-    function randomCallback
-    (
-        bytes32 _myID, 
-        string _result
-    )
-        onlyOraclize 
-    {
+    function randomCallback(bytes32 _myID, string _result) onlyOraclize {
         require(raffle[qID[_myID].weekNo].winNums.length == 0);
         reclaimUnclaimed();
         disburseFunds(qID[_myID].weekNo);
@@ -100,13 +87,7 @@ contract OraclizeUpdate {
      * @param   _result     The result of the Oraclize query
      *
      */
-    function apiCallback
-    (
-        bytes32 _myID, 
-        string _result
-    )
-        onlyOraclize 
-    {
+    function apiCallback(bytes32 _myID, string _result) onlyOraclize {
         require(raffle[qID[_myID].weekNo].winAmts.length == 0);
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
@@ -123,13 +104,7 @@ contract OraclizeUpdate {
      * @param   _weekNo     Raffle number the call is being made on behalf of.
      *
      */
-    function getQueryString
-    (
-        bool _isRandom, 
-        uint _weekNo
-    )
-        onlyOraclize returns (string) 
-    {
+    function getQueryString(bool _isRandom, uint _weekNo) onlyOraclize returns (string) {
         return _isRandom 
                ? strConcat(randomStr1, uint2str(_weekNo), randomStr2)
                : strConcat(apiStr1, uint2str(_weekNo), apiStr2);
@@ -152,16 +127,7 @@ contract OraclizeUpdate {
      *                      recursively.
      *
      */
-    function sendQuery
-    (
-        uint _delay, 
-        string _str, 
-        uint _weekNo, 
-        bool _isRandom, 
-        bool _isManual
-    )
-        onlyOraclize 
-    {
+    function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) onlyOraclize {
         bytes32 query = oraclize_query(_delay, "nested", _str, gasAmt);
         qID[query].weekNo   = _weekNo;
         qID[query].isRandom = _isRandom;
@@ -190,16 +156,7 @@ contract OraclizeUpdate {
      * @param   _status     The desired paused status of the contract.
      *
      */
-    function manuallyMakeOraclizeCall
-    (
-        uint _week,
-        uint _delay,
-        bool _isRandom,
-        bool _isManual,
-        bool _status
-    )
-        onlyEtheraffle external
-    {
+    function manuallyMakeOraclizeCall(uint _week,uint _delay,bool _isRandom,bool _isManual,bool _status) onlyEtheraffle external {
         paused = _status;
         sendQuery(_delay, getQueryString(_isRandom, _week), _week, _isRandom, _isManual);
     }
@@ -221,15 +178,7 @@ contract OraclizeUpdate {
      *                      turned on or off depending on caller's requirements.
      *
      */
-    function manuallyEditQID
-	(
-		bytes32 _ID, 
-		uint    _weekNo, 
-		bool    _isRandom, 
-		bool    _isManual
-	) 
-		onlyEtheraffle external 
-	{
+    function manuallyEditQID(bytes32 _ID, uint _weekNo, bool _isRandom, bool _isManual) onlyEtheraffle external {
 		qID[_ID].weekNo    = _weekNo;
         qID[_ID].isRandom  = _isRandom;
         qID[_ID].isManual  = _isManual;
