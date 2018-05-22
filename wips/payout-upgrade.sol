@@ -103,14 +103,9 @@ contract PayoutUpgrade {
         if (raffle[_week].unclaimed > prizePool) return pauseContract(3); // now a double check, is this bad?
         modifyPrizePool(false, raffle[_week].unclaimed);
         setWithdraw(_week, true);
-        
-        // Need to sort this event now too - don't forget the front end!!
-
-        emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
-
-        
+        emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, raffle[_week].unclaimed, now);
     }
 
-    event LogPrizePoolsUpdated(uint newMainPrizePool, uint indexed forRaffle, uint unclaimedPrizePool, uint threeMatchWinAmt, uint fourMatchWinAmt, uint fiveMatchWinAmt, uint sixMatchwinAmt, uint atTime);
+    event LogPrizePoolsUpdated(uint newMainPrizePool, uint indexed forRaffle, uint unclaimedPrizePool, uint[] winningAmounts, uint atTime);
 
 }   
