@@ -19,9 +19,9 @@
      * @dev     Function to enter a raffle. Checks for correct ticket price.
      *          Only callable when the contract is not paused.
      *
-     * @param _cNums    Ordered array of entrant's six selected numbers.
+     * @param   _cNums  Ordered array of entrant's six selected numbers.
      *
-     * @param _affID    Affiliate ID of the source of this entry.
+     * @param   _affID  Affiliate ID of the source of this entry.
      *
      */
     function enterRaffle(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
@@ -32,7 +32,7 @@
      * @dev     Checks that a raffle struct has a ticket price set and whether 
      *          the caller's msg.value is enough to cover that price.
      *
-     * @param _week     Week number for raffle in question.
+     * @param   _week   Week number for raffle in question.
      *
      */
     function validTktPrice(uint _week) internal view returns (bool) {
@@ -47,11 +47,11 @@
      *          contract is not paused. In the event of a win, only the 
      *          onBehalfOf address can claim it.
      *  
-     * @param _cNums        Ordered array of entrant's six selected numbers.
+     * @param   _cNums        Ordered array of entrant's six selected numbers.
      *
-     * @param _affID        Affiliate ID of the source of this entry.
+     * @param   _affID        Affiliate ID of the source of this entry.
      *
-     * @param _onBehalfOf   The address to be entered on behalf of.
+     * @param   _onBehalfOf   The address to be entered on behalf of.
      *
      */
     function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable public onlyIfNotPaused {
@@ -65,9 +65,9 @@
      *          freeEntries variable in the raffle struct then purchases the
      *          ticket.
      *
-     * @param _cNums    Ordered array of entrant's six selected numbers.
+     * @param   _cNums    Ordered array of entrant's six selected numbers.
      *
-     * @param _affID    Affiliate ID of the source of this entry.
+     * @param   _affID    Affiliate ID of the source of this entry.
      *
      */
     function enterFreeRaffle(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
@@ -79,9 +79,9 @@
      * @dev     Decrement an addresses FreeLOT token holdings by a specified 
      *          amount.
      *
-     * @param _address  The address owning the FreeLOT token(s)
+     * @param   _address  The address owning the FreeLOT token(s)
      *
-     * @param _amt      The amount of FreeLOT to destroy.
+     * @param   _amt      The amount of FreeLOT to destroy.
      *
      */
     function decrementFreeLOT(address _address, uint _amt) internal {
@@ -94,13 +94,13 @@
      *          price to the prize pool and stores a hash of the entrants chosen 
      *          numbers before logging the purchase.   
      *
-     * @param _cNums       Array of users selected numbers.
+     * @param   _cNums      Array of users selected numbers.
      *
-     * @param _entrant     Entrant's ethereum address.
+     * @param   _entrant    Entrant's ethereum address.
      *
-     * @param _value       The ticket purchase price.
+     * @param   _value      The ticket purchase price.
      *
-     * @param _affID       Affiliate ID of the source of this entry.
+     * @param   _affID      Affiliate ID of the source of this entry.
      *
      */
     function buyTicket(uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
@@ -153,7 +153,7 @@
      *          pass in order to qualify as valid. Ensures that there are six 
      *          numbers, in ascending order, between one and 49.
      *
-     * @param _cNums    Array of a ticket's proposed numbers in question.
+     * @param   _cNums  Array of a ticket's proposed numbers in question.
      *
      */
     function validNumbers(uint[] _cNums) internal pure returns (bool) {
@@ -174,9 +174,9 @@
      *          decremented. In which latter case, it requires the minuend 
      *          is smaller than the subtrahend.  
      *
-     * @param _bool     Boolean signifying addtion or subtraction. 
+     * @param   _bool   Boolean signifying addtion or subtraction. 
      *
-     * @param _amt      Amount to modify the prize pool by.
+     * @param   _amt    Amount to modify the prize pool by.
      *
      */
     function modifyPrizePool(bool _bool, uint _amt) private {
@@ -198,9 +198,9 @@
      *          to withdraw whatever winnings they are owed. Function can be 
      *          paused via the modifier function "onlyIfNotPaused"
      *
-     * @param _week        Week number of the raffle the winning entry is from.
+     * @param   _week       Week number of the raffle the winning entry is from.
      *
-     * @param _entryNum    The entrant's entry number into this raffle.
+     * @param   _entryNum   The entrant's entry number into this raffle.
      *
      */
     function withdrawWinnings(uint _week, uint _entryNum, uint[] _cNums) onlyIfNotPaused external {
@@ -214,13 +214,13 @@
      *          for withdraw before invalidating the ticket, deducting the win 
      *          from the unclaimed prizepool and finally transferring the winnings.
      *
-     * @param _week         Week number for raffle in question.
+     * @param   _week       Week number for raffle in question.
      *
-     * @param _entryNum     Entry number for ticket in question.
+     * @param   _entryNum   Entry number for ticket in question.
      *
-     * @param _matches      Number of matches ticket make to winning numbers.
+     * @param   _matches    Number of matches ticket make to winning numbers.
      *
-     * @param _entrant      Address of the ticket holder.
+     * @param   _entrant    Address of the ticket holder.
      *
      */
     function payWinnings(uint _week, uint _entryNum, , uint _matches, address _entrant) internal {
@@ -247,11 +247,11 @@
      *          false, decremented. In which latter case, it requires the 
      *          minuend is smaller than the subtrahend.   
      *
-     * @param _bool     Boolean signifying addtion or subtraction.
+     * @param   _bool     Boolean signifying addtion or subtraction.
      *
-     * @param _week     Week number for raffle in question.
+     * @param   _week     Week number for raffle in question.
      *
-     * @param _amt      Amount unclaimed is to be modified by.
+     * @param   _amt      Amount unclaimed is to be modified by.
      *
      */
     function modifyUnclaimed(bool _bool, uint _week, uint _amt) private {
@@ -263,9 +263,9 @@
      *          being set in the raffle struct and contract balance that 
      *          need to be passed before withdrawal can be processed.
      *
-     * @param _week     Week number for raffle in question.
+     * @param   _week     Week number for raffle in question.
      *
-     * @param _matches  Number of matches the entry in question has made.
+     * @param   _matches  Number of matches the entry in question has made.
      *
      */
     function eligibleForWithdraw(uint _week, uint _matches) internal view returns (bool) {
@@ -279,13 +279,13 @@
      * @dev     Compares hash of provided entry numbers to previously bought 
      *          ticket's hashed entry numbers.
      *
-     * @param _week         Week number for raffle in question.
+     * @param   _week       Week number for raffle in question.
      *
-     * @param _entryNum     Entry number in question.
+     * @param   _entryNum   Entry number in question.
      *
-     * @param _cNums        Propsed entry numbers for entry in question.
+     * @param   _cNums      Propsed entry numbers for entry in question.
      *
-     * @param _entrant      Address of entrant in question.
+     * @param   _entrant    Address of entrant in question.
      *
      */
     function validEntry(uint _week, uint _entryNum, uint[] _cNums, address _entrant) view internal returns (bool) {
@@ -295,11 +295,11 @@
      * @dev     Function zeroes the previously stored hash of an entrant's 
      *          ticket's chosen numbers.
      *
-     * @param _week         Week number for raffle in question.
+     * @param   _week       Week number for raffle in question.
      *
-     * @param _entrant      Address of the entrant in question.
+     * @param   _entrant    Address of the entrant in question.
      *
-     * @param _entryNum     Entry number in question.
+     * @param   _entryNum   Entry number in question.
      *
      */
     function invalidateEntry(uint _week, address _entrant, uint _entryNum) private {
@@ -309,7 +309,7 @@
      * @dev     Various temporal requirements plus struct setup requirements 
      *          that need to be met before a prize withdrawal can be processed.
      *
-     * @param _week     Week number for the raffle in question.
+     * @param   _week   Week number for the raffle in question.
      *
      */
     function openForWithdraw(uint _week) view internal returns (bool) {
@@ -322,13 +322,13 @@
         );
     }
     /**
-     * @dev   Function compares array of entrant's 6 chosen numbers to
-     *        the raffle in question's winning numbers and returns the 
-     *        number of matches.
+     * @dev     Function compares array of entrant's 6 chosen numbers to
+     *          the raffle in question's winning numbers and returns the 
+     *          number of matches.
      *
-     * @param _cNums      Array of entrant's chosen numbers 
+     * @param   _cNums  Array of entrant's chosen numbers 
      *
-     * @param _wNums      Array of winning numbers
+     * @param   _wNums  Array of winning numbers
      *
      */
     function getMatches(uint[] _cNums, uint[] _wNums) pure internal returns (uint) {
