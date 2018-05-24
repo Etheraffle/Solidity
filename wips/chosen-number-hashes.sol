@@ -240,7 +240,7 @@
      * @param   _amt        Amount of Wei to transfer.
      *
      */
-    function transferWinnings(address _address, uint _amt) internal {
+    function transferWinnings(address _address, uint _amt) private {
         _address.transfer(_amt);
     }
     /**
