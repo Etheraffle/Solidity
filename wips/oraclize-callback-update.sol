@@ -181,7 +181,7 @@ contract OraclizeUpdate {
      * @param   _status     The desired paused status of the contract.
      *
      */
-    function manuallyMakeOraclizeCall(uint _week,uint _delay,bool _isRandom,bool _isManual,bool _status) onlyEtheraffle external {
+    function manuallyMakeOraclizeCall(uint _week, uint _delay, bool _isRandom, bool _isManual, bool _status) onlyEtheraffle external {
         paused = _status;
         sendQuery(_delay, getQueryString(_isRandom, _week), _week, _isRandom, _isManual);
     }
