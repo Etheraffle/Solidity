@@ -76,8 +76,8 @@
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
 
-    function decrementFreeLOT(address _entrant, uint _amt) internal {
-        freeLOT.destroy(_entrant, _amt);
+    function decrementFreeLOT(address _address, uint _amt) internal {
+        freeLOT.destroy(_address, _amt);
     }
     /**
      * @dev     Internal function that purchases raffle tickets. Requires the 
