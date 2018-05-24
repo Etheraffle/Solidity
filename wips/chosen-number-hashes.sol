@@ -98,7 +98,18 @@
         raffle[week].entries[_entrant].push(keccak256(_cNums);
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
-
+    /**
+     * @dev     Stores a ticket purchase by hashing the chosen numbers 
+     *          and pushing them into an array mapped to the user's 
+     *          address in the relevant raffle's struct.
+     *
+     * @param   _week       Week number for raffle in question.
+     *
+     * @param   _entrant    The entrant's address.
+     *
+     * @param   _cNums      The entrant's chosen numbers.
+     *
+     */
     function storeEntry(uint _week, address _entrant, uint[] _cNums) internal {
         raffle[_week].entries[_entrant].push(keccak256(_cNums));
     }
