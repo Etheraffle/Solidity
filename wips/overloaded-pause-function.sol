@@ -6,7 +6,11 @@
      *
      * @param _id    A uint to identify the caller of this function.
      */
-    function pauseContract(uint _id) internal {
-      paused = true;
+    function pauseContract(bool _status, uint _id) internal {
+      paused = _status;
       emit LogFunctionsPaused(_id, now);
+    }
+
+    function pauseContract(bool _status) internal {
+      paused = _status;
     }
