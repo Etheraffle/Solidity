@@ -51,7 +51,9 @@ contract OraclizeUpdate {
      */
     function __callback(bytes32 _myID, string _result) onlyIfNotPaused onlyOraclize {
         emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
-        qID[_myID].isRandom ? randomCallback(_myID, _result) : apiCallback(_myID, _result);
+        qID[_myID].isRandom 
+            ? randomCallback(_myID, _result) 
+            : apiCallback(_myID, _result);
     }
     /**
      * @dev     Called when a random.org api callback comes in. It first 
