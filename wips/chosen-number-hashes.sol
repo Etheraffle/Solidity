@@ -99,8 +99,16 @@
         raffle[week].entries[_entrant].push(keccak256(_cNums);
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
-
-
+    /**
+     * @dev     Increments the number of entries in a raffle struct. 
+     *          Increments free entries if bool passed is true, else 
+     *          normal entries otherwise.
+     *
+     * @param   _week   Week number for raffle in question
+     *
+     * @param   _free   Whether it is a free entry or not.
+     *
+     */
     function incremementEntries(uint _week, bool _free) internal {
         _free ? raffle[week].freeEntries++ : raffle[_week].numEntries++;
     }
