@@ -76,6 +76,16 @@ contract OraclizeUpdate {
         sendQuery(matchesDelay, getQueryString(false, qID[_myID].weekNo), qID[_myID].weekNo, false, false);
     }
     /**
+     * @dev     Returns bool depending on whether the winning numbers
+     *          have been set in the struct or not.
+     *
+     * @param   _week   Week number for raffle in question.
+     *
+     */
+    function winNumbersSet(uint _week) internal returns (bool) {
+        return raffle[_week].winNums.length > 0;
+    }
+    /**
      * @dev     Called when the Etheraffle API callback is received. It sets 
      *          up the next raffle's struct, calculates this raffle's payouts 
      *          then makes the next Oraclize query to call the Random.org api.
