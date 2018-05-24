@@ -206,12 +206,16 @@
     function withdrawWinnings(uint _week, uint _entryNum, uint[] _cNums) onlyIfNotPaused external {
         require (validEntry(_week, _entryNum, _cNums, msg.sender) && openForWithdraw(_week));
         uint matches = getMatches(_cNums, raffle[_week].winNums);
-        if (matches == 2) return winFreeGo(_week, _entryNum);
+        require (matches >= 2);
+        matches == 2 ? winFreeGo(_week, _entryNum) : payWinnings(_week, _entryNum, matches, msg.sender);
+    }
+
+    function payWinnings(uint _week, uint _entryNum, , uint _matches, address _entrant) internal {
         require (eligibleForWithdraw(_week, matches));
-        invalidateEntry(_week, msg.sender, _entryNum);
+        invalidateEntry(_week, _entrant, _entryNum);
         modifyUnclaimed(false, _week, raffle[_week].winAmts[_matches - 3]);
-        transferWinnings(msg.sender, raffle[_week].winAmts[matches - 3]);
-        emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
+        transferWinnings(_entrant, raffle[_week].winAmts[matches - 3]);
+        emit LogWithdraw(_week, _entrant, _entryNum, _matches, raffle[_week].winAmts[_matches - 3], now);
     }
     /**
      * @dev     Tranfers an amount of ETH to an address.
