@@ -28,7 +28,7 @@
      *
 	 */
    	function setupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) internal {
-        raffle[_week].tktPrice  = _tktPrice
+        raffle[_week].tktPrice  = _tktPrice;
         raffle[_week].timeStamp = _timeStamp;
    	}
 	/**
