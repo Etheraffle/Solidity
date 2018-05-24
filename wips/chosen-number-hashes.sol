@@ -75,6 +75,10 @@
         incremementEntries(week, true);
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
+
+    function decrementFreeLOT(address _entrant, uint _amt) internal {
+        freeLOT.destroy(_entrant, _amt);
+    }
     /**
      * @dev     Internal function that purchases raffle tickets. Requires the 
      *          raffle be open for entry and the chosen numbers be valid. 
