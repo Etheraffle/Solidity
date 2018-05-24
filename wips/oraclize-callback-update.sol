@@ -205,10 +205,8 @@ contract OraclizeUpdate {
      *                      turned on or off depending on caller's requirements.
      *
      */
-    function manuallyEditQID(bytes32 _ID, uint _weekNo, bool _isRandom, bool _isManual) onlyEtheraffle external {
-		qID[_ID].weekNo    = _weekNo;
-        qID[_ID].isRandom  = _isRandom;
-        qID[_ID].isManual  = _isManual;
+    function manuallyModifyQID(bytes32 _ID, uint _weekNo, bool _isRandom, bool _isManual) onlyEtheraffle external {
+        modifyQIDStruct(_ID, _weekNo, _isRandom, _isManual);
     }
     /**
      * @dev     Modifies a query ID struct with the passed in information. 
