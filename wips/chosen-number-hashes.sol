@@ -71,7 +71,7 @@
      *
      */
     function enterFreeRaffle(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
-        freeLOT.destroy(msg.sender, 1);
+        decrementFreeLOT(msg.sender, 1);
         incremementEntries(week, true);
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
