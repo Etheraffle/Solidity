@@ -75,7 +75,15 @@
         incremementEntries(week, true);
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
-
+    /**
+     * @dev     Decrement an addresses FreeLOT token holdings by a specified 
+     *          amount.
+     *
+     * @param _address  The address owning the FreeLOT token(s)
+     *
+     * @param _amt      The amount of FreeLOT to destroy.
+     *
+     */
     function decrementFreeLOT(address _address, uint _amt) internal {
         freeLOT.destroy(_address, _amt);
     }
