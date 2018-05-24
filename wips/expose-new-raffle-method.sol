@@ -12,7 +12,7 @@
      */
     function newRaffle() internal {
         uint newWeek = getWeek();
-        if (newWeek == week) return pauseContract(4);
+        if (newWeek == week) return pauseContract(true, 4);
         setWeek(newWeek);
         setupRaffleStruct(newWeek, tktPrice, BIRTHDAY + (newWeek * WEEKDUR));
     }
