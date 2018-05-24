@@ -92,8 +92,11 @@ contract OraclizeUpdate {
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
         if (qID[_myID].isManual) return;
-        uint delay = (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
-        sendQuery(delay, getQueryString(true, getWeek()), getWeek(), true, false);
+        sendQuery(getNextDeadline(), getQueryString(true, getWeek()), getWeek(), true, false);
+    }
+
+    function getNextDeadline() internal view returns (uint) {
+        return (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
     }
     /**
      * @dev     Prepares the correct Oraclize query string using Oraclize's 
