@@ -156,9 +156,7 @@ contract OraclizeUpdate {
      */
     function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) onlyOraclize {
         bytes32 query = oraclize_query(_delay, "nested", _str, gasAmt);
-        qID[query].weekNo   = _weekNo;
-        qID[query].isRandom = _isRandom;
-        qID[query].isManual = _isManual;
+        modifyQIDStruct(query, _weekNo, _isRandom, _isManual);
         emit LogQuerySent(query, delay, now);
     }
     /**
