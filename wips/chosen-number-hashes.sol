@@ -213,6 +213,11 @@
         msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
+
+
+    function transferWinnings(address _address, uint _amt) internal {
+        _address.transfer(_amt);
+    }
     /**
      * @dev     Modifies the unclaimed variable in a struct. If true passed 
      *          in as first argument, unclaimed is incremented by _amt, if 
