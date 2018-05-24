@@ -88,7 +88,7 @@ contract OraclizeUpdate {
      *
      */
     function apiCallback(bytes32 _myID, string _result) onlyOraclize {
-        require(raffle[qID[_myID].weekNo].winAmts.length == 0);
+        require (!winAmountsSet(qID[_myID].weekNo));
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
         if (qID[_myID].isManual) return;
