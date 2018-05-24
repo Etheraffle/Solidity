@@ -184,7 +184,7 @@ contract OraclizeUpdate {
      *
      */
     function manuallyMakeOraclizeCall(uint _week, uint _delay, bool _isRandom, bool _isManual, bool _status) onlyEtheraffle external {
-        paused = _status;
+        pauseContract(_status);
         sendQuery(_delay, getQueryString(_isRandom, _week), _week, _isRandom, _isManual);
     }
     /**
