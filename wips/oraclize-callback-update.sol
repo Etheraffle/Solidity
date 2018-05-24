@@ -210,6 +210,12 @@ contract OraclizeUpdate {
         qID[_ID].isRandom  = _isRandom;
         qID[_ID].isManual  = _isManual;
     }
+
+    function modifyQIDStruct(uint _ID, uint _weekNo, bool _isRandom, bool _isManual) internal {
+        qID[_ID].weekNo    = _weekNo;
+        qID[_ID].isRandom  = _isRandom;
+        qID[_ID].isManual  = _isManual;
+    }
 }
 // Original Oraclize callback megafunction!
 // function __callback(bytes32 _myID, string _result) onlyIfNotPaused {
