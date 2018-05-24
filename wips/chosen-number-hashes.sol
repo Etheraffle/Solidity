@@ -95,7 +95,7 @@
         require (raffleOpenForEntry() && validNumbers(_cNums));
         incremementEntries(week, false);
         addToPrizePool(_value);
-        raffle[week].entries[_entrant].push(keccak256(_cNums);
+        storeEntry(week, _entrant, _cNums);
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
     /**
