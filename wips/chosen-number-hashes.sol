@@ -207,7 +207,9 @@
         require (validEntry(_week, _entryNum, _cNums, msg.sender) && openForWithdraw(_week));
         uint matches = getMatches(_cNums, raffle[_week].winNums);
         require (matches >= 2);
-        matches == 2 ? winFreeGo(_week, _entryNum) : payWinnings(_week, _entryNum, matches, msg.sender);
+        matches == 2 
+            ? winFreeGo(_week, _entryNum) 
+            : payWinnings(_week, _entryNum, matches, msg.sender);
     }
     /**
      * @dev     If ticket wins ETH this function first checks the eligibility 
