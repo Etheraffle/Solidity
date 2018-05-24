@@ -1,13 +1,15 @@
-//WRITE OVERLOADED SET PAUSE FUNCTION, ONE WITHOUT THE ID PARAM AND ONE WITH?!?!?
-
     /**
-     * @dev  To pause the contract's functions should the need arise.
-     *       Logs an event of the pausing.
+     * @dev     Sets the paused status of the contract to the bool 
+     *          passed in. Logs an event with a uint identifying the 
+     *          reason for pausing the contract to the front-end 
+     *          event watcher.
      *
-     * @param _id    A uint to identify the caller of this function.
+     * @param   _status Desired pause status.
+     *
+     * @param   _id     Uint identifing the reason function was called.
      */
     function pauseContract(bool _status, uint _id) internal {
-      paused = _status;
+      pauseContract(_status);
       emit LogFunctionsPaused(_id, now);
     }
     /**
