@@ -210,7 +210,7 @@
         require (eligibleForWithdraw(_week, matches));
         invalidateEntry(_week, msg.sender, _entryNum);
         modifyUnclaimed(false, _week, raffle[_week].winAmts[_matches - 3]);
-        msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
+        transferWinnings(msg.sender, raffle[_week].winAmts[matches - 3]);
         emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
     }
     /**
