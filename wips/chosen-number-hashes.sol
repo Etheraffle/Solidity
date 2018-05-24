@@ -93,10 +93,16 @@
      */
     function buyTicket (uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
         require (raffleOpenForEntry() && validNumbers(_cNums));
-        raffle[week].numEntries++;
+        // raffle[week].numEntries++; //func out
+        incremementEntries(week, false);
         addToPrizePool(_value);
         raffle[week].entries[_entrant].push(keccak256(_cNums);
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
+    }
+
+
+    function incremementEntries(uint _week, bool _free) internal {
+        _free ? raffle[week].freeEntries++ : raffle[_week].numEntries++;
     }
     /**
      * @dev     Temporal & raffle struct setup requirements that need to be 
