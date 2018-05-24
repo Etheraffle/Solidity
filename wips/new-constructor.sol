@@ -24,8 +24,9 @@ contract NewConstructor {
         week         = getWeek();
         ethRelief    = _ethRelief;
         freeLOT      = FreeLOTInterface(_freeLOT);
-        raffle[week].timeStamp = (week * WEEKDUR) + BIRTHDAY;
-        raffle[week].tktPrice = 2500000000000000;
+        setupRaffleStruct(week, 2500000000000000, (week * WEEKDUR) + BIRTHDAY);
+        // raffle[week].timeStamp = (week * WEEKDUR) + BIRTHDAY;
+        // raffle[week].tktPrice = 2500000000000000;
         // uint delay   = (week * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
         // bytes32 query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
         // qID[query].weekNo = week;
