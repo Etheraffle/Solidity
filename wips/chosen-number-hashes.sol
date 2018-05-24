@@ -72,7 +72,7 @@
      */
     function enterFreeRaffle(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
         freeLOT.destroy(msg.sender, 1);
-        raffle[week].freeEntries++;
+        incremementEntries(week, true);
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
@@ -93,7 +93,6 @@
      */
     function buyTicket (uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
         require (raffleOpenForEntry() && validNumbers(_cNums));
-        // raffle[week].numEntries++; //func out
         incremementEntries(week, false);
         addToPrizePool(_value);
         raffle[week].entries[_entrant].push(keccak256(_cNums);
