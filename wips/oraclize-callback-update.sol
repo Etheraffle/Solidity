@@ -94,7 +94,11 @@ contract OraclizeUpdate {
         if (qID[_myID].isManual) return;
         sendQuery(getNextDeadline(), getQueryString(true, getWeek()), getWeek(), true, false);
     }
-
+    /**
+     * @dev     Returns the number of seconds until the next occurring 
+     *          raffle deadline.
+     *
+     */
     function getNextDeadline() internal view returns (uint) {
         return (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
     }
