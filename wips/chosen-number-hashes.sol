@@ -209,7 +209,20 @@
         require (matches >= 2);
         matches == 2 ? winFreeGo(_week, _entryNum) : payWinnings(_week, _entryNum, matches, msg.sender);
     }
-
+    /**
+     * @dev     If ticket wins ETH this function first checks the eligibility 
+     *          for withdraw before invalidating the ticket, deducting the win 
+     *          from the unclaimed prizepool and finally transferring the winnings.
+     *
+     * @param _week         Week number for raffle in question.
+     *
+     * @param _entryNum     Entry number for ticket in question.
+     *
+     * @param _matches      Number of matches ticket make to winning numbers.
+     *
+     * @param _entrant      Address of the ticket holder.
+     *
+     */
     function payWinnings(uint _week, uint _entryNum, , uint _matches, address _entrant) internal {
         require (eligibleForWithdraw(_week, matches));
         invalidateEntry(_week, _entrant, _entryNum);
