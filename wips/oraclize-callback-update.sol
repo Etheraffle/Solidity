@@ -94,7 +94,13 @@ contract OraclizeUpdate {
         if (qID[_myID].isManual) return;
         sendQuery(getNextDeadline(), getQueryString(true, getWeek()), getWeek(), true, false);
     }
-    
+    /**
+     * @dev     Returns bool depending on whether the win amounts have 
+     *          been set in the struct or not.
+     *
+     * @param   _week   Week number for raffle in question.
+     *
+     */
     function winAmountsSet(uint _week) internal returns (bool) {
         return raffle[_week].winAmts.length > 0;
     }
