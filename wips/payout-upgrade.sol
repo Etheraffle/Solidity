@@ -90,7 +90,7 @@ contract PayoutUpgrade {
      */
     function setPayOuts(uint _week, string _result) internal {
         string[] memory numWinnersStr = stringToArray(_result);
-        if (numWinnersStr.length < 4) return pauseContract(2);
+        if (numWinnersStr.length < 4) return pauseContract(true, 2);
         for (uint i = 0; i < 4; i++) {
             uint amt = 0;
             uint numWinners = parseInt(numWinnersStr[i]);
@@ -100,7 +100,7 @@ contract PayoutUpgrade {
             }
             raffle[_week].winAmts.push(amt);
         }
-        if (raffle[_week].unclaimed > prizePool) return pauseContract(3); // now a double check, is this bad?
+        if (raffle[_week].unclaimed > prizePool) return pauseContract(true, 3); // now a double check, is this bad?
         modifyPrizePool(false, raffle[_week].unclaimed);
         setWithdraw(_week, true);
         emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, raffle[_week].unclaimed, now);
