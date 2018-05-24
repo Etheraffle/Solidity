@@ -103,7 +103,7 @@
      * @param _affID       Affiliate ID of the source of this entry.
      *
      */
-    function buyTicket (uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
+    function buyTicket(uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
         require (raffleOpenForEntry() && validNumbers(_cNums));
         incremementEntries(week, false);
         addToPrizePool(_value);
@@ -158,7 +158,7 @@
      */
     function validNumbers(uint[] _cNums) internal pure returns (bool) {
         return (
-            _cNums.length == 6 &&
+            _cNums.length == 6    &&
             0         < _cNums[0] &&
             _cNums[0] < _cNums[1] &&
             _cNums[1] < _cNums[2] &&
