@@ -210,7 +210,21 @@ contract OraclizeUpdate {
         qID[_ID].isRandom  = _isRandom;
         qID[_ID].isManual  = _isManual;
     }
-
+    /**
+     * @dev     Modifies a query ID struct with the passed in information. 
+     *          (Or creates it if struct doesn't exist yet...)
+     *
+     * @param   _ID         Bytes32 hash identifier for the struct.
+     *
+     * @param   _weekNo     Week number relevant to struct.
+     *
+     * @param   _isRandom   Whether the struct refers to a Random.org api call.
+     *
+     * @param   _isManual   Whether the struct was manually created or not.
+     *                      If manual, the Oraclize callback returns before the 
+     *                      next recursive Oraclize query is sent.
+     *
+     */
     function modifyQIDStruct(uint _ID, uint _weekNo, bool _isRandom, bool _isManual) internal {
         qID[_ID].weekNo    = _weekNo;
         qID[_ID].isRandom  = _isRandom;
