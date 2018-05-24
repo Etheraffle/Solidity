@@ -223,7 +223,7 @@ contract OraclizeUpdate {
      *                      next recursive Oraclize query is sent.
      *
      */
-    function modifyQIDStruct(uint _ID, uint _weekNo, bool _isRandom, bool _isManual) internal {
+    function modifyQIDStruct(bytes32 _ID, uint _weekNo, bool _isRandom, bool _isManual) internal {
         qID[_ID].weekNo    = _weekNo;
         qID[_ID].isRandom  = _isRandom;
         qID[_ID].isManual  = _isManual;
