@@ -13,7 +13,13 @@
         modifyUnclaimed(false, old, amt);
         emit LogReclaim(old, amt, now);
     }
-
+    /**
+     * @dev     Returns the unclaimed prize pool sequestered in a raffle's
+     *          struct.
+     *
+     * @param   _week   Week number for raffle in question.
+     *
+     */
     function getUnclaimed(uint _week) public view returns (uint) {
         return raffle[_week].unclaimed;
     }
