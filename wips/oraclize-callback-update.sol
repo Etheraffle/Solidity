@@ -151,7 +151,7 @@ contract OraclizeUpdate {
      * @param   _weekNo     Raffle number the call is being made on behalf of.
      *
      */
-    function getQueryString(bool _isRandom, uint _weekNo) onlyOraclize returns (string) {
+    function getQueryString(bool _isRandom, uint _weekNo) internal onlyOraclize returns (string) {
         return _isRandom 
                ? strConcat(randomStr1, uint2str(_weekNo), randomStr2)
                : strConcat(apiStr1, uint2str(_weekNo), apiStr2);
