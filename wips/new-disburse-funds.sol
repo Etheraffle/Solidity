@@ -13,7 +13,7 @@
         modifyPrizePool(false, cost);
         uint profit;
         if (raffle[_week].numEntries > 0) {
-            profit = ((raffle[_week].numEntries - raffle[_week].freeEntries) * tktPrice * take) / 1000;
+            profit = calcProfit(_week);
             prizePool -= profit;
             uint half = profit / 2;
             ReceiverInterface(disburseAddr).receiveEther.value(half)();
@@ -23,6 +23,15 @@
             return;
         }
         emit LogFundsDisbursed(_week, cost, profit, 0, now);
+    }
+    /**
+     * @dev     Calculates profits earnt from a raffle.
+     *
+     * @param   _week   Week number for raffle in question.
+     *
+     */
+    function calcProfit(uint _week) internal view returns (uint) {
+        return ((raffle[_week].numEntries - raffle[_week].freeEntries) * tktPrice * take) / 1000;
     }
     /**
      * @dev     Returns the cost of the Oraclize api calls
