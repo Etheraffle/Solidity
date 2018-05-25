@@ -83,7 +83,7 @@ contract OraclizeUpdate {
      * @param   _ID     Bytes32 hash identifying the query in question.
      *
      */
-    function queryIsManual(bytes32 _ID) internal returns (bool) {
+    function queryIsManual(bytes32 _ID) internal view returns (bool) {
         return qID[_ID].isManual;
     }
     /**
@@ -93,7 +93,7 @@ contract OraclizeUpdate {
      * @param   _week   Week number for raffle in question.
      *
      */
-    function winNumbersSet(uint _week) internal returns (bool) {
+    function winNumbersSet(uint _week) internal view returns (bool) {
         return raffle[_week].winNums.length > 0;
     }
     /**
