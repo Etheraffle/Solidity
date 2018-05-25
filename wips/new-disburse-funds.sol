@@ -9,7 +9,7 @@
      */
     function disburseFunds(uint _week) internal {
         uint oracTot = 2 * oraclizeCost(); // 2 queries per draw...
-        if (oracTot > prizePool) return pauseContract(1);
+        if (oracTot > prizePool) return pauseContract(true, 1);
         prizePool -= oracTot;
         uint profit;
         if (raffle[_week].numEntries > 0) {
