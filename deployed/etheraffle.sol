@@ -25,13 +25,13 @@
  *      If you want to chat to us you have loads of options:
  *      On 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 @ 𝐡𝐭𝐭𝐩𝐬://𝐭.𝐦𝐞/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
  *      Or on 𝐓𝐰𝐢𝐭𝐭𝐞𝐫 @ 𝐡𝐭𝐭𝐩𝐬://𝐭𝐰𝐢𝐭𝐭𝐞𝐫.𝐜𝐨𝐦/𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞
- *      Or on 𝐑𝐞𝐝𝐝𝐢𝐭 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚
+ *      Or on 𝐑𝐞𝐝𝐝𝐢𝐭 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐫𝐞𝐝𝐝𝐢𝐭.𝐜𝐨𝐦
  *
  */
 pragma solidity^0.4.21;
 
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
-import "github.com/Arachnid/solidity-stringutils/strings.sol";
+import "github.com/Arachnid/solidity-stringutils/src/strings.sol";
 
 contract ReceiverInterface {
     function receiveEther() external payable {}
@@ -398,12 +398,13 @@ contract Etheraffle is usingOraclize {
         }
     }
     /**
-     * @dev   Slices a string according to specified delimiter, returning
-     *        the sliced parts in an array.
+     * @dev     Slices a string according to specified delimiter, returning
+     *          the sliced parts in an array. Courtesy of Nick Johnson via
+     *          https://github.com/Arachnid/solidity-stringutils
      *
-     * @param _string   The string to be sliced.
+     * @param   _string   The string to be sliced.
      */
-    function stringToArray(string _string) internal returns (string[]) {
+    function stringToArray(string _string) internal pure returns (string[]) {
         var str    = _string.toSlice();
         var delim  = ",".toSlice();
         var parts  = new string[](str.count(delim) + 1);
