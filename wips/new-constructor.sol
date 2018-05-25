@@ -1,29 +1,17 @@
 contract NewConstructor {
     /**
-     * @dev     Constructor - sets the Etheraffle contract address &
-     *          the disbursal contract address for investors, calls
-     *          the newRaffle() function with sets the current
-     *          raffle ID global var plus sets up the first raffle's
-     *          struct with correct time stamp. Sets the withdraw
-     *          before time to a ten week period, and prepares the
-     *          initial oraclize call which will begin the recursive
-     *          function.
-     *
-     * @param   _freeLOT    The address of the Etheraffle FreeLOT special token.
-     *
-     * @param   _dsbrs      The address of the Etheraffle disbursal contract.
-     *
-     * @param   _msig       The address of the Etheraffle multisig wallet.
-     *
-     * @param   _ethRelief  The address of the EthRelief charity contract.
+     * @dev     Constructor. Sets the Etheraffle multisig address, 
+     *          the EthRelief & Disbursal contract addresses and 
+     *          instantiates the FreeLOT contract. Sets up an 
+     *          initial raffle struct.
      *
      */
-    constructor(address _freeLOT, address _dsbrs, address _msig, address _ethRelief) payable {
-        etheraffle   = _msig;
-        disburseAddr = _dsbrs;
+    constructor() payable {
         week         = getWeek();
-        ethRelief    = _ethRelief;
-        freeLOT      = FreeLOTInterface(_freeLOT);
+        etheraffle   = 0x97f535e98cf250cdd7ff0cb9b29e4548b609a0bd;
+        disburseAddr = 0xb6a5f50b5ce5909a9c75ce27fec96e5de393af61;
+        ethRelief    = 0x7ee65fe55accd9430f425379851fe768270c6699;
+        freeLOT      = FreeLOTInterface(0xc39f7bB97B31102C923DaF02bA3d1bD16424F4bb);
         setupRaffleStruct(week, 2500000000000000, (week * WEEKDUR) + BIRTHDAY);
     }
 }
