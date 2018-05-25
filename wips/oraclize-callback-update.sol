@@ -77,6 +77,9 @@ contract OraclizeUpdate {
         if (qID[_myID].isManual) return;
         sendQuery(matchesDelay, getQueryString(false, qID[_myID].weekNo), qID[_myID].weekNo, false, false);
     }
+    function queryIsManual() internal returns (bool) {
+        return qID[_ID].isManual;
+    }
     /**
      * @dev     Returns bool depending on whether the winning numbers
      *          have been set in the struct or not.
