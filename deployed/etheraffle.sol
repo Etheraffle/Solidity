@@ -782,7 +782,7 @@ contract Etheraffle is usingOraclize {
         emit LogPrizePoolAddition(msg.sender, msg.value, now);
     }
     /**
-     * @dev   Fallback function.
+     * @dev     Fallback function.
      */
     function () payable external {}
 }
