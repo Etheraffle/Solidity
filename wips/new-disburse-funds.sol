@@ -12,6 +12,7 @@
         if (cost > prizePool) return pauseContract(true, 1);
         modifyPrizePool(false, cost);
         uint profit = calcProfit(_week);
+        if (profit == 0) return LogFundsDisbursed(_week, cost, profit, 0, now); // Can't use emit keyword here
         //if zero, else disburse funds...
         // if (raffle[_week].numEntries > 0) {
         //     profit = calcProfit(_week);
@@ -23,7 +24,7 @@
         //     emit LogFundsDisbursed(_week, cost, half, disburseAddr, now);
         //     return;
         // }
-        emit LogFundsDisbursed(_week, cost, profit, 0, now);
+        
     }
     /**
      * @dev     Calculates profits earnt from a raffle. If there are 
