@@ -174,7 +174,7 @@ contract OraclizeUpdate {
      *                      recursively.
      *
      */
-    function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) onlyOraclize {
+    function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) internal onlyOraclize {
         bytes32 query = oraclize_query(_delay, "nested", _str, gasAmt);
         modifyQIDStruct(query, _weekNo, _isRandom, _isManual);
         emit LogQuerySent(query, delay, now);
