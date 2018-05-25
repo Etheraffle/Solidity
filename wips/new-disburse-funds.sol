@@ -11,29 +11,31 @@
         uint cost = getOraclizeCost();
         if (cost > prizePool) return pauseContract(true, 1);
         modifyPrizePool(false, cost);
-        uint profit;
-        if (raffle[_week].numEntries > 0) {
-            profit = calcProfit(_week);
-            modifyPrizePool(false, profit);
-            uint half = profit / 2;
-            ReceiverInterface(disburseAddr).receiveEther.value(half)();
-            ReceiverInterface(ethRelief).receiveEther.value(profit - half)();
-            emit LogFundsDisbursed(_week, cost, profit - half, ethRelief, now);
-            emit LogFundsDisbursed(_week, cost, half, disburseAddr, now);
-            return;
-        }
+        uint profit = calcProfit(_week);
+        //if zero, else disburse funds...
+        // if (raffle[_week].numEntries > 0) {
+        //     profit = calcProfit(_week);
+        //     modifyPrizePool(false, profit);
+        //     uint half = profit / 2;
+        //     ReceiverInterface(disburseAddr).receiveEther.value(half)();
+        //     ReceiverInterface(ethRelief).receiveEther.value(profit - half)();
+        //     emit LogFundsDisbursed(_week, cost, profit - half, ethRelief, now);
+        //     emit LogFundsDisbursed(_week, cost, half, disburseAddr, now);
+        //     return;
+        // }
         emit LogFundsDisbursed(_week, cost, profit, 0, now);
     }
     /**
-     * @dev     Calculates profits earnt from a raffle. If free entries 
-     *          outweigh paid entries, returns 0 (actual calc would 
-     *          underflow...)
+     * @dev     Calculates profits earnt from a raffle. If there are 
+     *          no paid entries or if free entries outweigh paid 
+     *          entries, returns 0.
      *
      * @param   _week   Week number for raffle in question.
      *
      */
     function calcProfit(uint _week) internal view returns (uint) {
-        return raffle[_week].numEntries > raffle[_week].freeEntries
+        return (raffle[_week].numEntries > 0 && 
+                raffle[_week].numEntries > raffle[_week].freeEntries)
             ? ((raffle[_week].numEntries - raffle[_week].freeEntries) * tktPrice * take) / 1000
             : 0;
     }
