@@ -29,19 +29,6 @@
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
-     * @dev     Checks that a raffle struct has a ticket price set and whether 
-     *          the caller's msg.value is enough to cover that price.
-     *
-     * @param   _week   Week number for raffle in question.
-     *
-     */
-    function validTktPrice(uint _week) internal view returns (bool) {
-        return (
-            raffle[_week].tktPrice > 0 && 
-            msg.value >= raffle[_week].tktPrice
-        );
-    }
-    /**
      * @dev     Function to enter the raffle on behalf of another address.  
      *          Checks for correct ticket price. Only callable when the 
      *          contract is not paused. In the event of a win, only the 
@@ -74,6 +61,19 @@
         decrementFreeLOT(msg.sender, 1);
         incremementEntries(week, true);
         buyTicket(_cNums, msg.sender, msg.value, _affID);
+    }
+    /**
+     * @dev     Checks that a raffle struct has a ticket price set and whether 
+     *          the caller's msg.value is enough to cover that price.
+     *
+     * @param   _week   Week number for raffle in question.
+     *
+     */
+    function validTktPrice(uint _week) internal view returns (bool) {
+        return (
+            raffle[_week].tktPrice > 0 && 
+            msg.value >= raffle[_week].tktPrice
+        );
     }
     /**
      * @dev     Decrement an addresses FreeLOT token holdings by a specified 
@@ -316,11 +316,11 @@
      */
     function openForWithdraw(uint _week) view internal returns (bool) {
         return (
+            winNumbersSet(_week) &&
+            raffle[_week].wdrawOpen &&
             raffle[_week].timeStamp > 0 &&
-            raffle[_week].winNums.length > 0 &&
-            now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7) &&
             now - raffle[_week].timeStamp < wdrawBfr &&
-            raffle[_week].wdrawOpen == true &&
+            now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7)
         );
     }
     /**
