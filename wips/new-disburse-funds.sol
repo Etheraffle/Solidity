@@ -8,7 +8,7 @@
      * @param _week   The week number of the raffle in question.
      */
     function disburseFunds(uint _week) internal {
-        uint oracTot = 2 * oraclizeCost(); // 2 queries per draw...
+        uint oracTot = getOraclizeCost();
         if (oracTot > prizePool) return pauseContract(true, 1);
         prizePool -= oracTot;
         uint profit;
@@ -25,8 +25,10 @@
         emit LogFundsDisbursed(_week, oracTot, profit, 0, now);
     }
     /**
-     * @dev     Returns the cost of an Oraclize api call.
+     * @dev     Returns the cost of the Oraclize api calls
+     *          (two per draw).
+     *
      */
-    function oraclizeCost() internal view returns (uint) {
-        return (gasAmt * gasPrc) + oracCost;
+    function getOraclizeCost() internal view returns (uint) {
+        return ((gasAmt * gasPrc) + oracCost) * 2;
     }
