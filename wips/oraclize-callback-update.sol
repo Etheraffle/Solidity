@@ -106,6 +106,15 @@ contract OraclizeUpdate {
         return qID[_ID].isManual;
     }
     /**
+     * @dev     Checks if an Oraclize query was to Random.org or not.
+     *
+     * @param   _ID     Bytes32 hash identifying the query in question.
+     *
+     */
+    function queryIsRandom(bytes32 _ID) internal view returns (bool) {
+        return qID[_ID].isRandom;
+    }
+    /**
      * @dev     Returns bool depending on whether the winning numbers
      *          have been set in the struct or not.
      *
