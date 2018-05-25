@@ -10,7 +10,7 @@
     function disburseFunds(uint _week) internal {
         uint cost = getOraclizeCost();
         if (cost > prizePool) return pauseContract(true, 1);
-        prizePool -= cost;
+        modifyPrizePool(false, cost);
         uint profit;
         if (raffle[_week].numEntries > 0) {
             profit = ((raffle[_week].numEntries - raffle[_week].freeEntries) * tktPrice * take) / 1000;
