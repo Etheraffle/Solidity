@@ -49,7 +49,7 @@ contract OraclizeUpdate {
      * @param   _result  The result of the api call.
      *
      */
-    function __callback(bytes32 _myID, string _result) onlyIfNotPaused onlyOraclize {
+    function __callback(bytes32 _myID, string _result) public onlyIfNotPaused onlyOraclize {
         emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
         queryIsRandom(_myID) 
             ? randomCallback(_myID, _result) 
@@ -69,7 +69,7 @@ contract OraclizeUpdate {
      * @param   _result     The result of the Oraclize query
      *
      */
-    function randomCallback(bytes32 _myID, string _result) onlyOraclize {
+    function randomCallback(bytes32 _myID, string _result) internal onlyOraclize {
         require(!winNumbersSet(qID[_myID].weekNo));
         reclaimUnclaimed();
         disburseFunds(qID[_myID].weekNo);
@@ -89,7 +89,7 @@ contract OraclizeUpdate {
      * @param   _result     The result of the Oraclize query
      *
      */
-    function apiCallback(bytes32 _myID, string _result) onlyOraclize {
+    function apiCallback(bytes32 _myID, string _result) internal onlyOraclize {
         require (!winAmountsSet(qID[_myID].weekNo));
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
