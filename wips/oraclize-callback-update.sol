@@ -74,7 +74,7 @@ contract OraclizeUpdate {
         reclaimUnclaimed();
         disburseFunds(qID[_myID].weekNo);
         setWinningNumbers(qID[_myID].weekNo, _result);
-        if (qID[_myID].isManual) return;
+        if (queryIsManual(_myID)) return;
         sendQuery(matchesDelay, getQueryString(false, qID[_myID].weekNo), qID[_myID].weekNo, false, false);
     }
     /**
@@ -112,7 +112,7 @@ contract OraclizeUpdate {
         require (!winAmountsSet(qID[_myID].weekNo));
         newRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
-        if (qID[_myID].isManual) return;
+        if (queryIsManual(_myID)) return;
         sendQuery(getNextDeadline(), getQueryString(true, getWeek()), getWeek(), true, false);
     }
     /**
