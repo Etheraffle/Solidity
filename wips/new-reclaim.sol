@@ -7,6 +7,13 @@
      */
     function reclaimUnclaimed() internal {
         uint old = getWeek() - 11;
-        modifyPrizePool(true, raffle[old].unclaimed);
-        emit LogReclaim(old, raffle[old].unclaimed, now);
+        uint amt = getUnclaimed(old);
+        if (amt == 0) return;
+        modifyPrizePool(true, amt);
+        modifyUnclaimed(false, old, amt);
+        emit LogReclaim(old, amt, now);
+    }
+
+    function getUnclaimed(uint _week) public view returns (uint) {
+        return raffle[_week].unclaimed;
     }
