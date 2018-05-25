@@ -1,6 +1,3 @@
-/**
- * TODO: The set payouts function can now use the setWithdraw() in here!
- */
  contract ExposeNewRaffle {
     /**
      * @dev   Function which gets current week number and if different
