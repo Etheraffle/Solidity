@@ -38,7 +38,7 @@ contract ReceiverInterface {
 }
 
 contract EtheraffleUpgrade {
-    function addToPrizePool() payable external {}
+    function manuallyAddToPrizePool() payable external {}
 }
 
 contract FreeLOTInterface {
@@ -756,7 +756,7 @@ contract Etheraffle is usingOraclize {
         apiStr1     = "";
         randomStr1  = "";
         require(this.balance >= amt);
-        EtheraffleUpgrade(_newAddr).addToPrizePool.value(amt)();
+        EtheraffleUpgrade(_newAddr).manuallyAddToPrizePool.value(amt)();
         emit LogUpgrade(_newAddr, amt, upgraded);
     }
     /**
