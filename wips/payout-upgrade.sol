@@ -63,11 +63,11 @@ contract PayoutUpgrade {
      *          splits method & the odds method, and returns the singular 
      *          prize using whichever method returned from the preceeding.
      *
-     * @param _numWinners   Number of winners in this tier
+     * @param   _numWinners   Number of winners in this tier
      *
-     * @param _i            Index this tier corresponds to in odds/splits arrays
+     * @param   _i            Index this tier corresponds to in odds/splits arrays
      *
-     * @param _week         The week number of the raffle in question.
+     * @param   _week         The week number of the raffle in question.
      */
     function calcPrize(uint _numWinners, uint _i, uint _week) internal view returns (uint) {
         return oddsTotal(_numWinners, _i, _week) <= splitsTotal(_numWinners, _i) ? oddsSingle(_i, _week) : splitsSingle(_numWinners, _i); 
