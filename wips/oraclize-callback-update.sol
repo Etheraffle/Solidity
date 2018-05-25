@@ -77,7 +77,13 @@ contract OraclizeUpdate {
         if (qID[_myID].isManual) return;
         sendQuery(matchesDelay, getQueryString(false, qID[_myID].weekNo), qID[_myID].weekNo, false, false);
     }
-    function queryIsManual() internal returns (bool) {
+    /**
+     * @dev     Checks if an Oraclize query was made manually or not.
+     *
+     * @param   _ID     Bytes32 hash identifying the query in question.
+     *
+     */
+    function queryIsManual(bytes32 _ID) internal returns (bool) {
         return qID[_ID].isManual;
     }
     /**
