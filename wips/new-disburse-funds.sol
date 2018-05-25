@@ -25,13 +25,17 @@
         emit LogFundsDisbursed(_week, cost, profit, 0, now);
     }
     /**
-     * @dev     Calculates profits earnt from a raffle.
+     * @dev     Calculates profits earnt from a raffle. If free entries 
+     *          outweigh paid entries, returns 0 (actual calc would 
+     *          underflow...)
      *
      * @param   _week   Week number for raffle in question.
      *
      */
     function calcProfit(uint _week) internal view returns (uint) {
-        return ((raffle[_week].numEntries - raffle[_week].freeEntries) * tktPrice * take) / 1000;
+        return raffle[_week].numEntries > raffle[_week].freeEntries
+            ? ((raffle[_week].numEntries - raffle[_week].freeEntries) * tktPrice * take) / 1000
+            : 0;
     }
     /**
      * @dev     Returns the cost of the Oraclize api calls
