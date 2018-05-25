@@ -65,7 +65,7 @@
     }
     /**
      * @dev     Checks that a raffle struct has a ticket price set and whether 
-     *          the caller's msg.value is enough to cover that price.
+     *          the caller's msg.value is greater than or equal to that price.
      *
      * @param   _week   Week number for raffle in question.
      *
@@ -77,7 +77,7 @@
         );
     }
     /**
-     * @dev     Decrement an addresses FreeLOT token holdings by a specified 
+     * @dev     Decrement an address' FreeLOT token holdings by a specified 
      *          amount.
      *
      * @param   _address  The address owning the FreeLOT token(s)
@@ -173,7 +173,7 @@
      * @dev     Modifies prizePool var. If true passed is in as first 
      *          argument, prizePool is incremented by _amt, if  false, 
      *          decremented. In which latter case, it requires the minuend 
-     *          is smaller than the subtrahend.  
+     *          be smaller than the subtrahend.  
      *
      * @param   _bool   Boolean signifying addtion or subtraction. 
      *
@@ -186,7 +186,8 @@
     }
     /**
      * @dev     Function allowing manual addition to the global prizepool.
-     *          Requires the caller to send ether.
+     *          Requires the caller to send ether, by which amount the 
+     *          prize pool is increased.
      *
      */
     function manuallyAddToPrizePool() payable public {
@@ -195,16 +196,18 @@
         emit LogPrizePoolAddition(msg.sender, msg.value, now);
     }
     /**
-     * @dev     Withdraw Winnings function. User calls this function in order
-     *          to withdraw whatever winnings they are owed. Function can be 
-     *          paused via the modifier function "onlyIfNotPaused"
+     * @dev     User calls this function in order to withdraw whatever 
+     *          winnings they are owed. It requires the entry be valid 
+     *          and the raffle open for withdraw. Function retrieves the
+     *          number of matches then pays out accordingly. Only callable 
+     *          if the contract is not paused.
      *
      * @param   _week       Week number of the raffle the winning entry is from.
      *
      * @param   _entryNum   The entrant's entry number into this raffle.
      *
      */
-    function withdrawWinnings(uint _week, uint _entryNum, uint[] _cNums) onlyIfNotPaused external {
+    function withdrawWinnings(uint _week, uint _entryNum, uint[] _cNums) external onlyIfNotPaused {
         require (validEntry(_week, _entryNum, _cNums, msg.sender) && openForWithdraw(_week));
         uint matches = getMatches(_cNums, raffle[_week].winNums);
         require (matches >= 2);
