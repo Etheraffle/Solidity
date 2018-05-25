@@ -16,8 +16,9 @@
         uint freeEntries;
     }
     /**
-     * @dev     Function to enter a raffle. Checks for correct ticket price.
-     *          Only callable when the contract is not paused.
+     * @dev     Function to enter a raffle. Checks for correct ticket price, 
+     *          then purchases ticket. Only callable when the contract is 
+     *          not paused.
      *
      * @param   _cNums  Ordered array of entrant's six selected numbers.
      *
@@ -50,7 +51,7 @@
      *          balance of the Etheraffle freeLOT token to be greater than
      *          zero. Function destroys one freeLOT token, increments the
      *          freeEntries variable in the raffle struct then purchases the
-     *          ticket.
+     *          ticket. Only callable if contract is not paused.
      *
      * @param   _cNums    Ordered array of entrant's six selected numbers.
      *
