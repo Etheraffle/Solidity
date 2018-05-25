@@ -14,7 +14,7 @@
         uint profit;
         if (raffle[_week].numEntries > 0) {
             profit = calcProfit(_week);
-            prizePool -= profit;
+            modifyPrizePool(false, profit);
             uint half = profit / 2;
             ReceiverInterface(disburseAddr).receiveEther.value(half)();
             ReceiverInterface(ethRelief).receiveEther.value(profit - half)();
