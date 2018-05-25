@@ -63,7 +63,7 @@
      * @param   _timeStamp  Timestamp of Mon 00:00 of the week of this raffle
      *
 	 */
-    function manuallysetupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) external onlyEtheraffle {
+    function manuallySetupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) external onlyEtheraffle {
         setupRaffleStruct(_week, _tktPrice, _timeStamp);
     }
 	/**
