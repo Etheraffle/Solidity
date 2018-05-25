@@ -274,7 +274,7 @@
      * @param   _matches  Number of matches the entry in question has made.
      *
      */
-    function eligibleForWithdraw(uint _week, uint _matches) internal view returns (bool) {
+    function eligibleForWithdraw(uint _week, uint _matches) view internal returns (bool) {
         return (
             _matches >= 3 &&
             raffle[_week].winAmts[_matches - 3] > 0 &&
@@ -337,7 +337,7 @@
      *
      */
     function getMatches(uint[] _cNums, uint[] _wNums) pure internal returns (uint) {
-        require(cNums.length == 6 && _wNums.length == 6);
+        require(_cNums.length == 6 && _wNums.length == 6);
         uint matches;
         for (uint i = 0; i < 6; i++) {
             for (uint j = 0; j < 6; j++) {
