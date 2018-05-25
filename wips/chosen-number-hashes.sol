@@ -324,16 +324,16 @@
         );
     }
     /**
-     * @dev     Function compares array of entrant's 6 chosen numbers to
-     *          the raffle in question's winning numbers and returns the 
-     *          number of matches.
+     * @dev     Function compares two arrays of the same length to one 
+     *          another to see how many numbers they have in common.
      *
-     * @param   _cNums  Array of entrant's chosen numbers 
+     * @param   _cNums  Array of entrant's chosen numbers.
      *
-     * @param   _wNums  Array of winning numbers
+     * @param   _wNums  Array of winning numbers.
      *
      */
     function getMatches(uint[] _cNums, uint[] _wNums) pure internal returns (uint) {
+        require(cNums.length == 6 && _wNums.length == 6);
         uint matches;
         for (uint i = 0; i < 6; i++) {
             for (uint j = 0; j < 6; j++) {
