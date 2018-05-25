@@ -313,7 +313,12 @@
     }
     /**
      * @dev     Various temporal requirements plus struct setup requirements 
-     *          that need to be met before a prize withdrawal can be processed.
+     *          that need to be met before a prize withdrawal can be processed. 
+     *          In order: Winning numbers need to be set, withdraw bool needs 
+     *          to be true, raffle's timestamp needs to be set, that the time 
+     *          the function is called needs to be before the withdraw deadline, 
+     *          and that the time the function is called needs to be six days 
+     *          beyond the timestamp. 
      *
      * @param   _week   Week number for the raffle in question.
      *
