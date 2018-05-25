@@ -78,25 +78,6 @@ contract OraclizeUpdate {
         sendQuery(matchesDelay, getQueryString(false, qID[_myID].weekNo), qID[_myID].weekNo, false, false);
     }
     /**
-     * @dev     Checks if an Oraclize query was made manually or not.
-     *
-     * @param   _ID     Bytes32 hash identifying the query in question.
-     *
-     */
-    function queryIsManual(bytes32 _ID) internal view returns (bool) {
-        return qID[_ID].isManual;
-    }
-    /**
-     * @dev     Returns bool depending on whether the winning numbers
-     *          have been set in the struct or not.
-     *
-     * @param   _week   Week number for raffle in question.
-     *
-     */
-    function winNumbersSet(uint _week) internal view returns (bool) {
-        return raffle[_week].winNums.length > 0;
-    }
-    /**
      * @dev     Called when the Etheraffle API callback is received. It sets 
      *          up the next raffle's struct, calculates this raffle's payouts 
      *          then makes the next Oraclize query to call the Random.org api.
@@ -114,6 +95,25 @@ contract OraclizeUpdate {
         setPayOuts(qID[_myID].weekNo, _result);
         if (queryIsManual(_myID)) return;
         sendQuery(getNextDeadline(), getQueryString(true, getWeek()), getWeek(), true, false);
+    }
+    /**
+     * @dev     Checks if an Oraclize query was made manually or not.
+     *
+     * @param   _ID     Bytes32 hash identifying the query in question.
+     *
+     */
+    function queryIsManual(bytes32 _ID) internal view returns (bool) {
+        return qID[_ID].isManual;
+    }
+    /**
+     * @dev     Returns bool depending on whether the winning numbers
+     *          have been set in the struct or not.
+     *
+     * @param   _week   Week number for raffle in question.
+     *
+     */
+    function winNumbersSet(uint _week) internal view returns (bool) {
+        return raffle[_week].winNums.length > 0;
     }
     /**
      * @dev     Returns bool depending on whether the win amounts have 
