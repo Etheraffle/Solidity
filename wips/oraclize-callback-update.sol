@@ -122,7 +122,7 @@ contract OraclizeUpdate {
      * @param   _week   Week number for raffle in question.
      *
      */
-    function winAmountsSet(uint _week) internal returns (bool) {
+    function winAmountsSet(uint _week) internal view returns (bool) {
         return raffle[_week].winAmts.length > 0;
     }
     /**
