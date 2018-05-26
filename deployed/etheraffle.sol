@@ -182,6 +182,7 @@ contract Etheraffle is usingOraclize {
         freeLOT      = FreeLOTInterface(0xc39f7bB97B31102C923DaF02bA3d1bD16424F4bb);
         setupRaffleStruct(week, 2500000000000000, (week * WEEKDUR) + BIRTHDAY);
     }
+    
     /**
      * @dev   Function using Etheraffle's birthday to calculate the
      *        week number since then.
@@ -211,14 +212,29 @@ contract Etheraffle is usingOraclize {
         }
     }
     /**
-     * @dev  To pause the contract's functions should the need arise. Internal.
-     *       Logs an event of the pausing.
+     * @dev     Sets the paused status of the contract to the bool 
+     *          passed in. This affects various of the contracts 
+     *          functions via the onlyIfNotPaused modifier.
      *
-     * @param _id    A uint to identify the caller of this function.
+     * @param   _status     Desired pause status.
+     *
      */
-    function pauseContract(uint _id) internal {
-      paused = true;
-      emit LogFunctionsPaused(_id, now);
+    function pauseContract(bool _status) internal {
+        paused = _status;
+    }
+    /**
+     * @dev     Sets the paused status of the contract to the bool 
+     *          passed in. Logs an event with a uint identifying the 
+     *          reason for pausing the contract to the front-end 
+     *          event watcher.
+     *
+     * @param   _status Desired pause status.
+     *
+     * @param   _id     Uint identifing the reason function was called.
+     */
+    function pauseContract(bool _status, uint _id) internal {
+        pauseContract(_status);
+        emit LogFunctionsPaused(_id, now);
     }
     /**
      * @dev  Function to enter the raffle. Requires the caller to send ether
