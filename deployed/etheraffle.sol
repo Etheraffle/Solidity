@@ -811,7 +811,60 @@ contract Etheraffle is usingOraclize {
     function winAmountsSet(uint _week) internal view returns (bool) {
         return raffle[_week].winAmts.length > 0;
     }
-
+    /**
+     * @dev     Returns the number of seconds until the next occurring 
+     *          raffle deadline.
+     *
+     */
+    function getNextDeadline() internal view returns (uint) {
+        return (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
+    }
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###         Oraclize Queries           ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
+    /**
+     * @dev     Prepares the correct Oraclize query string using Oraclize's 
+     *          contract's string concat function.
+     *
+     * @param   _isRandom   Whether the query is to the Random.org api, or Etheraffle's.
+     *
+     * @param   _weekNo     Raffle number the call is being made on behalf of.
+     *
+     */
+    function getQueryString(bool _isRandom, uint _weekNo) internal onlyOraclize returns (string) {
+        return _isRandom 
+               ? strConcat(randomStr1, uint2str(_weekNo), randomStr2)
+               : strConcat(apiStr1, uint2str(_weekNo), apiStr2);
+    }
+    /**
+     * @dev     Sends an Oraclize query, stores info w/r/t that query in a
+     *          struct mapped to by the hash of the query, and logs the 
+     *          pertinent details.
+     *
+     * @param   _delay      Desired return time for query from sending.
+     *
+     * @param   _str        The Oraclize call string.
+     *
+     * @param   _weekNo     Week number for raffle in question.
+     *
+     * @param   _isRandom   Whether the call is destined for Random.org 
+     *                      or Etheraffle.
+     *
+     * @param   _isManual   Whether the call is being made manually or 
+     *                      recursively.
+     *
+     */
+    function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) internal onlyOraclize {
+        bytes32 query = oraclize_query(_delay, "nested", _str, gasAmt);
+        modifyQIDStruct(query, _weekNo, _isRandom, _isManual);
+        emit LogQuerySent(query, delay, now);
+    }
 
 
 
