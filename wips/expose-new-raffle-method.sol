@@ -7,7 +7,7 @@
      *        sooner, the contract is paused for inspection.
      *
      */
-    function newRaffle() internal {
+    function setUpNewRaffle() internal {
         uint newWeek = getWeek();
         if (newWeek == week) return pauseContract(true, 4);
         setWeek(newWeek);
