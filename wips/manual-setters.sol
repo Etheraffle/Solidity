@@ -22,20 +22,20 @@
         apiStr2    = _apiStr2;
     }
     /**
-     * @dev   Set the ticket price of the raffle. Only callable by the
-     *        Etheraffle address.
+     * @dev     Set the ticket price of the raffle. Only callable by the
+     *          Etheraffle address.
      *
-     * @param _newPrice   uint - The desired new ticket price.
+     * @param   _newPrice   The desired new ticket price.
      *
      */
     function manuallySetTktPrice(uint _newPrice) external onlyEtheraffle {
         tktPrice = _newPrice;
     }
     /**
-     * @dev    Set new take percentage. Only callable by the Etheraffle
-     *         address.
+     * @dev     Set new take percentage. Only callable by the Etheraffle
+     *          address.
      *
-     * @param _newTake   uint - The desired new take, parts per thousand.
+     * @param   _newTake   The desired new take, parts per thousand.
      *
      */
     function manuallySetTake(uint _newTake) external onlyEtheraffle {
@@ -45,48 +45,50 @@
      * @dev     Set the payouts manually, in case of a failed Oraclize call.
      *          Only callable by the Etheraffle address.
      *
-     * @param _week         The week number of the raffle to set the payouts for.
-     * @param _numMatches   Number of matches. Comma-separated STRING of 4
-     *                      integers long, consisting of the number of 3 match
-     *                      winners, 4 match winners, 5 & 6 match winners in
-     *                      that order.
+     * @param   _week           The week number of the raffle to set the payouts for.
+     *
+     * @param   _numMatches     Number of matches. Comma-separated STRING of 4
+     *                          integers long, consisting of the number of 3 match
+     *                          winners, 4 match winners, 5 & 6 match winners in
+     *                          that order.
+     *
      */
     function manuallySetPayouts(uint _week, string _numMatches) external onlyEtheraffle {
         setPayOuts(_week, _numMatches);
     }
     /**
-     * @dev   Set the FreeLOT token contract address, in case of future updrades.
-     *        Only allable by the Etheraffle address.
+     * @dev     Set the FreeLOT token contract address, in case of future updrades.
+     *          Only allable by the Etheraffle address.
      *
-     * @param _newAddr   New address of FreeLOT contract.
+     * @param   _newAddr   New address of FreeLOT contract.
      */
     function manuallySetFreeLOT(address _newAddr) external onlyEtheraffle {
         freeLOT = FreeLOTInterface(_newAddr);
       }
     /**
-     * @dev   Set the EthRelief contract address, and gas required to run
-     *        the receiving function. Only allable by the Etheraffle address.
+     * @dev     Set the EthRelief contract address, and gas required to run
+     *          the receiving function. Only allable by the Etheraffle address.
      *
-     * @param _newAddr   New address of the EthRelief contract.
+     * @param   _newAddr   New address of the EthRelief contract.
      */
     function manuallySetEthRelief(address _newAddr) external onlyEtheraffle {
         ethRelief = _newAddr;
     }
     /**
-     * @dev   Set the dividend contract address, and gas required to run
-     *        the receive ether function. Only callable by the Etheraffle
-     *        address.
+     * @dev     Set the dividend contract address, and gas required to run
+     *          the receive ether function. Only callable by the Etheraffle
+     *          address.
      *
-     * @param _newAddr   New address of dividend contract.
+     * @param   _newAddr   New address of dividend contract.
      */
     function manuallySetDisbursingAddr(address _newAddr) external onlyEtheraffle {
         disburseAddr = _newAddr;
     }
     /**
-     * @dev   Set the Etheraffle multisig contract address, in case of future
-     *        upgrades. Only callable by the current Etheraffle address.
+     * @dev     Set the Etheraffle multisig contract address, in case of future
+     *          upgrades. Only callable by the current Etheraffle address.
      *
-     * @param _newAddr   New address of Etheraffle multisig contract.
+     * @param   _newAddr   New address of Etheraffle multisig contract.
      */
     function manuallySetEtheraffle(address _newAddr) external onlyEtheraffle {
         etheraffle = _newAddr;
@@ -96,7 +98,7 @@
      *          the start time of 00:00am Monday. Only callable by
      *          the Etheraffle address.
      *
-     * @param _newTime    The time desired in seconds.
+     * @param   _newTime    The time desired in seconds.
      */
     function manuallySetRafEnd(uint _newTime) external onlyEtheraffle {
         rafEnd = _newTime;
@@ -107,16 +109,16 @@
      *          back into the global prizepool. Only callable by the
      *          Etheraffle address.
      *
-     * @param _newTime    The time desired in seconds.
+     * @param   _newTime    The time desired in seconds.
      */
-    function manuallySetWithdrawBeforeTime(uint _newTime) external onlyEtheraffle {
+    function manuallySetWithdrawBefore(uint _newTime) external onlyEtheraffle {
         wdrawBfr = _newTime;
     }
     /**
      * @dev     Set the paused status of the raffles. Only callable by
      *          the Etheraffle address.
      *
-     * @param _status    The desired status of the raffles.
+     * @param   _status    The desired status of the raffles.
      */
     function manuallySetPaused(bool _status) external onlyEtheraffle {
         paused = _status;
@@ -125,7 +127,7 @@
      * @dev     Set the percentage-of-prizepool array. Only callable by the
      *          Etheraffle address.
      *
-     * @param _newPoP     An array of four integers totalling 1000.
+     * @param   _newPoP     An array of four integers totalling 1000.
      */
     function manuallySetPercentOfPool(uint[] _newPoP) external onlyEtheraffle {
         pctOfPool = _newPoP;
