@@ -1120,9 +1120,10 @@ contract Etheraffle is usingOraclize {
         }
         return parts;
     }
-
-
-
+    /**
+     * @dev     Fallback function.
+     */
+    function () payable external {}
     /**
      *
      *      ##########################################
@@ -1399,17 +1400,14 @@ contract Etheraffle is usingOraclize {
         require(now - upgraded > WEEKDUR * 10);
         selfdestruct(ethRelief);
     }
-    /**
-     * @dev     Function allowing manual addition to the global prizepool.
-     *          Requires the caller to send ether.
-     */
-    function addToPrizePool() payable external {
-        require(msg.value > 0);
-        prizePool += msg.value;
-        emit LogPrizePoolAddition(msg.sender, msg.value, now);
-    }
-    /**
-     * @dev     Fallback function.
-     */
-    function () payable external {}
+    // /**
+    //  * @dev     Function allowing manual addition to the global prizepool.
+    //  *          Requires the caller to send ether.
+    //  */
+    // function addToPrizePool() payable external {
+    //     require(msg.value > 0);
+    //     prizePool += msg.value;
+    //     emit LogPrizePoolAddition(msg.sender, msg.value, now);
+    // }
+
 }
