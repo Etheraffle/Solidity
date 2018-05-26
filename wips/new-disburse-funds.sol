@@ -1,3 +1,10 @@
+    /**
+     * @dev     Calculates and accounts for a raffle's costs and profits, 
+     *          before distributing the latter should there be any.
+     *
+     * @param   _week   Week number for raffle in question.
+     *
+     */
     function performAccounting(uint _week) internal {
         uint cost = getOraclizeCost();
         accountForCosts(cost);
@@ -5,14 +12,32 @@
         accountForProfit(profit);
         distributeFunds(_week, cost, profit);
     }
-
+    /**
+     * @dev     Distributes any profit earnt from a raffle. Half goes to 
+     *          the disbursal contract for the DAO of token holders, and 
+     *          the remainder to the EthRelief contract for charitable 
+     *          donations.
+     *
+     * @param   _week       Week number for raffle in question.
+     *
+     * @param   _cost       Cost of running this raffle.
+     *
+     * @param   _profit     Profit from running this raffle.
+     *
+     */
     function distributeFunds(uint _week, uint _cost, uint _profit) private {
         if (_profit == 0) return LogFundsDisbursed(_week, _cost, 0, 0, now); // Can't use emit keyword after return statement...
         uint half = _profit / 2;
         disburseFunds(_week, _cost, half, disburseAddr);
         disburseFunds(_week, _cost, _profit - half, ethRelief);
     }
-
+    /**
+     * @dev     Subtracts a given amount of profit from the prize pool, if 
+     *          said amount is greater than zero.
+     *
+     * @param   _profit   Amount to be deducted from the prize pool.
+     *
+     */
     function accountForProfit(uint _profit) private {
         if (_profit == 0) return 
         modifyPrizePool(false, profit);
