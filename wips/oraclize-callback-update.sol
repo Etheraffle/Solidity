@@ -72,7 +72,7 @@ contract OraclizeUpdate {
     function randomCallback(bytes32 _myID, string _result) internal onlyOraclize {
         require(!winNumbersSet(qID[_myID].weekNo));
         reclaimUnclaimed();
-        disburseFunds(qID[_myID].weekNo);
+        performAccounting(qID[_myID].weekNo);
         setWinningNumbers(qID[_myID].weekNo, _result);
         if (queryIsManual(_myID)) return;
         sendQuery(matchesDelay, getQueryString(false, qID[_myID].weekNo), qID[_myID].weekNo, false, false);
