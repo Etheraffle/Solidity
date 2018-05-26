@@ -745,6 +745,41 @@ contract Etheraffle is usingOraclize {
     function getUnclaimed(uint _week) public view returns (uint) {
         return raffle[_week].unclaimed;
     }
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###          Random Callback           ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
+    /**
+     * @dev     Called when the Etheraffle API callback is received. It sets 
+     *          up the next raffle's struct, calculates this raffle's payouts 
+     *          then makes the next Oraclize query to call the Random.org api.
+     *          Function requires the winning amounts to not already have been
+     *          set which stops Oraclize replays causing havoc!
+     *
+     * @param   _myID       The hash of the Oraclize query
+     *
+     * @param   _result     The result of the Oraclize query
+     *
+     */
+    function apiCallback(bytes32 _myID, string _result) internal onlyOraclize {
+        require (!winAmountsSet(qID[_myID].weekNo));
+        setUpNewRaffle();
+        setPayOuts(qID[_myID].weekNo, _result);
+        if (queryIsManual(_myID)) return;
+        sendQuery(getNextDeadline(), getQueryString(true, getWeek()), getWeek(), true, false);
+    }
+
+
+
+
+
+
+
 
 
 
