@@ -495,17 +495,17 @@ contract Etheraffle is usingOraclize {
         uint matches = getMatches(_cNums, raffle[_week].winNums);
         require (matches >= 2);
         matches == 2 
-            ? winFreeGo(_week, _entryNum) 
+            ? winFreeGo(_week, _entryNum, msg.sender) 
             : payWinnings(_week, _entryNum, matches, msg.sender);
     }
     /*
      * @dev     Mints a FreeLOT coupon to a two match winner allowing them 
      *          a free entry to Etheraffle. Function pausable by pause toggle.
      */
-    function winFreeGo(uint _week, uint _entryNum) onlyIfNotPaused internal {
-        raffle[_week].entries[msg.sender][_entryNum - 1].push(1);
-        freeLOT.mint(msg.sender, 1);
-        emit LogFreeLOTWin(_week, msg.sender, _entryNum, 1, now);
+    function winFreeGo(uint _week, uint _entryNum, address _entrant) internal onlyIfNotPaused {
+        invalidateEntry(_week, _entrant, _entryNum);
+        freeLOT.mint(_entrant, 1);
+        emit LogFreeLOTWin(_week, _entrant, _entryNum, 1, now);
     }
     /**
      * @dev     If ticket wins ETH this function first checks the eligibility 
