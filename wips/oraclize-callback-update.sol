@@ -91,7 +91,7 @@ contract OraclizeUpdate {
      */
     function apiCallback(bytes32 _myID, string _result) internal onlyOraclize {
         require (!winAmountsSet(qID[_myID].weekNo));
-        newRaffle();
+        setUpNewRaffle();
         setPayOuts(qID[_myID].weekNo, _result);
         if (queryIsManual(_myID)) return;
         sendQuery(getNextDeadline(), getQueryString(true, getWeek()), getWeek(), true, false);
