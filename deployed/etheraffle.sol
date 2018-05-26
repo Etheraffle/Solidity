@@ -182,7 +182,15 @@ contract Etheraffle is usingOraclize {
         freeLOT      = FreeLOTInterface(0xc39f7bB97B31102C923DaF02bA3d1bD16424F4bb);
         setupRaffleStruct(week, 2500000000000000, (week * WEEKDUR) + BIRTHDAY);
     }
-    
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###           Raffle Setup             ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
     /**
      * @dev   Function using Etheraffle's birthday to calculate the
      *        week number since then.
@@ -211,6 +219,15 @@ contract Etheraffle is usingOraclize {
             raffle[newWeek].timeStamp = BIRTHDAY + (newWeek * WEEKDUR);
         }
     }
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###           Pause Contract           ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
     /**
      * @dev     Sets the paused status of the contract to the bool 
      *          passed in. This affects various of the contracts 
