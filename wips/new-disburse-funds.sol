@@ -1,40 +1,13 @@
-    /**
-     * @dev  Function totals up oraclize cost for the raffle, subtracts
-     *       it from the prizepool (if less than, if greater than if
-     *       pauses the contract and fires an event). Calculates profit
-     *       based on raffle's tickets sales and the take percentage,
-     *       then forwards that amount of ether to the disbursal contract.
-     *
-     * @param _week   The week number of the raffle in question.
-     */
-
-     //TODO: Rename this function? Or break it up and call more funcs in the api callback? Like, accountForOraclize(), accountForProfit() disburseFunds() - uses I dunno, a generic sender for the the two cases of EthRelief plus disbursal? Or call the big function bookKeeping() or something? performAccounting()???
     function performAccounting(uint _week) internal {
         uint cost = getOraclizeCost();
         accountForCosts(cost);
         uint profit = calcProfit(_week);
         accountForProfit(profit);
         distributeFunds(_week, cost, profit);
-
-
-        // if (profit == 0) return logDisbursal(_week, cost, 0, 0, now); // Can't use emit keyword here
-
-        //if zero, else disburse funds...
-        // if (raffle[_week].numEntries > 0) {
-        //     profit = calcProfit(_week);
-        //     modifyPrizePool(false, profit);
-        //     uint half = profit / 2;
-        //     ReceiverInterface(disburseAddr).receiveEther.value(half)();
-        //     ReceiverInterface(ethRelief).receiveEther.value(profit - half)();
-        //     emit LogFundsDisbursed(_week, cost, profit - half, ethRelief, now);
-        //     emit LogFundsDisbursed(_week, cost, half, disburseAddr, now);
-        //     return;
-        // }
-        
     }
 
     function distributeFunds(uint _week, uint _cost, uint _profit) private {
-        if (_profit == 0) return LogFundsDisbursed(_week, _cost, 0, 0, now);
+        if (_profit == 0) return LogFundsDisbursed(_week, _cost, 0, 0, now); // Can't use emit keyword after return statement...
         uint half = _profit / 2;
         disburseFunds(_week, _cost, half, disburseAddr);
         disburseFunds(_week, _cost, _profit - half, ethRelief);
