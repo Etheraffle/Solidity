@@ -7,12 +7,15 @@
      *
      * @param _week   The week number of the raffle in question.
      */
+
+     //TODO: Rename this function? Or break it up and call more funcs in the api callback? Like, accountForOraclize(), accountForProfit() disburseFunds() - uses I dunno, a generic sender for the the two cases of EthRelief plus disbursal? Or call the big function bookKeeping() or something? performAccounting()???
     function disburseFunds(uint _week) internal {
         uint cost = getOraclizeCost();
         if (cost > prizePool) return pauseContract(true, 1);
         modifyPrizePool(false, cost);
         uint profit = calcProfit(_week);
         if (profit == 0) return LogFundsDisbursed(_week, cost, profit, 0, now); // Can't use emit keyword here
+
         //if zero, else disburse funds...
         // if (raffle[_week].numEntries > 0) {
         //     profit = calcProfit(_week);
@@ -25,6 +28,20 @@
         //     return;
         // }
         
+    }
+    /**
+     * @dev     Sends funds via a given contract's "receiver" interface,
+     *          which ensures an event is fired in the receiving contract, 
+     *          announcing the funds' arrival.
+     *
+     * @param   _addr   Address of receiving contract.
+     *
+     * @param   _amt    Amount of Wei to send.
+     *
+     */
+    function disburseFunds(uint _week, uint _cost, uint _amt, address _addr) private {
+        ReceiverInterface(_addr).receiveEther.value(_amt)();
+        emit LogFundsDisbursed(_week, _cost, _amt, _addr, now);
     }
     /**
      * @dev     Calculates profits earnt from a raffle. If there are 
