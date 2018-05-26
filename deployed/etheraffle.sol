@@ -300,75 +300,151 @@ contract Etheraffle is usingOraclize {
      *      ##########################################
      *
      */
-    /**
-     * @dev  Function to enter the raffle. Requires the caller to send ether
-     *       of amount greater than or equal to the ticket price.
+   /**
+     * @dev     Function to enter a raffle. Checks for correct ticket price, 
+     *          then purchases ticket. Only callable when the contract is 
+     *          not paused.
      *
-     * @param _cNums    Ordered array of entrant's six selected numbers.
-     * @param _affID    Affiliate ID of the source of this entry.
+     * @param   _cNums  Ordered array of entrant's six selected numbers.
+     *
+     * @param   _affID  Affiliate ID of the source of this entry.
+     *
      */
-    function enterRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
-        require(msg.value >= tktPrice);
+    function enterRaffle(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
+        require (validTktPrice(week));
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
-     * @dev  Function to enter the raffle on behalf of another address. Requires the 
-     *       caller to send ether of amount greater than or equal to the ticket price.
-     *       In the event of a win, only the onBehalfOf address can claim it.
+     * @dev     Function to enter the raffle on behalf of another address.  
+     *          Checks for correct ticket price. Only callable when the 
+     *          contract is not paused. In the event of a win, only the 
+     *          onBehalfOf address can claim it.
+     *  
+     * @param   _cNums        Ordered array of entrant's six selected numbers.
      *
-     * @param _cNums        Ordered array of entrant's six selected numbers.
-     * @param _affID        Affiliate ID of the source of this entry.
-     * @param _onBehalfOf   The address to be entered on behalf of.
+     * @param   _affID        Affiliate ID of the source of this entry.
+     *
+     * @param   _onBehalfOf   The address to be entered on behalf of.
+     *
      */
-    function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable external onlyIfNotPaused {
-        require(msg.value >= tktPrice);
+    function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable public onlyIfNotPaused {
+        require (validTktPrice(week));
         buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
     /**
-     * @dev  Function to enter the raffle for free. Requires the caller's
-     *       balance of the Etheraffle freeLOT token to be greater than
-     *       zero. Function destroys one freeLOT token, increments the
-     *       freeEntries variable in the raffle struct then purchases the
-     *       ticket.
+     * @dev     Function to enter the raffle for free. Requires the caller's
+     *          balance of the Etheraffle freeLOT token to be greater than
+     *          zero. Function destroys one freeLOT token, increments the
+     *          freeEntries variable in the raffle struct then purchases the
+     *          ticket. Only callable if contract is not paused.
      *
-     * @param _cNums    Ordered array of entrant's six selected numbers.
-     * @param _affID    Affiliate ID of the source of this entry.
+     * @param   _cNums    Ordered array of entrant's six selected numbers.
+     *
+     * @param   _affID    Affiliate ID of the source of this entry.
+     *
      */
-    function enterFreeRaffle(uint[] _cNums, uint _affID) payable external onlyIfNotPaused {
-        freeLOT.destroy(msg.sender, 1);
-        raffle[week].freeEntries++;
+    function enterFreeRaffle(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
+        decrementFreeLOT(msg.sender, 1);
+        incremementEntries(week, true);
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
-     * @dev   Function to buy tickets. Internal. Requires the entry number
-     *        array to be of length 6, requires the timestamp of the current
-     *        raffle struct to have been set, and for this time this function
-     *        is call to be before the end of the raffle. Then requires that
-     *        the chosen numbers are ordered lowest to highest & bound between
-     *        1 and 49. Function increments the total number of entries in the
-     *        current raffle's struct, increments the prize pool accordingly
-     *        and pushes the chosen number array into the entries map and then
-     *        logs the ticket purchase.
+     * @dev     Checks that a raffle struct has a ticket price set and whether 
+     *          the caller's msg.value is greater than or equal to that price.
      *
-     * @param _cNums       Array of users selected numbers.
-     * @param _entrant     Entrant's ethereum address.
-     * @param _value       The ticket purchase price.
-     * @param _affID       The affiliate ID of the source of this entry.
+     * @param   _week   Week number for raffle in question.
+     *
      */
-    function buyTicket
-    (
-        uint[]  _cNums,
-        address _entrant,
-        uint    _value,
-        uint    _affID
-    )
-        internal
-    {
-        require
-        (
-            _cNums.length == 6 &&
+    function validTktPrice(uint _week) internal view returns (bool) {
+        return (
+            raffle[_week].tktPrice > 0 && 
+            msg.value >= raffle[_week].tktPrice
+        );
+    }
+    /**
+     * @dev     Decrement an address' FreeLOT token holdings by a specified 
+     *          amount.
+     *
+     * @param   _address  The address owning the FreeLOT token(s)
+     *
+     * @param   _amt      The amount of FreeLOT to destroy.
+     *
+     */
+    function decrementFreeLOT(address _address, uint _amt) internal {
+        freeLOT.destroy(_address, _amt);
+    }
+    /**
+     * @dev     Internal function that purchases raffle tickets. Requires the 
+     *          raffle be open for entry and the chosen numbers be valid. 
+     *          Increments number of entries in the raffle strut, adds the ticket 
+     *          price to the prize pool and stores a hash of the entrants chosen 
+     *          numbers before logging the purchase.   
+     *
+     * @param   _cNums      Array of users selected numbers.
+     *
+     * @param   _entrant    Entrant's ethereum address.
+     *
+     * @param   _value      The ticket purchase price.
+     *
+     * @param   _affID      Affiliate ID of the source of this entry.
+     *
+     */
+    function buyTicket(uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
+        require (raffleOpenForEntry() && validNumbers(_cNums));
+        incremementEntries(week, false);
+        addToPrizePool(_value);
+        storeEntry(week, _entrant, _cNums);
+        emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
+    }
+    /**
+     * @dev     Stores a ticket purchase by hashing the chosen numbers 
+     *          and pushing them into an array mapped to the user's 
+     *          address in the relevant raffle's struct.
+     *
+     * @param   _week       Week number for raffle in question.
+     *
+     * @param   _entrant    The entrant's address.
+     *
+     * @param   _cNums      The entrant's chosen numbers.
+     *
+     */
+    function storeEntry(uint _week, address _entrant, uint[] _cNums) internal {
+        raffle[_week].entries[_entrant].push(keccak256(_cNums));
+    }
+    /**
+     * @dev     Increments the number of entries in a raffle struct. 
+     *          Increments free entries if bool passed is true, else 
+     *          normal entries otherwise.
+     *
+     * @param   _week   Week number for raffle in question
+     *
+     * @param   _free   Whether it is a free entry or not.
+     *
+     */
+    function incremementEntries(uint _week, bool _free) internal {
+        _free ? raffle[week].freeEntries++ : raffle[_week].numEntries++;
+    }
+    /**
+     * @dev     Temporal & raffle struct setup requirements that need to be 
+     *          satisfied before a raffle ticket can be purchased.
+     */
+    function raffleOpenForEntry() internal view returns (bool) {
+        return (
             raffle[week].timeStamp > 0 &&
-            now < raffle[week].timeStamp + rafEnd &&
+            now < raffle[week].timeStamp + rafEnd
+        );
+    }
+    /**
+     * @dev     Series of requirements a raffle ticket's chosen numbers must 
+     *          pass in order to qualify as valid. Ensures that there are six 
+     *          numbers, in ascending order, between one and 49.
+     *
+     * @param   _cNums  Array of a ticket's proposed numbers in question.
+     *
+     */
+    function validNumbers(uint[] _cNums) internal pure returns (bool) {
+        return (
+            _cNums.length == 6    &&
             0         < _cNums[0] &&
             _cNums[0] < _cNums[1] &&
             _cNums[1] < _cNums[2] &&
@@ -377,11 +453,35 @@ contract Etheraffle is usingOraclize {
             _cNums[4] < _cNums[5] &&
             _cNums[5] <= 49
         );
-        raffle[week].numEntries++;
-        prizePool += _value;
-        raffle[week].entries[_entrant].push(_cNums);
-        emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
+    /**
+     * @dev     Modifies prizePool var. If true passed is in as first 
+     *          argument, prizePool is incremented by _amt, if  false, 
+     *          decremented. In which latter case, it requires the minuend 
+     *          be smaller than the subtrahend.  
+     *
+     * @param   _bool   Boolean signifying addtion or subtraction. 
+     *
+     * @param   _amt    Amount to modify the prize pool by.
+     *
+     */
+    function modifyPrizePool(bool _bool, uint _amt) private {
+        if (!_bool) require (_amt <= prizePool, '_amt > prizePool!');
+        prizePool = _bool ? prizePool + _amt : prizePool - _amt;
+    }
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###         Withdraw Winnings          ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
+
+
+
+
     /**
      * @dev Withdraw Winnings function. User calls this function in order to withdraw
      *      whatever winnings they are owed. Function can be paused via the modifier
