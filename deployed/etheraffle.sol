@@ -673,6 +673,22 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
+     * @dev     The Oralize call back function. Only callable by Etheraffle 
+     *          or the Oraclize address. Emits an event detailing the callback, 
+     *          before running the relevant method that acts on the callback.
+     * 
+     * @param   _myID    Unique id oraclize provides with their callbacks.
+     *                            
+     * @param   _result  The result of the api call.
+     *
+     */
+    function __callback(bytes32 _myID, string _result) public onlyIfNotPaused onlyOraclize {
+        emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
+        queryIsRandom(_myID) 
+            ? randomCallback(_myID, _result) 
+            : apiCallback(_myID, _result);
+    }
+    /**
      * @dev    Called by the weekly Oraclize callback. Checks raffle 10
      *         weeks older than current raffle for any unclaimed prize
      *         pool. If any found, returns it to the main prizePool and
