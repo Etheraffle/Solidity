@@ -1095,7 +1095,31 @@ contract Etheraffle is usingOraclize {
         modifyQIDStruct(query, _weekNo, _isRandom, _isManual);
         emit LogQuerySent(query, delay, now);
     }
-
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###             Utilities              ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
+    /**
+     * @dev     Slices a string according to specified delimiter, returning
+     *          the sliced parts in an array. Courtesy of Nick Johnson via
+     *          https://github.com/Arachnid/solidity-stringutils
+     *
+     * @param   _string   The string to be sliced.
+     */
+    function stringToArray(string _string) internal pure returns (string[]) {
+        var str    = _string.toSlice();
+        var delim  = ",".toSlice();
+        var parts  = new string[](str.count(delim) + 1);
+        for (uint i = 0; i < parts.length; i++) {
+            parts[i] = str.split(delim).toString();
+        }
+        return parts;
+    }
 
 
 
@@ -1114,143 +1138,9 @@ contract Etheraffle is usingOraclize {
 
 
 
-    /**
-     * @dev  Function totals up oraclize cost for the raffle, subtracts
-     *       it from the prizepool (if less than, if greater than if
-     *       pauses the contract and fires an event). Calculates profit
-     *       based on raffle's tickets sales and the take percentage,
-     *       then forwards that amount of ether to the disbursal contract.
-     *
-     * @param _week   The week number of the raffle in question.
-     */
-    function disburseFunds(uint _week) internal {
-        uint oracTot = 2 * ((gasAmt * gasPrc) + oracCost);//2 queries per draw...
-        if (oracTot > prizePool) return pauseContract(1);
-        prizePool -= oracTot;
-        uint profit;
-        if (raffle[_week].numEntries > 0) {
-            profit = ((raffle[_week].numEntries - raffle[_week].freeEntries) * tktPrice * take) / 1000;
-            prizePool -= profit;
-            uint half = profit / 2;
-            ReceiverInterface(disburseAddr).receiveEther.value(half)();
-            ReceiverInterface(ethRelief).receiveEther.value(profit - half)();
-            emit LogFundsDisbursed(_week, oracTot, profit - half, ethRelief, now);
-            emit LogFundsDisbursed(_week, oracTot, half, disburseAddr, now);
-            return;
-        }
-        emit LogFundsDisbursed(_week, oracTot, profit, 0, now);
-    }
-    /**
-     * @dev     Slices a string according to specified delimiter, returning
-     *          the sliced parts in an array. Courtesy of Nick Johnson via
-     *          https://github.com/Arachnid/solidity-stringutils
-     *
-     * @param   _string   The string to be sliced.
-     */
-    function stringToArray(string _string) internal pure returns (string[]) {
-        var str    = _string.toSlice();
-        var delim  = ",".toSlice();
-        var parts  = new string[](str.count(delim) + 1);
-        for (uint i = 0; i < parts.length; i++) {
-            parts[i] = str.split(delim).toString();
-        }
-        return parts;
-    }
-    /**
-     * @dev   Takes oraclize random.org api call result string and splits
-     *        it at the commas into an array, parses those strings in that
-     *        array as integers and pushes them into the winning numbers
-     *        array in the raffle's struct. Fires event logging the data,
-     *        including the serial number of the random.org callback so
-     *        its veracity can be proven.
-     *
-     * @param _week    The week number of the raffle in question.
-     * @param _result   The results string from oraclize callback.
-     */
-    function setWinningNumbers(uint _week, string _result) internal {
-        string[] memory arr = stringToArray(_result);
-        for (uint i = 0; i < arr.length; i++){
-            raffle[_week].winNums.push(parseInt(arr[i]));
-        }
-        uint serialNo = parseInt(arr[6]);
-        emit LogWinningNumbers(_week, raffle[_week].numEntries, raffle[_week].winNums, prizePool, serialNo, now);
-    }
-    /*  
-     * @dev     Returns TOTAL payout per tier when calculated using the odds method.
-     *
-     * @param _numWinners       Number of X match winners
-     * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
-     */
-    function oddsTotal(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
-        return oddsSingle(_matchesIndex) * _numWinners;
-    }
-    /*
-     * @dev     Returns TOTAL payout per tier when calculated using the splits method.
-     *
-     * @param _numWinners       Number of X match winners
-     * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
-     */
-    function splitsTotal(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
-        return splitsSingle(_numWinners, _matchesIndex) * _numWinners;
-    }
-    /*
-     * @dev     Returns single payout when calculated using the odds method.
-     *
-     * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
-     */
-    function oddsSingle(uint _matchesIndex) internal view returns (uint) {
-        return tktPrice * odds[_matchesIndex];
-    }
-    /*
-     * @dev     Returns a single payout when calculated using the splits method.
-     *
-     * @param _numWinners       Number of X match winners
-     * @param _matchesIndex     Index of matches array (∴ 3 match win, 4 match win etc)
-     */
-    function splitsSingle(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
-        return (prizePool * pctOfPool[_matchesIndex]) / (_numWinners * 1000);
-    }
-    /**
-     * @dev   Takes the results of the oraclize Etheraffle api call back
-     *        and uses them to calculate the prizes due to each tier
-     *        (3 matches, 4 matches etc) then pushes them into the winning
-     *        amounts array in the raffle in question's struct. Calculates
-     *        the total winnings of the raffle, subtracts it from the
-     *        global prize pool sequesters that amount into the raffle's
-     *        struct "unclaimed" variable, ∴ "rolling over" the unwon
-     *        ether. Enables winner withdrawals by setting the withdraw
-     *        open bool to true.
-     *
-     * @param _week    The week number of the raffle in question.
-     * @param _result  The results string from oraclize callback.
-     */
-    function setPayOuts(uint _week, string _result) internal {
-        string[] memory numWinnersStr = stringToArray(_result);
-        if (numWinnersStr.length < 4) return pauseContract(2);
-        uint[] memory numWinnersInt = new uint[](4);
-        for (uint i = 0; i < 4; i++) {
-            numWinnersInt[i] = parseInt(numWinnersStr[i]);
-        }
-        uint[] memory payOuts = new uint[](4);
-        uint total;
-        for (i = 0; i < 4; i++) {
-            if (numWinnersInt[i] != 0) {
-                uint amt = oddsTotal(numWinnersInt[i], i) <= splitsTotal(numWinnersInt[i], i) 
-                         ? oddsSingle(i) 
-                         : splitsSingle(numWinnersInt[i], i); 
-                payOuts[i] = amt;
-                total += payOuts[i] * numWinnersInt[i];
-            }
-        }
-        raffle[_week].unclaimed = total;
-        if (raffle[_week].unclaimed > prizePool) return pauseContract(3);
-        prizePool -= raffle[_week].unclaimed;
-        for (i = 0; i < payOuts.length; i++) {
-            raffle[_week].winAmts.push(payOuts[i]);
-        }
-        raffle[_week].wdrawOpen = true;
-        emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].unclaimed, payOuts[0], payOuts[1], payOuts[2], payOuts[3], now);
-    }
+
+
+   
     /**
      * @dev     Manually make an Oraclize API call, incase of automation
      *          failure. Only callable by the Etheraffle address.
