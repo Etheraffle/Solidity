@@ -132,3 +132,28 @@
     function manuallySetPercentOfPool(uint[] _newPoP) external onlyEtheraffle {
         pctOfPool = _newPoP;
     }
+        function manuallySetupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) external onlyEtheraffle {
+        setUpRaffleStruct(_week, _tktPrice, _timeStamp);
+    }
+	/**
+	 * @dev		Manually sets the withdraw status of a raffle. Only
+     *          callable by the Etheraffle multisig.
+	 *
+	 * @param   _week   Week number for raffle in question.
+     *
+     * @param   _status Desired withdraw status for raffle.
+     *
+	 */
+    function manuallySetWithdraw(uint _week, bool _status) external onlyEtheraffle {
+        setWithdraw(_week, _status);
+    }
+    /**
+	 * @dev		Manually sets the global week variable. Only callable
+     *          by the Etheraffle multisig wallet.
+	 *
+	 * @param   _week   Desired week number.
+     *
+	 */
+    function manuallySetWeek(uint _week) external onlyEtheraffle {
+        setWeek(_week);
+    }
