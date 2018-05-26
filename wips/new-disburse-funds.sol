@@ -13,7 +13,8 @@
         uint cost = getOraclizeCost();
         accountForCosts(cost);
         uint profit = calcProfit(_week);
-        accountForProfit(_week, cost, profit);
+        accountForProfit(profit);
+        distributeFunds(_week, cost, profit);
 
 
         // if (profit == 0) return logDisbursal(_week, cost, 0, 0, now); // Can't use emit keyword here
@@ -32,12 +33,16 @@
         
     }
 
-    function accountForProfit(uint _week, uint _cost, uint _profit) private {
-        if (_profit == 0) return LogFundsDisbursed(_week, _cost, 0, 0, now);
-        modifyPrizePool(false, profit);
+    function distributeFunds(uint _week, uint _cost, uint _profit) private {
+        if (_profit == 0) LogFundsDisbursed(_week, _cost, 0, 0, now);
         uint half = _profit / 2;
         disburseFunds(_week, _cost, half, disburseAddr);
         disburseFunds(_week, _cost, _profit - half, ethRelief);
+    }
+
+    function accountForProfit(uint _profit) private {
+        if (_profit == 0) return 
+        modifyPrizePool(false, profit);
     }
     /**
      * @dev     Subtracts a given cost from the prize pool. Pauses contract 
@@ -48,6 +53,7 @@
      */
     function accountForCosts(uint _cost) private {
         if (_cost > prizePool) return pauseContract(true, 1);
+      
         modifyPrizePool(false, _cost);
     }
     /**
