@@ -9,7 +9,7 @@
      */
 
      //TODO: Rename this function? Or break it up and call more funcs in the api callback? Like, accountForOraclize(), accountForProfit() disburseFunds() - uses I dunno, a generic sender for the the two cases of EthRelief plus disbursal? Or call the big function bookKeeping() or something? performAccounting()???
-    function disburseFunds(uint _week) internal {
+    function performAccounting(uint _week) internal {
         uint cost = getOraclizeCost();
         accountForCosts(cost);
         uint profit = calcProfit(_week);
@@ -53,7 +53,7 @@
      */
     function accountForCosts(uint _cost) private {
         if (_cost > prizePool) return pauseContract(true, 1);
-        if (cost == 0) return;
+        if (cost == 0) return; // TODO: Unnecessary?
         modifyPrizePool(false, _cost);
     }
     /**
