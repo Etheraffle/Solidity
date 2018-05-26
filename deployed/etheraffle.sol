@@ -746,48 +746,6 @@ contract Etheraffle is usingOraclize {
         emit LogFundsDisbursed(_week, oracTot, profit, 0, now);
     }
     /**
-     * @dev   The Oralize call back function. The oracalize api calls are
-     *        recursive. One to random.org for the draw and the other to
-     *        the Etheraffle api for the numbers of matches each entry made
-     *        against the winning numbers. Each calls the other recursively.
-     *        The former when calledback closes and reclaims any unclaimed
-     *        prizepool from the raffle ten weeks previous to now. Then it
-     *        disburses profit to the disbursal contract, then it sets the
-     *        winning numbers received from random.org into the raffle
-     *        struct. Finally it prepares the next oraclize call. Which
-     *        latter callback first sets up the new raffle struct, then
-     *        sets the payouts based on the number of winners in each tier
-     *        returned from the api call, then prepares the next oraclize
-     *        query for a week later to draw the next raffle's winning
-     *        numbers.
-     *
-     * @param _myID     bytes32 - Unique id oraclize provides with their
-     *                            callbacks.
-     * @param _result   string - The result of the api call.
-     */
-    function __callback(bytes32 _myID, string _result) onlyIfNotPaused {
-        require(msg.sender == oraclize_cbAddress() || msg.sender == etheraffle);
-        emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
-        if (qID[_myID].isRandom == true) {
-            reclaimUnclaimed();
-            disburseFunds(qID[_myID].weekNo);
-            setWinningNumbers(qID[_myID].weekNo, _result);
-            if (qID[_myID].isManual == true) return;
-            bytes32 query = oraclize_query(matchesDelay, "nested", strConcat(apiStr1, uint2str(qID[_myID].weekNo), apiStr2), gasAmt);
-            qID[query].weekNo = qID[_myID].weekNo;
-            emit LogQuerySent(query, matchesDelay + now, now);
-        } else {
-            newRaffle();
-            setPayOuts(qID[_myID].weekNo, _result);
-            if (qID[_myID].isManual == true) return;
-            uint delay = (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
-            query = oraclize_query(delay, "nested", strConcat(randomStr1, uint2str(getWeek()), randomStr2), gasAmt);
-            qID[query].weekNo = getWeek();
-            qID[query].isRandom = true;
-            emit LogQuerySent(query, delay, now);
-        }
-    }
-    /**
      * @dev     Slices a string according to specified delimiter, returning
      *          the sliced parts in an array. Courtesy of Nick Johnson via
      *          https://github.com/Arachnid/solidity-stringutils
