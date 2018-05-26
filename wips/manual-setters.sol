@@ -1,30 +1,25 @@
-/**
-     * @dev    Set the Oraclize strings, in case of url changes. Only callable by
-     *         the Etheraffle address  .
+    /**
+     * @dev     Set the Oraclize strings, in case of url changes. Only callable by
+     *          the Etheraffle address.
      *
-     * @param _newRandomHalfOne       string - with properly escaped characters for
-     *                                the first half of the random.org call string.
-     * @param _newRandomHalfTwo       string - with properly escaped characters for
-     *                                the second half of the random.org call string.
-     * @param _newEtheraffleHalfOne   string - with properly escaped characters for
-     *                                the first half of the EtheraffleAPI call string.
-     * @param _newEtheraffleHalfTwo   string - with properly escaped characters for
-     *                                the second half of the EtheraffleAPI call string.
+     * @param   _randomStr1     String with properly escaped characters for 
+     *                          first half of Random.org api call.
+     *
+     * @param   _randomStr2     String with properly escaped characters for 
+     *                          second half of Random.org api call.
+     *
+     * @param   _apiStr1        String with properly escaped characters for 
+     *                          first half of Etheraffle api call.
+     *
+     * @param   _apiStr2        String with properly escaped characters for 
+     *                          second half of Etheraffle api call.
      *
      */
-    function manuallySetOraclizeString
-    (
-        string _newRandomHalfOne,
-        string _newRandomHalfTwo,
-        string _newEtheraffleHalfOne,
-        string _newEtheraffleHalfTwo
-    )
-        onlyEtheraffle external
-    {
-        randomStr1 = _newRandomHalfOne;
-        randomStr2 = _newRandomHalfTwo;
-        apiStr1    = _newEtheraffleHalfOne;
-        apiStr2    = _newEtheraffleHalfTwo;
+    function manuallySetOraclizeString(string _randomStr1, string _randomStr2, string _apiStr1, string _apiStr2) external onlyEtheraffle {
+        randomStr1 = _randomStr1;
+        randomStr2 = _randomStr2;
+        apiStr1    = _apiStr1;
+        apiStr2    = _apiStr2;
     }
     /**
      * @dev   Set the ticket price of the raffle. Only callable by the
