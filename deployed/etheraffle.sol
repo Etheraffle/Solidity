@@ -509,7 +509,7 @@ contract Etheraffle is usingOraclize {
      * @param   _entrant    Entry to whom the win belongs.
      *
      */
-    function winFreeGo(uint _week, uint _entryNum, address _entrant) internal onlyIfNotPaused {
+    function winFreeGo(uint _week, uint _entryNum, address _entrant) private onlyIfNotPaused {
         invalidateEntry(_week, _entrant, _entryNum);
         freeLOT.mint(_entrant, 1);
         emit LogFreeLOTWin(_week, _entrant, _entryNum, 1, now);
@@ -528,7 +528,7 @@ contract Etheraffle is usingOraclize {
      * @param   _entrant    Address of the ticket holder.
      *
      */
-    function payWinnings(uint _week, uint _entryNum, , uint _matches, address _entrant) internal {
+    function payWinnings(uint _week, uint _entryNum, , uint _matches, address _entrant) private {
         require (eligibleForWithdraw(_week, matches));
         invalidateEntry(_week, _entrant, _entryNum);
         modifyUnclaimed(false, _week, raffle[_week].winAmts[_matches - 3]);
