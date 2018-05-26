@@ -49,7 +49,15 @@ contract FreeLOTInterface {
 
 contract Etheraffle is usingOraclize {
     using strings for *;
-
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###             Variables              ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
     uint    public week;
     bool    public paused;
     uint    public upgraded;
@@ -71,14 +79,20 @@ contract Etheraffle is usingOraclize {
     uint[]  public odds         = [56, 1032, 54200, 13983816]; // Rounded down to nearest whole 
     uint  constant WEEKDUR      = 604800;
     uint  constant BIRTHDAY     = 1500249600;//Etheraffle's birthday <3
-
-    FreeLOTInterface freeLOT;
-
     string randomStr1 = "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random[\"data\", \"serialNumber\"]','\\n{\"jsonrpc\": \"2.0\",\"method\":\"generateSignedIntegers\",\"id\":\"";
     string randomStr2 = "\",\"params\":{\"n\":\"6\",\"min\":1,\"max\":49,\"replacement\":false,\"base\":10,\"apiKey\":${[decrypt] BIaCXRwykpLeDE9h1dQaAUi0LPTD4Jz0kwh6SVTftO+zromdgBhmdQhFwPsaLEGDHHn8bhQA8ksyjOZJpjDzKcVWlkBx5C07udHFtMnvG9g9VITYGxoMOhpFCTnoIKTBlIbNe5D1rIgl9OYUVX4ibTT8fCEE8TkWqQ==}}']";
     string apiStr1    = "[URL] ['json(https://etheraffle.com/api/a).m','{\"r\":\"";
     string apiStr2    = "\",\"k\":${[decrypt] BDzj/WPcHzGWYRL2cXvMNvInBxhutESn6Xj8pVzUUH+oEeWBoyycp23B7FSjqKJww6uH5AxvD4srlX0D/Rhl678YcKSNX2oMJJ47ciZrCnj6+28GHCLBV+XiA/1GDis9p5Q9NIKI}}']";
-
+    FreeLOTInterface freeLOT;
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###          Data Structures           ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
     mapping (uint => rafStruct) public raffle;
     struct rafStruct {
         mapping (address => uint[][]) entries;
@@ -98,6 +112,15 @@ contract Etheraffle is usingOraclize {
         bool isManual;
     }
     /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###             Modifiers              ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
+    /**
     * @dev  Modifier to prepend to functions adding the additional
     *       conditional requiring caller of the method to be the
     *       etheraffle address.
@@ -114,6 +137,15 @@ contract Etheraffle is usingOraclize {
         require(!paused);
         _;
     }
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###              Events                ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
     event LogFunctionsPaused(uint identifier, uint atTime);
     event LogQuerySent(bytes32 queryID, uint dueAt, uint sendTime);
     event LogReclaim(uint indexed fromRaffle, uint amount, uint atTime);
@@ -126,7 +158,15 @@ contract Etheraffle is usingOraclize {
     event LogWinningNumbers(uint indexed forRaffle, uint numberOfEntries, uint[] wNumbers, uint currentPrizePool, uint randomSerialNo, uint atTime);
     event LogTicketBought(uint indexed forRaffle, uint indexed entryNumber, address indexed theEntrant, uint[] chosenNumbers, uint personalEntryNumber, uint tktCost, uint atTime, uint affiliateID);
     event LogPrizePoolsUpdated(uint newMainPrizePool, uint indexed forRaffle, uint unclaimedPrizePool, uint threeMatchWinAmt, uint fourMatchWinAmt, uint fiveMatchWinAmt, uint sixMatchwinAmt, uint atTime);
-
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###            Constructor             ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
     /**
      * @dev     Constructor. Sets the Etheraffle multisig address, 
      *          the EthRelief & Disbursal contract addresses and 
