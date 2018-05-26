@@ -688,6 +688,24 @@ contract Etheraffle is usingOraclize {
             ? randomCallback(_myID, _result) 
             : apiCallback(_myID, _result);
     }
+        /**
+     * @dev     Checks if an Oraclize query was made manually or not.
+     *
+     * @param   _ID     Bytes32 hash identifying the query in question.
+     *
+     */
+    function queryIsManual(bytes32 _ID) internal view returns (bool) {
+        return qID[_ID].isManual;
+    }
+    /**
+     * @dev     Checks if an Oraclize query was to Random.org or not.
+     *
+     * @param   _ID     Bytes32 hash identifying the query in question.
+     *
+     */
+    function queryIsRandom(bytes32 _ID) internal view returns (bool) {
+        return qID[_ID].isRandom;
+    }
     /**
      *
      *      ##########################################
@@ -779,6 +797,15 @@ contract Etheraffle is usingOraclize {
 
 
 
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###          ???????????????           ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
 
 
 
