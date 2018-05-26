@@ -53,7 +53,7 @@
      */
     function accountForCosts(uint _cost) private {
         if (_cost > prizePool) return pauseContract(true, 1);
-      
+        if (cost == 0) return;
         modifyPrizePool(false, _cost);
     }
     /**
