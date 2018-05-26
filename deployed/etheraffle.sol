@@ -96,6 +96,7 @@ contract Etheraffle is usingOraclize {
     mapping (uint => rafStruct) public raffle;
     struct rafStruct {
         mapping (address => uint[][]) entries;
+        uint tktPrice;
         uint unclaimed;
         uint[] winNums;
         uint[] winAmts;
