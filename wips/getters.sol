@@ -1,7 +1,7 @@
     /**
      * @dev     Get a entrant's number of entries into a specific raffle
      *
-     * @param   _week       The week number of the queried raffle.
+     * @param   _week       The week number of the raffle in question.
      *
      * @param   _entrant    The entrant in question.
      *
@@ -15,12 +15,12 @@
      *
      * @param   _entrant    The entrant in question's address.
      *
-     * @param   _week       The week number of the queried raffle.
+     * @param   _week       The week number of raffle in question.
      *
      * @param   _entryNum   The entrant's entry number in this raffle.
      *
      */
-    function getChosenNumbers(address _entrant, uint _week, uint _entryNum) constant external returns (uint[]) {
+    function getChosenNumbersHash(address _entrant, uint _week, uint _entryNum) constant external returns (bytes32) {
         return raffle[_week].entries[_entrant][_entryNum-1];
     }
     /**
