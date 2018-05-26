@@ -28,7 +28,7 @@
      * @param _newPrice   uint - The desired new ticket price.
      *
      */
-    function manuallySetTktPrice(uint _newPrice) onlyEtheraffle external {
+    function manuallySetTktPrice(uint _newPrice) external onlyEtheraffle {
         tktPrice = _newPrice;
     }
     /**
@@ -38,7 +38,7 @@
      * @param _newTake   uint - The desired new take, parts per thousand.
      *
      */
-    function manuallySetTake(uint _newTake) onlyEtheraffle external {
+    function manuallySetTake(uint _newTake) external onlyEtheraffle {
         take = _newTake;
     }
     /**
@@ -51,7 +51,7 @@
      *                      winners, 4 match winners, 5 & 6 match winners in
      *                      that order.
      */
-    function manuallySetPayouts(uint _week, string _numMatches) onlyEtheraffle external {
+    function manuallySetPayouts(uint _week, string _numMatches) external onlyEtheraffle {
         setPayOuts(_week, _numMatches);
     }
     /**
@@ -60,7 +60,7 @@
      *
      * @param _newAddr   New address of FreeLOT contract.
      */
-    function manuallySetFreeLOT(address _newAddr) onlyEtheraffle external {
+    function manuallySetFreeLOT(address _newAddr) external onlyEtheraffle {
         freeLOT = FreeLOTInterface(_newAddr);
       }
     /**
@@ -69,7 +69,7 @@
      *
      * @param _newAddr   New address of the EthRelief contract.
      */
-    function manuallySetEthRelief(address _newAddr) onlyEtheraffle external {
+    function manuallySetEthRelief(address _newAddr) external onlyEtheraffle {
         ethRelief = _newAddr;
     }
     /**
@@ -79,7 +79,7 @@
      *
      * @param _newAddr   New address of dividend contract.
      */
-    function manuallySetDisbursingAddr(address _newAddr) onlyEtheraffle external {
+    function manuallySetDisbursingAddr(address _newAddr) external onlyEtheraffle {
         disburseAddr = _newAddr;
     }
     /**
@@ -88,7 +88,7 @@
      *
      * @param _newAddr   New address of Etheraffle multisig contract.
      */
-    function manuallySetEtheraffle(address _newAddr) onlyEtheraffle external {
+    function manuallySetEtheraffle(address _newAddr) external onlyEtheraffle {
         etheraffle = _newAddr;
     }
     /**
@@ -98,7 +98,7 @@
      *
      * @param _newTime    The time desired in seconds.
      */
-    function manuallySetRafEnd(uint _newTime) onlyEtheraffle external {
+    function manuallySetRafEnd(uint _newTime) external onlyEtheraffle {
         rafEnd = _newTime;
     }
     /**
@@ -109,7 +109,7 @@
      *
      * @param _newTime    The time desired in seconds.
      */
-    function manuallySetWithdrawBeforeTime(uint _newTime) onlyEtheraffle external {
+    function manuallySetWithdrawBeforeTime(uint _newTime) external onlyEtheraffle {
         wdrawBfr = _newTime;
     }
     /**
@@ -118,7 +118,7 @@
      *
      * @param _status    The desired status of the raffles.
      */
-    function manuallySetPaused(bool _status) onlyEtheraffle external {
+    function manuallySetPaused(bool _status) external onlyEtheraffle {
         paused = _status;
     }
     /**
@@ -127,6 +127,6 @@
      *
      * @param _newPoP     An array of four integers totalling 1000.
      */
-    function manuallySetPercentOfPool(uint[] _newPoP) onlyEtheraffle external {
+    function manuallySetPercentOfPool(uint[] _newPoP) external onlyEtheraffle {
         pctOfPool = _newPoP;
     }
