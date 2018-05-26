@@ -9,8 +9,8 @@
      * @param   _id     Uint identifing the reason function was called.
      */
     function pauseContract(bool _status, uint _id) internal {
-      pauseContract(_status);
-      emit LogFunctionsPaused(_id, now);
+        pauseContract(_status);
+        emit LogFunctionsPaused(_id, now);
     }
     /**
      * @dev     Sets the paused status of the contract to the bool 
@@ -21,5 +21,5 @@
      *
      */
     function pauseContract(bool _status) internal {
-      paused = _status;
+        paused = _status;
     }
