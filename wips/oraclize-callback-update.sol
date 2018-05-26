@@ -180,53 +180,6 @@ contract OraclizeUpdate {
         emit LogQuerySent(query, delay, now);
     }
     /**
-     * @dev     Manually make an Oraclize API call, incase of automation
-     *          failure. Only callable by the Etheraffle address.
-     *
-     * @param   _delay      Either a time in seconds before desired callback
-     *                      time for the API call, or a future UTC format time
-     *                      for the desired time for the API callback.
-     *
-     * @param   _week       The week number this query is for.
-     *
-     * @param   _isRandom   Whether or not the api call being made is for
-     *                      the random.org results draw, or for the 
-     *                      Etheraffle API results call.
-     *
-     * @param   _isManual   The Oraclize call back is a recursive function in
-     *                      which each call fires off another call in perpetuity.
-     *                      This bool allows that recursiveness for this call to
-     *                      be turned on or off depending on caller's requirements.
-     *
-     * @param   _status     The desired paused status of the contract.
-     *
-     */
-    function manuallyMakeOraclizeCall(uint _week, uint _delay, bool _isRandom, bool _isManual, bool _status) onlyEtheraffle external {
-        pauseContract(_status);
-        sendQuery(_delay, getQueryString(_isRandom, _week), _week, _isRandom, _isManual);
-    }
-    /**
-     * @dev     Manually edit (or make!) a query ID struct, that Oraclize callbacks 
-     *          can reference.
-     *
-     * @param   _ID         Desired keccak hash key for the struct
-     *
-     * @param   _weekNo     Desired week/raffle number the struct refers to. 
-     *
-     * @param   _isRandom   Whether or not the api call being made is for
-     *                      the random.org results draw, or for the Etheraffle
-     *                      API results call.
-     *
-     * @param   _isManual   The Oraclize call back is a recursive function in
-     *                      which each call fires off another call in perpetuity.
-     *                      This bool allows that recursiveness for this call to be
-     *                      turned on or off depending on caller's requirements.
-     *
-     */
-    function manuallyModifyQID(bytes32 _ID, uint _weekNo, bool _isRandom, bool _isManual) onlyEtheraffle external {
-        modifyQIDStruct(_ID, _weekNo, _isRandom, _isManual);
-    }
-    /**
      * @dev     Modifies a query ID struct with the passed in information. 
      *          (Or creates it if struct doesn't exist yet...)
      *
