@@ -291,6 +291,15 @@ contract Etheraffle is usingOraclize {
         emit LogFunctionsPaused(_id, now);
     }
     /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###         Ticket Purchasing          ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
+    /**
      * @dev  Function to enter the raffle. Requires the caller to send ether
      *       of amount greater than or equal to the ticket price.
      *
