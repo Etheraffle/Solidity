@@ -211,10 +211,7 @@ contract Etheraffle is usingOraclize {
      */
     function getWeek() public constant returns (uint) {
         uint curWeek = (now - BIRTHDAY) / WEEKDUR;
-        if (now - ((curWeek * WEEKDUR) + BIRTHDAY) > rafEnd) {
-            curWeek++;
-        }
-        return curWeek;
+        return now - ((curWeek * WEEKDUR) + BIRTHDAY) > rafEnd ? curWeek + 1 : curWeek;
     }
 	/**
 	 * @dev		Sets up new raffle via creating a struct with the correct 
