@@ -184,17 +184,7 @@
         if (!_bool) require (_amt <= prizePool, '_amt > prizePool!');
         prizePool = _bool ? prizePool + _amt : prizePool - _amt;
     }
-    /**
-     * @dev     Function allowing manual addition to the global prizepool.
-     *          Requires the caller to send ether, by which amount the 
-     *          prize pool is increased.
-     *
-     */
-    function manuallyAddToPrizePool() payable public {
-        require (msg.value > 0);
-        modifyPrizePool(true, msg.value);
-        emit LogPrizePoolAddition(msg.sender, msg.value, now);
-    }
+
     /**
      * @dev     User calls this function in order to withdraw whatever 
      *          winnings they are owed. It requires the entry be valid 

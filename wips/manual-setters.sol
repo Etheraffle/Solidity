@@ -1,4 +1,15 @@
     /**
+     * @dev     Function allowing manual addition to the global prizepool.
+     *          Requires the caller to send ether, by which amount the 
+     *          prize pool is increased.
+     *
+     */
+    function manuallyAddToPrizePool() payable public {
+        require (msg.value > 0);
+        modifyPrizePool(true, msg.value);
+        emit LogPrizePoolAddition(msg.sender, msg.value, now);
+    }
+    /**
      * @dev     Set the Oraclize strings, in case of url changes. Only callable by
      *          the Etheraffle address.
      *
