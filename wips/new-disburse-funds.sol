@@ -41,6 +41,20 @@
      */
     function disburseFunds(uint _week, uint _cost, uint _amt, address _addr) private {
         ReceiverInterface(_addr).receiveEther.value(_amt)();
+    }
+    /**
+     * @dev     Fires an event pertaining to a disbursal of funds.
+     *
+     * @param   _week   Week of raffle the funds were disbursed from.
+     *
+     * @param   _cost   Cost of the raffle.
+     *
+     * @param   _amt    Amount of Wei sent.
+     *
+     * @param   _addr   Address of receiving contract.
+     *
+     */
+    function logDisbursal(uint _week, uint _cost, uint _amt, address _addr) private {
         emit LogFundsDisbursed(_week, _cost, _amt, _addr, now);
     }
     /**
