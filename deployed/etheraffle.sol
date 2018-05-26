@@ -677,6 +677,7 @@ contract Etheraffle is usingOraclize {
         modifyUnclaimed(false, old, amt);
         emit LogReclaim(old, amt, now);
     }
+    //TODO: Check is this is used more than once - might be a refactor too far?
     /**
      * @dev     Returns the unclaimed prize pool sequestered in a raffle's
      *          struct.
@@ -687,6 +688,11 @@ contract Etheraffle is usingOraclize {
     function getUnclaimed(uint _week) public view returns (uint) {
         return raffle[_week].unclaimed;
     }
+
+
+
+
+
     /**
      * @dev  Function totals up oraclize cost for the raffle, subtracts
      *       it from the prizepool (if less than, if greater than if
