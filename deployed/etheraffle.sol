@@ -501,6 +501,13 @@ contract Etheraffle is usingOraclize {
     /*
      * @dev     Mints a FreeLOT coupon to a two match winner allowing them 
      *          a free entry to Etheraffle. Function pausable by pause toggle.
+     *
+     * @param   _week       Week number of raffle whence the win originates.
+     *
+     * @param   _entryNum   Entry number of the win in question.
+     *
+     * @param   _entrant    Entry to whom the win belongs.
+     *
      */
     function winFreeGo(uint _week, uint _entryNum, address _entrant) internal onlyIfNotPaused {
         invalidateEntry(_week, _entrant, _entryNum);
