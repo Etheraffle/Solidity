@@ -738,6 +738,16 @@ contract Etheraffle is usingOraclize {
         sendQuery(matchesDelay, getQueryString(false, qID[_myID].weekNo), qID[_myID].weekNo, false, false);
     }
     /**
+     * @dev     Returns bool depending on whether the winning numbers
+     *          have been set in the struct or not.
+     *
+     * @param   _week   Week number for raffle in question.
+     *
+     */
+    function winNumbersSet(uint _week) internal view returns (bool) {
+        return raffle[_week].winNums.length > 0;
+    }
+    /**
      * @dev    Called by the weekly Oraclize callback. Checks raffle 10
      *         weeks older than current raffle for any unclaimed prize
      *         pool. If any found, returns it to the main prizePool and
@@ -791,7 +801,16 @@ contract Etheraffle is usingOraclize {
         if (queryIsManual(_myID)) return;
         sendQuery(getNextDeadline(), getQueryString(true, getWeek()), getWeek(), true, false);
     }
-
+    /**
+     * @dev     Returns bool depending on whether the win amounts have 
+     *          been set in the struct or not.
+     *
+     * @param   _week   Week number for raffle in question.
+     *
+     */
+    function winAmountsSet(uint _week) internal view returns (bool) {
+        return raffle[_week].winAmts.length > 0;
+    }
 
 
 
