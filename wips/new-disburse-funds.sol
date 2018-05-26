@@ -29,7 +29,7 @@
      */
     function accountForCosts(uint _cost) private {
         if (_cost > prizePool) return pauseContract(true, 1);
-        if (cost == 0) return; // TODO: Unnecessary?
+        if (cost == 0) return; // TODO: Unnecessary? Will save a little gas except on deploy...
         modifyPrizePool(false, _cost);
     }
     /**
