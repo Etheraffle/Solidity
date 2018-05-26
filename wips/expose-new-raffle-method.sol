@@ -11,7 +11,7 @@
         uint newWeek = getWeek();
         if (newWeek == week) return pauseContract(true, 4);
         setWeek(newWeek);
-        setupRaffleStruct(newWeek, tktPrice, BIRTHDAY + (newWeek * WEEKDUR));
+        setUpRaffleStruct(newWeek, tktPrice, BIRTHDAY + (newWeek * WEEKDUR));
     }
 	/**
 	 * @dev		Sets up new raffle via creating a struct with the correct 
@@ -24,7 +24,7 @@
      * @param    _timeStamp Timestamp of Mon 00:00 of the week of this raffle
      *
 	 */
-   	function setupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) internal {
+   	function setUpRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) internal {
         raffle[_week].tktPrice  = _tktPrice;
         raffle[_week].timeStamp = _timeStamp;
    	}
@@ -61,7 +61,7 @@
      *
 	 */
     function manuallySetupRaffleStruct(uint _week, uint _tktPrice, uint _timeStamp) external onlyEtheraffle {
-        setupRaffleStruct(_week, _tktPrice, _timeStamp);
+        setUpRaffleStruct(_week, _tktPrice, _timeStamp);
     }
 	/**
 	 * @dev		Manually sets the withdraw status of a raffle. Only
