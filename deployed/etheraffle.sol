@@ -478,44 +478,25 @@ contract Etheraffle is usingOraclize {
      *      ##########################################
      *
      */
-
-
-
-
     /**
-     * @dev Withdraw Winnings function. User calls this function in order to withdraw
-     *      whatever winnings they are owed. Function can be paused via the modifier
-     *      function "onlyIfNotPaused"
+     * @dev     User calls this function in order to withdraw whatever 
+     *          winnings they are owed. It requires the entry be valid 
+     *          and the raffle open for withdraw. Function retrieves the
+     *          number of matches then pays out accordingly. Only callable 
+     *          if the contract is not paused.
      *
-     * @param _week        Week number of the raffle the winning entry is from
-     * @param _entryNum    The entrants entry number into this raffle
+     * @param   _week       Week number of the raffle the winning entry is from.
+     *
+     * @param   _entryNum   The entrant's entry number into this raffle.
+     *
      */
-    function withdrawWinnings(uint _week, uint _entryNum) onlyIfNotPaused external {
-        require
-        (
-            raffle[_week].timeStamp > 0 &&
-            now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7) &&
-            now - raffle[_week].timeStamp < wdrawBfr &&
-            raffle[_week].wdrawOpen == true &&
-            raffle[_week].entries[msg.sender][_entryNum - 1].length == 6
-        );
-        uint matches = getMatches(_week, msg.sender, _entryNum);
-        if (matches == 2) return winFreeGo(_week, _entryNum);
-        require
-        (
-            matches >= 3 &&
-            raffle[_week].winAmts[matches - 3] > 0 &&
-            raffle[_week].winAmts[matches - 3] <= this.balance
-        );
-        raffle[_week].entries[msg.sender][_entryNum - 1].push(1);
-        if (raffle[_week].winAmts[matches - 3] <= raffle[_week].unclaimed) {
-            raffle[_week].unclaimed -= raffle[_week].winAmts[matches - 3];
-        } else {
-            raffle[_week].unclaimed = 0;
-            pauseContract(5);
-        }
-        msg.sender.transfer(raffle[_week].winAmts[matches - 3]);
-        emit LogWithdraw(_week, msg.sender, _entryNum, matches, raffle[_week].winAmts[matches - 3], now);
+    function withdrawWinnings(uint _week, uint _entryNum, uint[] _cNums) external onlyIfNotPaused {
+        require (validEntry(_week, _entryNum, _cNums, msg.sender) && openForWithdraw(_week));
+        uint matches = getMatches(_cNums, raffle[_week].winNums);
+        require (matches >= 2);
+        matches == 2 
+            ? winFreeGo(_week, _entryNum) 
+            : payWinnings(_week, _entryNum, matches, msg.sender);
     }
     /*
      * @dev     Mints a FreeLOT coupon to a two match winner allowing them 
@@ -526,6 +507,157 @@ contract Etheraffle is usingOraclize {
         freeLOT.mint(msg.sender, 1);
         emit LogFreeLOTWin(_week, msg.sender, _entryNum, 1, now);
     }
+    /**
+     * @dev     If ticket wins ETH this function first checks the eligibility 
+     *          for withdraw before invalidating the ticket, deducting the win 
+     *          from the unclaimed prizepool and finally transferring the winnings.
+     *
+     * @param   _week       Week number for raffle in question.
+     *
+     * @param   _entryNum   Entry number for ticket in question.
+     *
+     * @param   _matches    Number of matches ticket make to winning numbers.
+     *
+     * @param   _entrant    Address of the ticket holder.
+     *
+     */
+    function payWinnings(uint _week, uint _entryNum, , uint _matches, address _entrant) internal {
+        require (eligibleForWithdraw(_week, matches));
+        invalidateEntry(_week, _entrant, _entryNum);
+        modifyUnclaimed(false, _week, raffle[_week].winAmts[_matches - 3]);
+        transferWinnings(_entrant, raffle[_week].winAmts[matches - 3]);
+        emit LogWithdraw(_week, _entrant, _entryNum, _matches, raffle[_week].winAmts[_matches - 3], now);
+    }
+    /**
+     * @dev     Tranfers an amount of ETH to an address.
+     *
+     * @param   _address    Address to transger ETH to.
+     *
+     * @param   _amt        Amount of Wei to transfer.
+     *
+     */
+    function transferWinnings(address _address, uint _amt) private {
+        _address.transfer(_amt);
+    }
+    /**
+     * @dev     Modifies the unclaimed variable in a struct. If true passed 
+     *          in as first argument, unclaimed is incremented by _amt, if 
+     *          false, decremented. In which latter case, it requires the 
+     *          minuend is smaller than the subtrahend.   
+     *
+     * @param   _bool     Boolean signifying addtion or subtraction.
+     *
+     * @param   _week     Week number for raffle in question.
+     *
+     * @param   _amt      Amount unclaimed is to be modified by.
+     *
+     */
+    function modifyUnclaimed(bool _bool, uint _week, uint _amt) private {
+        if (!_bool) require (_amt <= raffle[_week].unclaimed, 'Prize amt > Unclaimed!');
+        raffle[_week].unclaimed = _bool ? raffle[_week].unclaimed + _amt : raffle[_week].unclaimed - _amt;
+    }
+    /**
+     * @dev     Various requirements w/r/t number of matches, win amounts 
+     *          being set in the raffle struct and contract balance that 
+     *          need to be passed before withdrawal can be processed.
+     *
+     * @param   _week     Week number for raffle in question.
+     *
+     * @param   _matches  Number of matches the entry in question has made.
+     *
+     */
+    function eligibleForWithdraw(uint _week, uint _matches) view internal returns (bool) {
+        return (
+            _matches >= 3 &&
+            raffle[_week].winAmts[_matches - 3] > 0 &&
+            raffle[_week].winAmts[_matches - 3] <= this.balance &&
+        );
+    }
+    /**
+     * @dev     Compares hash of provided entry numbers to previously bought 
+     *          ticket's hashed entry numbers.
+     *
+     * @param   _week       Week number for raffle in question.
+     *
+     * @param   _entryNum   Entry number in question.
+     *
+     * @param   _cNums      Propsed entry numbers for entry in question.
+     *
+     * @param   _entrant    Address of entrant in question.
+     *
+     */
+    function validEntry(uint _week, uint _entryNum, uint[] _cNums, address _entrant) view internal returns (bool) {
+        return raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums);
+    }
+    /**
+     * @dev     Function zeroes the previously stored hash of an entrant's 
+     *          ticket's chosen numbers.
+     *
+     * @param   _week       Week number for raffle in question.
+     *
+     * @param   _entrant    Address of the entrant in question.
+     *
+     * @param   _entryNum   Entry number in question.
+     *
+     */
+    function invalidateEntry(uint _week, address _entrant, uint _entryNum) private {
+        raffle[_week].entries[_entrant][_entryNum - 1] = 0;
+    }
+    /**
+     * @dev     Various temporal requirements plus struct setup requirements 
+     *          that need to be met before a prize withdrawal can be processed. 
+     *          In order: Winning numbers need to be set, withdraw bool needs 
+     *          to be true, raffle's timestamp needs to be set, that the time 
+     *          the function is called needs to be before the withdraw deadline, 
+     *          and that the time the function is called needs to be six days 
+     *          beyond the timestamp. 
+     *
+     * @param   _week   Week number for the raffle in question.
+     *
+     */
+    function openForWithdraw(uint _week) view internal returns (bool) {
+        return (
+            winNumbersSet(_week) &&
+            raffle[_week].wdrawOpen &&
+            raffle[_week].timeStamp > 0 &&
+            now - raffle[_week].timeStamp < wdrawBfr &&
+            now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7)
+        );
+    }
+    /**
+     * @dev     Function compares two arrays of the same length to one 
+     *          another to see how many numbers they have in common.
+     *
+     * @param   _cNums  Array of entrant's chosen numbers.
+     *
+     * @param   _wNums  Array of winning numbers.
+     *
+     */
+    function getMatches(uint[] _cNums, uint[] _wNums) pure internal returns (uint) {
+        require(_cNums.length == 6 && _wNums.length == 6);
+        uint matches;
+        for (uint i = 0; i < 6; i++) {
+            for (uint j = 0; j < 6; j++) {
+                if (_cNums[i] == _wNums[j]) {
+                    matches++;
+                    break;
+                }
+            }
+        }
+        return matches;
+    }
+    /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###         ?????????????????          ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
+
+
+
     /**
      * @dev    Called by the weekly oraclize callback. Checks raffle 10
      *         weeks older than current raffle for any unclaimed prize
