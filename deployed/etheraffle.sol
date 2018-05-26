@@ -122,20 +122,30 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-    * @dev  Modifier to prepend to functions adding the additional
-    *       conditional requiring caller of the method to be the
-    *       etheraffle address.
+    * @dev      Modifier to prepend to functions adding the additional
+    *           conditional requiring caller of the method to be the
+    *           etheraffle address.
     */
     modifier onlyEtheraffle() {
         require(msg.sender == etheraffle);
         _;
     }
     /**
-    * @dev  Modifier to prepend to functions adding the additional
-    *       conditional requiring the paused bool to be false.
+    * @dev      Modifier to prepend to functions adding the additional
+    *           conditional requiring the paused bool to be false.
     */
     modifier onlyIfNotPaused() {
         require(!paused);
+        _;
+    }
+    /**
+     * @dev     Modifier to prepend to functions adding the additional
+     *          conditional requiring caller of the method to be either
+     *          the Oraclize or Etheraffle address.
+     *
+     */
+    modifier onlyOraclize() {
+        require(msg.sender == oraclize_cbAddress() || msg.sender == etheraffle);
         _;
     }
     /**
