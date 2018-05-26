@@ -11,8 +11,9 @@
      //TODO: Rename this function? Or break it up and call more funcs in the api callback? Like, accountForOraclize(), accountForProfit() disburseFunds() - uses I dunno, a generic sender for the the two cases of EthRelief plus disbursal? Or call the big function bookKeeping() or something? performAccounting()???
     function disburseFunds(uint _week) internal {
         uint cost = getOraclizeCost();
-        if (cost > prizePool) return pauseContract(true, 1);
-        modifyPrizePool(false, cost);
+        accountForCosts(cost);
+        // if (cost > prizePool) return pauseContract(true, 1);
+        // modifyPrizePool(false, cost);
         uint profit = calcProfit(_week);
         if (profit == 0) return logDisbursal(_week, cost, 0, 0, now); // Can't use emit keyword here
 
@@ -28,6 +29,17 @@
         //     return;
         // }
         
+    }
+    /**
+     * @dev     Subtracts a given cost from the prize pool. Pauses contract 
+     *          instead if cost is greater than the prize pool.
+     *
+     * @param   _cost   Amount to be deducted from the prize pool.
+     *
+     */
+    function accountForCosts(uint _cost) private {
+        if (_cost > prizePool) return pauseContract(true, 1);
+        modifyPrizePool(false, _cost);
     }
     /**
      * @dev     Sends funds via a given contract's "receiver" interface,
