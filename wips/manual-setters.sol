@@ -121,7 +121,7 @@
      * @param   _status    The desired status of the raffles.
      */
     function manuallySetPaused(bool _status) external onlyEtheraffle {
-        paused = _status;
+        pauseContract(_status);
     }
     /**
      * @dev     Set the percentage-of-prizepool array. Only callable by the
