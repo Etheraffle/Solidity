@@ -689,6 +689,37 @@ contract Etheraffle is usingOraclize {
             : apiCallback(_myID, _result);
     }
     /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###          Random Callback           ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
+    /**
+     * @dev     Called when a random.org api callback comes in. It first 
+     *          reclaims unclaimed prizes from the raffle ten weeks previous,
+     *          disburses this week's raffle's profits, sets the winning 
+     *          numbers from the callback in this raffle's struct and finally 
+     *          prepares the next Oraclize query to call the Etheraffle API.
+     *          Function requires the winning numbers to not already have been
+     *          set which stops Oraclize replays causing havoc!
+     *
+     * @param   _myID       The hash of the Oraclize query
+     *
+     * @param   _result     The result of the Oraclize query
+     *
+     */
+    function randomCallback(bytes32 _myID, string _result) internal onlyOraclize {
+        require(!winNumbersSet(qID[_myID].weekNo));
+        reclaimUnclaimed();
+        performAccounting(qID[_myID].weekNo);
+        setWinningNumbers(qID[_myID].weekNo, _result);
+        if (queryIsManual(_myID)) return;
+        sendQuery(matchesDelay, getQueryString(false, qID[_myID].weekNo), qID[_myID].weekNo, false, false);
+    }
+    /**
      * @dev    Called by the weekly Oraclize callback. Checks raffle 10
      *         weeks older than current raffle for any unclaimed prize
      *         pool. If any found, returns it to the main prizePool and
