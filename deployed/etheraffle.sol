@@ -1279,7 +1279,7 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _newAddr   New address of the EthRelief contract.
      */
-    function manuallySetEthRelief(address _newAddr) external onlyEtheraffle {
+    function manuallySetEthReliefAddr(address _newAddr) external onlyEtheraffle {
         ethRelief = _newAddr;
     }
     /**
@@ -1298,7 +1298,7 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _newAddr   New address of Etheraffle multisig contract.
      */
-    function manuallySetEtheraffle(address _newAddr) external onlyEtheraffle {
+    function manuallySetEtheraffleAddr(address _newAddr) external onlyEtheraffle {
         etheraffle = _newAddr;
     }
     /**
@@ -1308,7 +1308,7 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _newTime    The time desired in seconds.
      */
-    function manuallySetRafEnd(uint _newTime) external onlyEtheraffle {
+    function manuallySetRafEndTime(uint _newTime) external onlyEtheraffle {
         rafEnd = _newTime;
     }
     /**
