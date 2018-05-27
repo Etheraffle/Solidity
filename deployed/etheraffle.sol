@@ -50,6 +50,8 @@ contract FreeLOTInterface {
 contract Etheraffle is usingOraclize {
     using strings for *;
     /**
+     * @title   Etheraffle
+     * @author  Greg Kapka (github.com/gskapka)
      *
      *      ##########################################
      *      ###                                    ###
