@@ -1362,19 +1362,6 @@ contract Etheraffle is usingOraclize {
     function manuallyModifyQID(bytes32 _ID, uint _weekNo, bool _isRandom, bool _isManual) onlyEtheraffle external {
         modifyQIDStruct(_ID, _weekNo, _isRandom, _isManual);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-    
     /**
      *
      *      ##########################################
