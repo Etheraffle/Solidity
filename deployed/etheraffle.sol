@@ -713,6 +713,8 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _ID     Bytes32 hash identifying the query in question.
      *
+     * @return  True if query was made manually, else false.
+     *
      */
     function queryIsManual(bytes32 _ID) internal view returns (bool) {
         return qID[_ID].isManual;
@@ -721,6 +723,8 @@ contract Etheraffle is usingOraclize {
      * @notice  Checks if an Oraclize query was to Random.org or not.
      *
      * @param   _ID     Bytes32 hash identifying the query in question.
+     *
+     * @return  True if query pertains to a Random.org api call, else false.
      *
      */
     function queryIsRandom(bytes32 _ID) internal view returns (bool) {
@@ -763,6 +767,8 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _week   Week number for raffle in question.
      *
+     * @return  True if winning numbers are set correctly in raffle struct.
+     *
      */
     function winNumbersSet(uint _week) internal view returns (bool) {
         return raffle[_week].winNums.length > 0;
@@ -789,6 +795,8 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _week   Week number for raffle in question.
      *
+     * @return  Unclaimed prize pool sequestered in raffle's struct in Wei.
+     *
      */
     function getUnclaimed(uint _week) public view returns (uint) {
         return raffle[_week].unclaimed;
@@ -810,6 +818,8 @@ contract Etheraffle is usingOraclize {
     /**
      * @notice  Returns the cost of the Oraclize api calls
      *          (two per draw).
+     *
+     * @return  The cost of the two Oraclize API calls per draw.
      *
      */
     function getOraclizeCost() internal view returns (uint) {
@@ -833,6 +843,8 @@ contract Etheraffle is usingOraclize {
      *          entries, returns 0.
      *
      * @param   _week   Week number for raffle in question.
+     *
+     * @return  The profit generated from a raffle's ticket sales.
      *
      */
     function calcProfit(uint _week) internal view returns (uint) {
@@ -919,6 +931,9 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _week   Week number for raffle in question.
      *
+     * @return  True if the winning amounts are set correctly in the 
+     *          raffle's struct, else false.
+     *
      */
     function winAmountsSet(uint _week) internal view returns (bool) {
         return raffle[_week].winAmts.length > 0;
@@ -947,6 +962,9 @@ contract Etheraffle is usingOraclize {
     /**
      * @notice  Returns the number of seconds until the next occurring 
      *          raffle deadline.
+     *
+     * @return  The deadline in UTC format of the raffle calculated 
+     *          from the current week number.
      *
      */
     function getNextDeadline() internal view returns (uint) {
@@ -995,6 +1013,10 @@ contract Etheraffle is usingOraclize {
      * @param   _i            Index this tier corresponds to in odds/splits arrays
      *
      * @param   _week         The week number of the raffle in question.
+     *
+     * @return  The prize amount in Wei for a given tier w/r/t number of
+     *          winners in that tier.
+     *
      */
     function calcPrize(uint _numWinners, uint _i, uint _week) internal view returns (uint) {
         return oddsTotal(_numWinners, _i, _week) <= splitsTotal(_numWinners, _i) ? oddsSingle(_i, _week) : splitsSingle(_numWinners, _i); 
