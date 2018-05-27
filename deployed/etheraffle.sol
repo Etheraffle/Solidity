@@ -1022,7 +1022,7 @@ contract Etheraffle is usingOraclize {
         return oddsTotal(_numWinners, _i, _week) <= splitsTotal(_numWinners, _i) ? oddsSingle(_i, _week) : splitsSingle(_numWinners, _i); 
     }
     /*  
-     * @notice  Returns TOTAL payout per tier when calculated using 
+     * @notice  Calculates the total payout per tier when calculated using 
      *          the odds method.
      *
      * @param   _numWinners     Number of X match winners.
@@ -1030,12 +1030,15 @@ contract Etheraffle is usingOraclize {
      * @param   _matchesIndex   Index of matches array (∴ 3 match win,
      *                          4 match win etc).
      *
+     * @return  The total prize amount in Wei for a given tier, calculated 
+     *          using the true odds for a given number of matches.
+     *
      */
     function oddsTotal(uint _numWinners, uint _matchesIndex, uint _week) internal view returns (uint) {
         return oddsSingle(_matchesIndex, _week) * _numWinners;
     }
     /*
-     * @notice  Returns TOTAL payout per tier when calculated using
+     * @notice  Calculates the total payout per tier when calculated using
      *          the splits method.
      *
      * @param    _numWinners     Number of X match winners.
@@ -1043,29 +1046,40 @@ contract Etheraffle is usingOraclize {
      * @param    _matchesIndex   Index of matches array (∴ 3 match win,
      *                           4 match win etc).
      *
+     * @return  The total prize amount in Wei for a given tier, calculated
+     *          using a percentage split for a given tier of the total 
+     *          prize pool.
+     *
      */
     function splitsTotal(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
         return splitsSingle(_numWinners, _matchesIndex) * _numWinners;
     }
     /*
-     * @notice  Returns single payout when calculated using the odds
+     * @notice  Calculates single payout when calculated using the odds
      *          method.
      *
      * @param   _matchesIndex   Index of matches array (∴ 3 match win,
      *                          4 match win etc).
+     *
+     * @return  A single prize amount in Wei for a given tier, calculated
+     *          using the true odds for a given number of matches.
      *
      */
     function oddsSingle(uint _matchesIndex, uint _week) internal view returns (uint) {
         return (raffle[_week].tktPrice * odds[_matchesIndex] * (1000 - take)) / 1000;
     }
     /*
-     * @notice  Returns a single payout when calculated using the 
+     * @notice  Calculates a single payout when calculated using the 
      *          splits method.
      *
      * @param   _numWinners     Number of X match winners.
      *
      * @param   _matchesIndex   Index of matches array (∴ 3 match win,
      *                          4 match win etc).
+     *
+     * @return  A single prize amount in Wei for a given tier, calculated
+     *          using a percentage split for a given tier of the total 
+     *          prize pool.
      *
      */
     function splitsSingle(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
@@ -1107,6 +1121,9 @@ contract Etheraffle is usingOraclize {
      * @param   _isRandom   Whether the query is to the Random.org api, or Etheraffle's.
      *
      * @param   _weekNo     Raffle number the call is being made on behalf of.
+     *
+     * @return  A string making up the full Oraclize query for either the Random.org
+     *          or Etheraffle API calls, depending on bool passed in.
      *
      */
     function getQueryString(bool _isRandom, uint _weekNo) internal onlyOraclize returns (string) {
@@ -1152,6 +1169,9 @@ contract Etheraffle is usingOraclize {
      *          https://github.com/Arachnid/solidity-stringutils
      *
      * @param   _string   The string to be sliced.
+     *
+     * @return  An array of strings.
+     *
      */
     function stringToArray(string _string) internal pure returns (string[]) {
         var str    = _string.toSlice();
@@ -1420,6 +1440,8 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _entrant    The entrant in question.
      *
+     * @return  The number of entries an entrant has made in a given raffle.
+     *
      */
     function getUserNumEntries(address _entrant, uint _week) constant external returns (uint) {
         return raffle[_week].entries[_entrant].length;
@@ -1434,6 +1456,8 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _entryNum   The entrant's entry number in this raffle.
      *
+     * @return  The hash of an entrant's entry numbers in the specified raffle. 
+     *
      */
     function getChosenNumbersHash(address _entrant, uint _week, uint _entryNum) constant external returns (bytes32) {
         return raffle[_week].entries[_entrant][_entryNum-1];
@@ -1443,6 +1467,10 @@ contract Etheraffle is usingOraclize {
      *          and the prize amounts. Returns two arrays.
      *
      * @param   _week   The week number of the raffle in question.
+     *
+     * @return  The two arrays stored in the given raffle's struct, 
+     *          containing if set the winning numbers and the winning
+     *          winning amounts respectively.
      *
      */
     function getWinningDetails(uint _week) constant external returns (uint[], uint[]) {
