@@ -219,14 +219,19 @@ contract Etheraffle is usingOraclize {
     /**
      * @notice  Function using Etheraffle's birthday to calculate the
      *          week number since then.
+     *
+     * @return  The current week number.
+     *
      */
     function getWeek() public constant returns (uint) {
         uint curWeek = (now - BIRTHDAY) / WEEKDUR;
         return pastClosingTime(curWeek) ? curWeek + 1 : curWeek
     }
     /**
-     * @notice  Returns true if time of calling is past a raffle's 
+     * @notice  Calculates if time function is called is past a raffle's 
      *          designated end time.
+     *
+     * @return  True if past closing else false.
      *
      */
     function pastClosingTime(uint _curWeek) internal view returns (bool) {
@@ -364,6 +369,8 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _week   Week number for raffle in question.
      *
+     * @return  True if msg.value greater than tktPrice, else false.
+     *
      */
     function validTktPrice(uint _week) internal view returns (bool) {
         return (
@@ -437,6 +444,9 @@ contract Etheraffle is usingOraclize {
     /**
      * @notice  Temporal & raffle struct setup requirements that need to be 
      *          satisfied before a raffle ticket can be purchased.
+     *
+     * @return  True if raffle is open for entry, else false.
+     *
      */
     function raffleOpenForEntry() internal view returns (bool) {
         return (
@@ -450,6 +460,8 @@ contract Etheraffle is usingOraclize {
      *          numbers, in ascending order, between one and 49.
      *
      * @param   _cNums  Array of a ticket's proposed numbers in question.
+     *
+     * @return  True if numbers are valid, else false.
      *
      */
     function validNumbers(uint[] _cNums) internal pure returns (bool) {
@@ -582,6 +594,8 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _matches  Number of matches the entry in question has made.
      *
+     * @return  True if eligible for withdraw, else false.
+     *
      */
     function eligibleForWithdraw(uint _week, uint _matches) view internal returns (bool) {
         return (
@@ -601,6 +615,8 @@ contract Etheraffle is usingOraclize {
      * @param   _cNums      Propsed entry numbers for entry in question.
      *
      * @param   _entrant    Address of entrant in question.
+     *
+     * @return  True if entry is valid, else false.
      *
      */
     function validEntry(uint _week, uint _entryNum, uint[] _cNums, address _entrant) view internal returns (bool) {
@@ -631,6 +647,8 @@ contract Etheraffle is usingOraclize {
      *
      * @param   _week   Week number for the raffle in question.
      *
+     * @return  True if raffle is open for withdraw, else false.
+     *
      */
     function openForWithdraw(uint _week) view internal returns (bool) {
         return (
@@ -648,6 +666,8 @@ contract Etheraffle is usingOraclize {
      * @param   _cNums  Array of entrant's chosen numbers.
      *
      * @param   _wNums  Array of winning numbers.
+     *
+     * @return  Amount of numbers two arrays have in common.
      *
      */
     function getMatches(uint[] _cNums, uint[] _wNums) pure internal returns (uint) {
