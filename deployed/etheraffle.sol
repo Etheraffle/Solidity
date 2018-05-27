@@ -1363,6 +1363,15 @@ contract Etheraffle is usingOraclize {
         return (raffle[_week].winNums, raffle[_week].winAmts);
     }
     /**
+     *
+     *      ##########################################
+     *      ###                                    ###
+     *      ###         Upgrade Functions          ###
+     *      ###                                    ###
+     *      ##########################################
+     *
+     */
+    /**
      * @dev     Upgrades the Etheraffle contract. Only callable by the
      *          Etheraffle address. Calls an addToPrizePool method as
      *          per the abstract contract above. Function renders the
@@ -1371,7 +1380,7 @@ contract Etheraffle is usingOraclize {
      *          contract. Sets a var tracking when upgrade occurred and logs
      *          the event.
      *
-     * @param _newAddr   The new contract address.
+     * @param   _newAddr   The new contract address.
      */
     function upgradeContract(address _newAddr) onlyEtheraffle external {
         require(upgraded == 0 && upgradeAddr == address(0));
@@ -1400,14 +1409,4 @@ contract Etheraffle is usingOraclize {
         require(now - upgraded > WEEKDUR * 10);
         selfdestruct(ethRelief);
     }
-    // /**
-    //  * @dev     Function allowing manual addition to the global prizepool.
-    //  *          Requires the caller to send ether.
-    //  */
-    // function addToPrizePool() payable external {
-    //     require(msg.value > 0);
-    //     prizePool += msg.value;
-    //     emit LogPrizePoolAddition(msg.sender, msg.value, now);
-    // }
-
 }
