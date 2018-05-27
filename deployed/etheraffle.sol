@@ -122,7 +122,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-    * @dev      Modifier to prepend to functions adding the additional
+    * @notice   Modifier to prepend to functions adding the additional
     *           conditional requiring caller of the method to be the
     *           etheraffle address.
     */
@@ -131,7 +131,7 @@ contract Etheraffle is usingOraclize {
         _;
     }
     /**
-    * @dev      Modifier to prepend to functions adding the additional
+    * @notice   Modifier to prepend to functions adding the additional
     *           conditional requiring the paused bool to be false.
     */
     modifier onlyIfNotPaused() {
@@ -139,7 +139,7 @@ contract Etheraffle is usingOraclize {
         _;
     }
     /**
-     * @dev     Modifier to prepend to functions adding the additional
+     * @notice  Modifier to prepend to functions adding the additional
      *          conditional requiring caller of the method to be either
      *          the Oraclize or Etheraffle address.
      *
@@ -179,7 +179,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev     Constructor. Sets the Etheraffle multisig address, 
+     * @notice  Constructor. Sets the Etheraffle multisig address, 
      *          the EthRelief & Disbursal contract addresses and 
      *          instantiates the FreeLOT contract. Sets up an 
      *          initial raffle struct.
@@ -203,11 +203,11 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev   Function which gets current week number and if different
-     *        from the global var week number, it updates that and sets
-     *        up the new raffle struct. Should only be called once a
-     *        week after the raffle is closed. Should it get called
-     *        sooner, the contract is paused for inspection.
+     * @notice  Function which gets current week number and if different
+     *          from the global var week number, it updates that and sets
+     *          up the new raffle struct. Should only be called once a
+     *          week after the raffle is closed. Should it get called
+     *          sooner, the contract is paused for inspection.
      *
      */
     function setUpNewRaffle() internal {
@@ -217,15 +217,15 @@ contract Etheraffle is usingOraclize {
         setUpRaffleStruct(newWeek, tktPrice, BIRTHDAY + (newWeek * WEEKDUR));
     }
     /**
-     * @dev   Function using Etheraffle's birthday to calculate the
-     *        week number since then.
+     * @notice  Function using Etheraffle's birthday to calculate the
+     *          week number since then.
      */
     function getWeek() public constant returns (uint) {
         uint curWeek = (now - BIRTHDAY) / WEEKDUR;
         return pastClosingTime(curWeek) ? curWeek + 1 : curWeek
     }
     /**
-     * @dev     Returns true if time of calling is past a raffle's 
+     * @notice  Returns true if time of calling is past a raffle's 
      *          designated end time.
      *
      */
@@ -233,7 +233,7 @@ contract Etheraffle is usingOraclize {
         return now - ((curWeek * WEEKDUR) + BIRTHDAY) > rafEnd;
     }
 	/**
-	 * @dev		Sets up new raffle via creating a struct with the correct 
+	 * @notice	Sets up new raffle via creating a struct with the correct 
      *          timestamp and ticket price. 
 	 *
 	 * @param   _week       Desired week number for new raffle struct.
@@ -248,7 +248,7 @@ contract Etheraffle is usingOraclize {
         raffle[_week].timeStamp = _timeStamp;
    	}
 	/**
-	 * @dev		Sets the withdraw status of a raffle.
+	 * @notice	Sets the withdraw status of a raffle.
 	 *
 	 * @param   _week   Week number for raffle in question.
      *
@@ -259,7 +259,7 @@ contract Etheraffle is usingOraclize {
         raffle[_week].wdrawOpen = _status;
     }
     /**
-	 * @dev		Sets the global week variable.
+	 * @notice	Sets the global week variable.
 	 *
 	 * @param   _week   Desired week number.
      *
@@ -277,7 +277,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev     Sets the paused status of the contract to the bool 
+     * @notice  Sets the paused status of the contract to the bool 
      *          passed in. This affects various of the contracts 
      *          functions via the onlyIfNotPaused modifier.
      *
@@ -288,7 +288,7 @@ contract Etheraffle is usingOraclize {
         paused = _status;
     }
     /**
-     * @dev     Sets the paused status of the contract to the bool 
+     * @notice  Sets the paused status of the contract to the bool 
      *          passed in. Logs an event with a uint identifying the 
      *          reason for pausing the contract to the front-end 
      *          event watcher.
@@ -311,7 +311,7 @@ contract Etheraffle is usingOraclize {
      *
      */
    /**
-     * @dev     Function to enter a raffle. Checks for correct ticket price, 
+     * @notice  Function to enter a raffle. Checks for correct ticket price, 
      *          then purchases ticket. Only callable when the contract is 
      *          not paused.
      *
@@ -325,7 +325,7 @@ contract Etheraffle is usingOraclize {
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
-     * @dev     Function to enter the raffle on behalf of another address.  
+     * @notice  Function to enter the raffle on behalf of another address.  
      *          Checks for correct ticket price. Only callable when the 
      *          contract is not paused. In the event of a win, only the 
      *          onBehalfOf address can claim it.
@@ -342,7 +342,7 @@ contract Etheraffle is usingOraclize {
         buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
     /**
-     * @dev     Function to enter the raffle for free. Requires the caller's
+     * @notice  Function to enter the raffle for free. Requires the caller's
      *          balance of the Etheraffle freeLOT token to be greater than
      *          zero. Function destroys one freeLOT token, increments the
      *          freeEntries variable in the raffle struct then purchases the
@@ -359,7 +359,7 @@ contract Etheraffle is usingOraclize {
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
-     * @dev     Checks that a raffle struct has a ticket price set and whether 
+     * @notice  Checks that a raffle struct has a ticket price set and whether 
      *          the caller's msg.value is greater than or equal to that price.
      *
      * @param   _week   Week number for raffle in question.
@@ -372,7 +372,7 @@ contract Etheraffle is usingOraclize {
         );
     }
     /**
-     * @dev     Decrement an address' FreeLOT token holdings by a specified 
+     * @notice  Decrement an address' FreeLOT token holdings by a specified 
      *          amount.
      *
      * @param   _address  The address owning the FreeLOT token(s)
@@ -384,7 +384,7 @@ contract Etheraffle is usingOraclize {
         freeLOT.destroy(_address, _amt);
     }
     /**
-     * @dev     Internal function that purchases raffle tickets. Requires the 
+     * @notice  Internal function that purchases raffle tickets. Requires the 
      *          raffle be open for entry and the chosen numbers be valid. 
      *          Increments number of entries in the raffle strut, adds the ticket 
      *          price to the prize pool and stores a hash of the entrants chosen 
@@ -407,7 +407,7 @@ contract Etheraffle is usingOraclize {
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
     /**
-     * @dev     Stores a ticket purchase by hashing the chosen numbers 
+     * @notice  Stores a ticket purchase by hashing the chosen numbers 
      *          and pushing them into an array mapped to the user's 
      *          address in the relevant raffle's struct.
      *
@@ -422,7 +422,7 @@ contract Etheraffle is usingOraclize {
         raffle[_week].entries[_entrant].push(keccak256(_cNums));
     }
     /**
-     * @dev     Increments the number of entries in a raffle struct. 
+     * @notice  Increments the number of entries in a raffle struct. 
      *          Increments free entries if bool passed is true, else 
      *          normal entries otherwise.
      *
@@ -435,7 +435,7 @@ contract Etheraffle is usingOraclize {
         _free ? raffle[week].freeEntries++ : raffle[_week].numEntries++;
     }
     /**
-     * @dev     Temporal & raffle struct setup requirements that need to be 
+     * @notice  Temporal & raffle struct setup requirements that need to be 
      *          satisfied before a raffle ticket can be purchased.
      */
     function raffleOpenForEntry() internal view returns (bool) {
@@ -445,7 +445,7 @@ contract Etheraffle is usingOraclize {
         );
     }
     /**
-     * @dev     Series of requirements a raffle ticket's chosen numbers must 
+     * @notice  Series of requirements a raffle ticket's chosen numbers must 
      *          pass in order to qualify as valid. Ensures that there are six 
      *          numbers, in ascending order, between one and 49.
      *
@@ -465,7 +465,7 @@ contract Etheraffle is usingOraclize {
         );
     }
     /**
-     * @dev     Modifies prizePool var. If true passed is in as first 
+     * @notice  Modifies prizePool var. If true passed is in as first 
      *          argument, prizePool is incremented by _amt, if  false, 
      *          decremented. In which latter case, it requires the minuend 
      *          be smaller than the subtrahend.  
@@ -489,7 +489,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev     User calls this function in order to withdraw whatever 
+     * @notice  User calls this function in order to withdraw whatever 
      *          winnings they are owed. It requires the entry be valid 
      *          and the raffle open for withdraw. Function retrieves the
      *          number of matches then pays out accordingly. Only callable 
@@ -509,7 +509,7 @@ contract Etheraffle is usingOraclize {
             : payWinnings(_week, _entryNum, matches, msg.sender);
     }
     /*
-     * @dev     Mints a FreeLOT coupon to a two match winner allowing them 
+     * @notice  Mints a FreeLOT coupon to a two match winner allowing them 
      *          a free entry to Etheraffle. Function pausable by pause toggle.
      *
      * @param   _week       Week number of raffle whence the win originates.
@@ -525,7 +525,7 @@ contract Etheraffle is usingOraclize {
         emit LogFreeLOTWin(_week, _entrant, _entryNum, 1, now);
     }
     /**
-     * @dev     If ticket wins ETH this function first checks the eligibility 
+     * @notice  If ticket wins ETH this function first checks the eligibility 
      *          for withdraw before invalidating the ticket, deducting the win 
      *          from the unclaimed prizepool and finally transferring the winnings.
      *
@@ -546,7 +546,7 @@ contract Etheraffle is usingOraclize {
         emit LogWithdraw(_week, _entrant, _entryNum, _matches, raffle[_week].winAmts[_matches - 3], now);
     }
     /**
-     * @dev     Tranfers an amount of ETH to an address.
+     * @notice  Tranfers an amount of ETH to an address.
      *
      * @param   _address    Address to transger ETH to.
      *
@@ -557,7 +557,7 @@ contract Etheraffle is usingOraclize {
         _address.transfer(_amt);
     }
     /**
-     * @dev     Modifies the unclaimed variable in a struct. If true passed 
+     * @notice  Modifies the unclaimed variable in a struct. If true passed 
      *          in as first argument, unclaimed is incremented by _amt, if 
      *          false, decremented. In which latter case, it requires the 
      *          minuend is smaller than the subtrahend.   
@@ -574,7 +574,7 @@ contract Etheraffle is usingOraclize {
         raffle[_week].unclaimed = _bool ? raffle[_week].unclaimed + _amt : raffle[_week].unclaimed - _amt;
     }
     /**
-     * @dev     Various requirements w/r/t number of matches, win amounts 
+     * @notice  Various requirements w/r/t number of matches, win amounts 
      *          being set in the raffle struct and contract balance that 
      *          need to be passed before withdrawal can be processed.
      *
@@ -591,7 +591,7 @@ contract Etheraffle is usingOraclize {
         );
     }
     /**
-     * @dev     Compares hash of provided entry numbers to previously bought 
+     * @notice  Compares hash of provided entry numbers to previously bought 
      *          ticket's hashed entry numbers.
      *
      * @param   _week       Week number for raffle in question.
@@ -607,7 +607,7 @@ contract Etheraffle is usingOraclize {
         return raffle[_week].entries[_entrant][_entryNum - 1] == keccak256(_cNums);
     }
     /**
-     * @dev     Function zeroes the previously stored hash of an entrant's 
+     * @notice  Function zeroes the previously stored hash of an entrant's 
      *          ticket's chosen numbers.
      *
      * @param   _week       Week number for raffle in question.
@@ -621,7 +621,7 @@ contract Etheraffle is usingOraclize {
         raffle[_week].entries[_entrant][_entryNum - 1] = 0;
     }
     /**
-     * @dev     Various temporal requirements plus struct setup requirements 
+     * @notice  Various temporal requirements plus struct setup requirements 
      *          that need to be met before a prize withdrawal can be processed. 
      *          In order: Winning numbers need to be set, withdraw bool needs 
      *          to be true, raffle's timestamp needs to be set, that the time 
@@ -642,7 +642,7 @@ contract Etheraffle is usingOraclize {
         );
     }
     /**
-     * @dev     Function compares two arrays of the same length to one 
+     * @notice  Function compares two arrays of the same length to one 
      *          another to see how many numbers they have in common.
      *
      * @param   _cNums  Array of entrant's chosen numbers.
@@ -673,7 +673,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev     The Oralize call back function. Only callable by Etheraffle 
+     * @notice  The Oralize call back function. Only callable by Etheraffle 
      *          or the Oraclize address. Emits an event detailing the callback, 
      *          before running the relevant method that acts on the callback.
      * 
@@ -689,7 +689,7 @@ contract Etheraffle is usingOraclize {
             : apiCallback(_myID, _result);
     }
         /**
-     * @dev     Checks if an Oraclize query was made manually or not.
+     * @notice  Checks if an Oraclize query was made manually or not.
      *
      * @param   _ID     Bytes32 hash identifying the query in question.
      *
@@ -698,7 +698,7 @@ contract Etheraffle is usingOraclize {
         return qID[_ID].isManual;
     }
     /**
-     * @dev     Checks if an Oraclize query was to Random.org or not.
+     * @notice  Checks if an Oraclize query was to Random.org or not.
      *
      * @param   _ID     Bytes32 hash identifying the query in question.
      *
@@ -716,7 +716,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev     Called when a random.org api callback comes in. It first 
+     * @notice  Called when a random.org api callback comes in. It first 
      *          reclaims unclaimed prizes from the raffle ten weeks previous,
      *          disburses this week's raffle's profits, sets the winning 
      *          numbers from the callback in this raffle's struct and finally 
@@ -738,7 +738,7 @@ contract Etheraffle is usingOraclize {
         sendQuery(matchesDelay, getQueryString(false, qID[_myID].weekNo), qID[_myID].weekNo, false, false);
     }
     /**
-     * @dev     Returns bool depending on whether the winning numbers
+     * @notice  Returns bool depending on whether the winning numbers
      *          have been set in the struct or not.
      *
      * @param   _week   Week number for raffle in question.
@@ -748,10 +748,10 @@ contract Etheraffle is usingOraclize {
         return raffle[_week].winNums.length > 0;
     }
     /**
-     * @dev    Called by the weekly Oraclize callback. Checks raffle 10
-     *         weeks older than current raffle for any unclaimed prize
-     *         pool. If any found, returns it to the main prizePool and
-     *         zeros the amount.
+     * @notice  Called by the weekly Oraclize callback. Checks raffle 10
+     *          weeks older than current raffle for any unclaimed prize
+     *          pool. If any found, returns it to the main prizePool and
+     *          zeros the amount.
      *
      */
     function reclaimUnclaimed() internal {
@@ -764,7 +764,7 @@ contract Etheraffle is usingOraclize {
     }
     //TODO: Check is this is used more than once - might be a refactor too far?
     /**
-     * @dev     Returns the unclaimed prize pool sequestered in a raffle's
+     * @notice  Returns the unclaimed prize pool sequestered in a raffle's
      *          struct.
      *
      * @param   _week   Week number for raffle in question.
@@ -774,7 +774,7 @@ contract Etheraffle is usingOraclize {
         return raffle[_week].unclaimed;
     }
         /**
-     * @dev     Calculates and accounts for a raffle's costs and profits, 
+     * @notice  Calculates and accounts for a raffle's costs and profits, 
      *          before distributing the latter should there be any.
      *
      * @param   _week   Week number for raffle in question.
@@ -788,7 +788,7 @@ contract Etheraffle is usingOraclize {
         distributeFunds(_week, cost, profit);
     }
     /**
-     * @dev     Returns the cost of the Oraclize api calls
+     * @notice  Returns the cost of the Oraclize api calls
      *          (two per draw).
      *
      */
@@ -796,7 +796,7 @@ contract Etheraffle is usingOraclize {
         return ((gasAmt * gasPrc) + oracCost) * 2;
     }
     /**
-     * @dev     Subtracts a given cost from the prize pool. Pauses contract 
+     * @notice  Subtracts a given cost from the prize pool. Pauses contract 
      *          instead if cost is greater than the prize pool.
      *
      * @param   _cost   Amount to be deducted from the prize pool.
@@ -808,7 +808,7 @@ contract Etheraffle is usingOraclize {
         modifyPrizePool(false, _cost);
     }
     /**
-     * @dev     Calculates profits earnt from a raffle. If there are 
+     * @notice  Calculates profits earnt from a raffle. If there are 
      *          no paid entries or if free entries outweigh paid 
      *          entries, returns 0.
      *
@@ -822,7 +822,7 @@ contract Etheraffle is usingOraclize {
             : 0;
     }
     /**
-     * @dev     Subtracts a given amount of profit from the prize pool, if 
+     * @notice  Subtracts a given amount of profit from the prize pool, if 
      *          said amount is greater than zero.
      *
      * @param   _profit   Amount to be deducted from the prize pool.
@@ -833,7 +833,7 @@ contract Etheraffle is usingOraclize {
         modifyPrizePool(false, profit);
     }
     /**
-     * @dev     Distributes any profit earnt from a raffle. Half goes to 
+     * @notice  Distributes any profit earnt from a raffle. Half goes to 
      *          the disbursal contract for the DAO of token holders, and 
      *          the remainder to the EthRelief contract for charitable 
      *          donations.
@@ -852,7 +852,7 @@ contract Etheraffle is usingOraclize {
         disburseFunds(_week, _cost, _profit - half, ethRelief);
     }
     /**
-     * @dev     Sends funds via a given contract's "receiver" interface,
+     * @notice  Sends funds via a given contract's "receiver" interface,
      *          which ensures an event is fired in the receiving contract, 
      *          announcing the funds' arrival.
      *
@@ -875,7 +875,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev     Called when the Etheraffle API callback is received. It sets 
+     * @notice  Called when the Etheraffle API callback is received. It sets 
      *          up the next raffle's struct, calculates this raffle's payouts 
      *          then makes the next Oraclize query to call the Random.org api.
      *          Function requires the winning amounts to not already have been
@@ -894,7 +894,7 @@ contract Etheraffle is usingOraclize {
         sendQuery(getNextDeadline(), getQueryString(true, getWeek()), getWeek(), true, false);
     }
     /**
-     * @dev     Returns bool depending on whether the win amounts have 
+     * @notice  Returns bool depending on whether the win amounts have 
      *          been set in the struct or not.
      *
      * @param   _week   Week number for raffle in question.
@@ -904,7 +904,7 @@ contract Etheraffle is usingOraclize {
         return raffle[_week].winAmts.length > 0;
     }
     /**
-     * @dev     Takes oraclize random.org api call result string and splits
+     * @notice  Takes oraclize random.org api call result string and splits
      *          it at the commas into an array, parses those strings in that
      *          array as integers and pushes them into the winning numbers
      *          array in the raffle's struct. Fires event logging the data,
@@ -925,7 +925,7 @@ contract Etheraffle is usingOraclize {
         emit LogWinningNumbers(_week, raffle[_week].numEntries, raffle[_week].winNums, prizePool, serialNo, now);
     }
     /**
-     * @dev     Returns the number of seconds until the next occurring 
+     * @notice  Returns the number of seconds until the next occurring 
      *          raffle deadline.
      *
      */
@@ -933,7 +933,7 @@ contract Etheraffle is usingOraclize {
         return (getWeek() * WEEKDUR) + BIRTHDAY + rafEnd + resultsDelay;
     }
     /**
-     * @dev     Takes the results of the oraclize Etheraffle api call back
+     * @notice  Takes the results of the oraclize Etheraffle api call back
      *          and uses them to calculate the prizes due to each tier
      *          (3 matches, 4 matches etc) then pushes them into the winning
      *          amounts array in the raffle in question's struct. Calculates
@@ -966,7 +966,7 @@ contract Etheraffle is usingOraclize {
         emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, raffle[_week].unclaimed, now);
     }
     /**
-     * @dev     Calculates the total prizes for a given tier using the 
+     * @notice  Calculates the total prizes for a given tier using the 
      *          splits method & the odds method, and returns the singular 
      *          prize using whichever method returned from the preceeding.
      *
@@ -980,7 +980,7 @@ contract Etheraffle is usingOraclize {
         return oddsTotal(_numWinners, _i, _week) <= splitsTotal(_numWinners, _i) ? oddsSingle(_i, _week) : splitsSingle(_numWinners, _i); 
     }
     /*  
-     * @dev     Returns TOTAL payout per tier when calculated using 
+     * @notice  Returns TOTAL payout per tier when calculated using 
      *          the odds method.
      *
      * @param   _numWinners     Number of X match winners.
@@ -993,7 +993,7 @@ contract Etheraffle is usingOraclize {
         return oddsSingle(_matchesIndex, _week) * _numWinners;
     }
     /*
-     * @dev     Returns TOTAL payout per tier when calculated using
+     * @notice  Returns TOTAL payout per tier when calculated using
      *          the splits method.
      *
      * @param    _numWinners     Number of X match winners.
@@ -1006,7 +1006,7 @@ contract Etheraffle is usingOraclize {
         return splitsSingle(_numWinners, _matchesIndex) * _numWinners;
     }
     /*
-     * @dev     Returns single payout when calculated using the odds
+     * @notice  Returns single payout when calculated using the odds
      *          method.
      *
      * @param   _matchesIndex   Index of matches array (∴ 3 match win,
@@ -1017,7 +1017,7 @@ contract Etheraffle is usingOraclize {
         return (raffle[_week].tktPrice * odds[_matchesIndex] * (1000 - take)) / 1000;
     }
     /*
-     * @dev     Returns a single payout when calculated using the 
+     * @notice  Returns a single payout when calculated using the 
      *          splits method.
      *
      * @param   _numWinners     Number of X match winners.
@@ -1039,7 +1039,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev     Modifies a query ID struct with the passed in information. 
+     * @notice  Modifies a query ID struct with the passed in information. 
      *          (Or creates it if struct doesn't exist yet...)
      *
      * @param   _ID         Bytes32 hash identifier for the struct.
@@ -1059,7 +1059,7 @@ contract Etheraffle is usingOraclize {
         qID[_ID].isManual  = _isManual;
     }
     /**
-     * @dev     Prepares the correct Oraclize query string using Oraclize's 
+     * @notice  Prepares the correct Oraclize query string using Oraclize's 
      *          contract's string concat function.
      *
      * @param   _isRandom   Whether the query is to the Random.org api, or Etheraffle's.
@@ -1073,7 +1073,7 @@ contract Etheraffle is usingOraclize {
                : strConcat(apiStr1, uint2str(_weekNo), apiStr2);
     }
     /**
-     * @dev     Sends an Oraclize query, stores info w/r/t that query in a
+     * @notice  Sends an Oraclize query, stores info w/r/t that query in a
      *          struct mapped to by the hash of the query, and logs the 
      *          pertinent details.
      *
@@ -1105,7 +1105,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev     Slices a string according to specified delimiter, returning
+     * @notice  Slices a string according to specified delimiter, returning
      *          the sliced parts in an array. Courtesy of Nick Johnson via
      *          https://github.com/Arachnid/solidity-stringutils
      *
@@ -1121,7 +1121,7 @@ contract Etheraffle is usingOraclize {
         return parts;
     }
     /**
-     * @dev     Fallback function.
+     * @notice  Fallback function.
      */
     function () payable external {}
     /**
@@ -1134,7 +1134,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev     Function allowing manual addition to the global prizepool.
+     * @notice  Function allowing manual addition to the global prizepool.
      *          Requires the caller to send ether, by which amount the 
      *          prize pool is increased.
      *
@@ -1145,7 +1145,7 @@ contract Etheraffle is usingOraclize {
         emit LogPrizePoolAddition(msg.sender, msg.value, now);
     }
     /**
-     * @dev     Set the Oraclize strings, in case of url changes. Only callable by
+     * @notice  Set the Oraclize strings, in case of url changes. Only callable by
      *          the Etheraffle address.
      *
      * @param   _randomStr1     String with properly escaped characters for 
@@ -1168,7 +1168,7 @@ contract Etheraffle is usingOraclize {
         apiStr2    = _apiStr2;
     }
     /**
-     * @dev     Set the ticket price of the raffle. Only callable by the
+     * @notice  Set the ticket price of the raffle. Only callable by the
      *          Etheraffle address.
      *
      * @param   _newPrice   The desired new ticket price.
@@ -1178,7 +1178,7 @@ contract Etheraffle is usingOraclize {
         tktPrice = _newPrice;
     }
     /**
-     * @dev     Set new take percentage. Only callable by the Etheraffle
+     * @notice  Set new take percentage. Only callable by the Etheraffle
      *          address.
      *
      * @param   _newTake   The desired new take, parts per thousand.
@@ -1188,7 +1188,7 @@ contract Etheraffle is usingOraclize {
         take = _newTake;
     }
     /**
-     * @dev     Set the payouts manually, in case of a failed Oraclize call.
+     * @notice  Set the payouts manually, in case of a failed Oraclize call.
      *          Only callable by the Etheraffle address.
      *
      * @param   _week           The week number of the raffle to set the payouts for.
@@ -1203,7 +1203,7 @@ contract Etheraffle is usingOraclize {
         setPayOuts(_week, _numMatches);
     }
     /**
-     * @dev     Set the FreeLOT token contract address, in case of future updrades.
+     * @notice  Set the FreeLOT token contract address, in case of future updrades.
      *          Only allable by the Etheraffle address.
      *
      * @param   _newAddr   New address of FreeLOT contract.
@@ -1212,7 +1212,7 @@ contract Etheraffle is usingOraclize {
         freeLOT = FreeLOTInterface(_newAddr);
       }
     /**
-     * @dev     Set the EthRelief contract address, and gas required to run
+     * @notice  Set the EthRelief contract address, and gas required to run
      *          the receiving function. Only allable by the Etheraffle address.
      *
      * @param   _newAddr   New address of the EthRelief contract.
@@ -1221,7 +1221,7 @@ contract Etheraffle is usingOraclize {
         ethRelief = _newAddr;
     }
     /**
-     * @dev     Set the dividend contract address, and gas required to run
+     * @notice  Set the dividend contract address, and gas required to run
      *          the receive ether function. Only callable by the Etheraffle
      *          address.
      *
@@ -1231,7 +1231,7 @@ contract Etheraffle is usingOraclize {
         disburseAddr = _newAddr;
     }
     /**
-     * @dev     Set the Etheraffle multisig contract address, in case of future
+     * @notice  Set the Etheraffle multisig contract address, in case of future
      *          upgrades. Only callable by the current Etheraffle address.
      *
      * @param   _newAddr   New address of Etheraffle multisig contract.
@@ -1240,7 +1240,7 @@ contract Etheraffle is usingOraclize {
         etheraffle = _newAddr;
     }
     /**
-     * @dev     Set the raffle end time, in number of seconds passed
+     * @notice  Set the raffle end time, in number of seconds passed
      *          the start time of 00:00am Monday. Only callable by
      *          the Etheraffle address.
      *
@@ -1250,7 +1250,7 @@ contract Etheraffle is usingOraclize {
         rafEnd = _newTime;
     }
     /**
-     * @dev     Set the wdrawBfr time - the time a winner has to withdraw
+     * @notice  Set the wdrawBfr time - the time a winner has to withdraw
      *          their winnings before the unclaimed prizepool is rolled
      *          back into the global prizepool. Only callable by the
      *          Etheraffle address.
@@ -1261,7 +1261,7 @@ contract Etheraffle is usingOraclize {
         wdrawBfr = _newTime;
     }
     /**
-     * @dev     Set the paused status of the raffles. Only callable by
+     * @notice  Set the paused status of the raffles. Only callable by
      *          the Etheraffle address.
      *
      * @param   _status    The desired status of the raffles.
@@ -1270,7 +1270,7 @@ contract Etheraffle is usingOraclize {
         pauseContract(_status);
     }
     /**
-     * @dev     Set the percentage-of-prizepool array. Only callable by the
+     * @notice  Set the percentage-of-prizepool array. Only callable by the
      *          Etheraffle address.
      *
      * @param   _newPoP     An array of four integers totalling 1000.
@@ -1279,7 +1279,7 @@ contract Etheraffle is usingOraclize {
         pctOfPool = _newPoP;
     }
     /**
-	 * @dev		Allows manual set up of a new raffle via creating a struct
+	 * @notice	Allows manual set up of a new raffle via creating a struct
      *          with the correct timestamp and ticket price. Only callable
      *          by the Etheraffle multisig address.
 	 *
@@ -1294,7 +1294,7 @@ contract Etheraffle is usingOraclize {
         setUpRaffleStruct(_week, _tktPrice, _timeStamp);
     }
 	/**
-	 * @dev		Manually sets the withdraw status of a raffle. Only
+	 * @notice	Manually sets the withdraw status of a raffle. Only
      *          callable by the Etheraffle multisig.
 	 *
 	 * @param   _week   Week number for raffle in question.
@@ -1306,7 +1306,7 @@ contract Etheraffle is usingOraclize {
         setWithdraw(_week, _status);
     }
     /**
-	 * @dev		Manually sets the global week variable. Only callable
+	 * @notice	Manually sets the global week variable. Only callable
      *          by the Etheraffle multisig wallet.
 	 *
 	 * @param   _week   Desired week number.
@@ -1316,7 +1316,7 @@ contract Etheraffle is usingOraclize {
         setWeek(_week);
     }
         /**
-     * @dev     Manually make an Oraclize API call, incase of automation
+     * @notice  Manually make an Oraclize API call, incase of automation
      *          failure. Only callable by the Etheraffle address.
      *
      * @param   _delay      Either a time in seconds before desired callback
@@ -1342,7 +1342,7 @@ contract Etheraffle is usingOraclize {
         sendQuery(_delay, getQueryString(_isRandom, _week), _week, _isRandom, _isManual);
     }
     /**
-     * @dev     Manually edit (or make!) a query ID struct, that Oraclize callbacks 
+     * @notice  Manually edit (or make!) a query ID struct, that Oraclize callbacks 
      *          can reference.
      *
      * @param   _ID         Desired keccak hash key for the struct
@@ -1372,7 +1372,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev     Get a entrant's number of entries into a specific raffle
+     * @notice  Get a entrant's number of entries into a specific raffle
      *
      * @param   _week       The week number of the raffle in question.
      *
@@ -1383,7 +1383,7 @@ contract Etheraffle is usingOraclize {
         return raffle[_week].entries[_entrant].length;
     }
     /**
-     * @dev     Get chosen numbers of an entrant, for a specific raffle.
+     * @notice  Get chosen numbers of an entrant, for a specific raffle.
      *          Returns an array.
      *
      * @param   _entrant    The entrant in question's address.
@@ -1397,7 +1397,7 @@ contract Etheraffle is usingOraclize {
         return raffle[_week].entries[_entrant][_entryNum-1];
     }
     /**
-     * @dev     Get winning details of a raffle, ie, it's winning numbers
+     * @notice  Get winning details of a raffle, ie, it's winning numbers
      *          and the prize amounts. Returns two arrays.
      *
      * @param   _week   The week number of the raffle in question.
@@ -1416,7 +1416,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-     * @dev     Upgrades the Etheraffle contract. Only callable by the
+     * @notice  Upgrades the Etheraffle contract. Only callable by the
      *          Etheraffle address. Calls an addToPrizePool method as
      *          per the abstract contract above. Function renders the
      *          entry method uncallable, cancels the Oraclize recursion,
@@ -1441,7 +1441,7 @@ contract Etheraffle is usingOraclize {
         emit LogUpgrade(_newAddr, amt, upgraded);
     }
     /**
-     * @dev     Self destruct contract. Only callable by Etheraffle address.
+     * @notice  Self destruct contract. Only callable by Etheraffle address.
      *          function. It deletes all contract code and data and forwards
      *          any remaining ether from non-claimed winning raffle tickets
      *          to the EthRelief charity contract. Requires the upgrade contract
