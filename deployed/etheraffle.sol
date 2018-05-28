@@ -662,8 +662,8 @@ contract Etheraffle is usingOraclize {
         );
     }
     /**
-     * @notice  Function compares two arrays of the same length to one 
-     *          another to see how many numbers they have in common.
+     * @notice  Function performs set intersection on two arrays
+     *          and counts to see how many numbers they have in common.
      *
      * @param   _cNums  Array of entrant's chosen numbers.
      *
