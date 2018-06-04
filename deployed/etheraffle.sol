@@ -309,7 +309,7 @@ contract Etheraffle is usingOraclize {
      */
     function pauseContract(bool _status, uint _id) internal {
         pauseContract(_status);
-        emit LogFunctionsPaused(_id, now);
+        LogFunctionsPaused(_id, now);
     }
     /**
      *
@@ -416,7 +416,7 @@ contract Etheraffle is usingOraclize {
         incremementEntries(week, false);
         modifyPrizePool(true, _value);
         storeEntry(week, _entrant, _cNums);
-        emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
+        LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
     /**
      * @notice  Stores a ticket purchase by hashing the chosen numbers 
@@ -493,7 +493,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     function modifyPrizePool(bool _bool, uint _amt) private {
-        if (!_bool) require (_amt <= prizePool, '_amt > prizePool!');
+        if (!_bool) require (_amt <= prizePool);
         prizePool = _bool ? prizePool + _amt : prizePool - _amt;
     }
     /**
@@ -539,7 +539,7 @@ contract Etheraffle is usingOraclize {
     function winFreeGo(uint _week, uint _entryNum, address _entrant) private onlyIfNotPaused {
         invalidateEntry(_week, _entrant, _entryNum);
         freeLOT.mint(_entrant, 1);
-        emit LogFreeLOTWin(_week, _entrant, _entryNum, 1, now);
+        LogFreeLOTWin(_week, _entrant, _entryNum, 1, now);
     }
     /**
      * @notice  If ticket wins ETH this function first checks the eligibility 
@@ -560,7 +560,7 @@ contract Etheraffle is usingOraclize {
         invalidateEntry(_week, _entrant, _entryNum);
         modifyUnclaimed(false, _week, raffle[_week].winAmts[_matches - 3]);
         transferWinnings(_entrant, raffle[_week].winAmts[_matches - 3]);
-        emit LogWithdraw(_week, _entrant, _entryNum, _matches, raffle[_week].winAmts[_matches - 3], now);
+        LogWithdraw(_week, _entrant, _entryNum, _matches, raffle[_week].winAmts[_matches - 3], now);
     }
     /**
      * @notice  Tranfers an amount of ETH to an address.
@@ -587,7 +587,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     function modifyUnclaimed(bool _bool, uint _week, uint _amt) private {
-        if (!_bool) require (_amt <= raffle[_week].unclaimed, 'Prize amt > Unclaimed!');
+        if (!_bool) require (_amt <= raffle[_week].unclaimed);
         raffle[_week].unclaimed = _bool ? raffle[_week].unclaimed + _amt : raffle[_week].unclaimed - _amt;
     }
     /**
@@ -708,7 +708,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     function __callback(bytes32 _myID, string _result) public onlyIfNotPaused onlyOraclize {
-        emit LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
+        LogOraclizeCallback(msg.sender, _myID, _result, qID[_myID].weekNo, now);
         queryIsRandom(_myID) 
             ? randomCallback(_myID, _result) 
             : apiCallback(_myID, _result);
@@ -791,7 +791,7 @@ contract Etheraffle is usingOraclize {
         if (amt == 0) return;
         modifyPrizePool(true, amt);
         modifyUnclaimed(false, old, amt);
-        emit LogReclaim(old, amt, now);
+        LogReclaim(old, amt, now);
     }
     //TODO: Check is this is used more than once - might be a refactor too far?
     /**
@@ -883,7 +883,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     function distributeFunds(uint _week, uint _cost, uint _profit) private {
-        if (_profit == 0) return LogFundsDisbursed(_week, _cost, 0, 0, now); // Can't use emit keyword after return statement...
+        if (_profit == 0) return LogFundsDisbursed(_week, _cost, 0, 0, now); // Can't use keyword after return statement...
         uint half = _profit / 2;
         disburseFunds(_week, _cost, half, disburseAddr);
         disburseFunds(_week, _cost, _profit - half, ethRelief);
@@ -900,7 +900,7 @@ contract Etheraffle is usingOraclize {
      */
     function disburseFunds(uint _week, uint _cost, uint _amt, address _addr) private {
         ReceiverInterface(_addr).receiveEther.value(_amt)();
-        emit LogFundsDisbursed(_week, _cost, _amt, _addr, now);
+        LogFundsDisbursed(_week, _cost, _amt, _addr, now);
     }
     /**
      *
@@ -962,7 +962,7 @@ contract Etheraffle is usingOraclize {
             raffle[_week].winNums.push(parseInt(arr[i]));
         }
         uint serialNo = parseInt(arr[6]);
-        emit LogWinningNumbers(_week, raffle[_week].numEntries, raffle[_week].winNums, prizePool, serialNo, now);
+        LogWinningNumbers(_week, raffle[_week].numEntries, raffle[_week].winNums, prizePool, serialNo, now);
     }
     /**
      * @notice  Returns the number of seconds until the next occurring 
@@ -1006,7 +1006,7 @@ contract Etheraffle is usingOraclize {
         if (raffle[_week].unclaimed > prizePool) return pauseContract(true, 3); // now a double check, is this bad?
         modifyPrizePool(false, raffle[_week].unclaimed);
         setWithdraw(_week, true);
-        emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, raffle[_week].winAmts, now);
+        LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, raffle[_week].winAmts, now);
     }
     /**
      * @notice  Calculates the total prizes for a given tier using the 
@@ -1157,7 +1157,7 @@ contract Etheraffle is usingOraclize {
     function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) internal onlyOraclize {
         bytes32 query = oraclize_query(_delay, "nested", _str, gasAmt);
         modifyQIDStruct(query, _weekNo, _isRandom, _isManual);
-        emit LogQuerySent(query, _delay, now);
+        LogQuerySent(query, _delay, now);
     }
     /**
      *
@@ -1209,7 +1209,7 @@ contract Etheraffle is usingOraclize {
     function manuallyAddToPrizePool() payable public {
         require (msg.value > 0);
         modifyPrizePool(true, msg.value);
-        emit LogPrizePoolAddition(msg.sender, msg.value, now);
+        LogPrizePoolAddition(msg.sender, msg.value, now);
     }
     /**
      * @notice  Set the Oraclize strings, in case of url changes. Only callable by
@@ -1513,7 +1513,7 @@ contract Etheraffle is usingOraclize {
         randomStr1  = "";
         require(this.balance >= amt);
         EtheraffleUpgrade(_newAddr).manuallyAddToPrizePool.value(amt)();
-        emit LogUpgrade(_newAddr, amt, upgraded);
+        LogUpgrade(_newAddr, amt, upgraded);
     }
     /**
      * @notice  Self destruct contract. Only callable by Etheraffle address.
