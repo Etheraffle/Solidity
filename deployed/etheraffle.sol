@@ -31,7 +31,7 @@
  *      Or on 𝐑𝐞𝐝𝐝𝐢𝐭 @ 𝐡𝐭𝐭𝐩𝐬://𝐞𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞.𝐫𝐞𝐝𝐝𝐢𝐭.𝐜𝐨𝐦
  *
  */
-pragma solidity^0.4.24;
+pragma solidity^0.4.20;
 
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 import "github.com/Arachnid/solidity-stringutils/src/strings.sol";
@@ -190,7 +190,7 @@ contract Etheraffle is usingOraclize {
      *          initial raffle struct.
      *
      */
-    constructor() payable {
+    function Etheraffle() payable {
         week         = getWeek();
         etheraffle   = 0x97f535e98cf250cdd7ff0cb9b29e4548b609a0bd;
         disburseAddr = 0xb6a5f50b5ce5909a9c75ce27fec96e5de393af61;
