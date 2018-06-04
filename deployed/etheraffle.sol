@@ -100,7 +100,7 @@ contract Etheraffle is usingOraclize {
      */
     mapping (uint => rafStruct) public raffle;
     struct rafStruct {
-        mapping (address => uint[][]) entries;
+        mapping (address => bytes32[]) entries;
         uint tktPrice;
         uint unclaimed;
         uint[] winNums;
@@ -196,7 +196,7 @@ contract Etheraffle is usingOraclize {
         disburseAddr = 0xb6a5f50b5ce5909a9c75ce27fec96e5de393af61;
         ethRelief    = 0x7ee65fe55accd9430f425379851fe768270c6699;
         freeLOT      = FreeLOTInterface(0xc39f7bB97B31102C923DaF02bA3d1bD16424F4bb);
-        setupRaffleStruct(week, 2500000000000000, (week * WEEKDUR) + BIRTHDAY);
+        setUpRaffleStruct(week, 2500000000000000, (week * WEEKDUR) + BIRTHDAY);
     }
     /**
      *
@@ -230,7 +230,7 @@ contract Etheraffle is usingOraclize {
      */
     function getWeek() public constant returns (uint) {
         uint curWeek = (now - BIRTHDAY) / WEEKDUR;
-        return pastClosingTime(curWeek) ? curWeek + 1 : curWeek
+        return pastClosingTime(curWeek) ? curWeek + 1 : curWeek;
     }
     /**
      * @notice  Calculates if time function is called is past a raffle's 
@@ -240,7 +240,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     function pastClosingTime(uint _curWeek) internal view returns (bool) {
-        return now - ((curWeek * WEEKDUR) + BIRTHDAY) > rafEnd;
+        return now - ((_curWeek * WEEKDUR) + BIRTHDAY) > rafEnd;
     }
 	/**
 	 * @notice	Sets up new raffle via creating a struct with the correct 
@@ -414,7 +414,7 @@ contract Etheraffle is usingOraclize {
     function buyTicket(uint[] _cNums, address _entrant, uint _value, uint _affID) internal {
         require (raffleOpenForEntry() && validNumbers(_cNums));
         incremementEntries(week, false);
-        addToPrizePool(_value);
+        modifyPrizePool(true, _value);
         storeEntry(week, _entrant, _cNums);
         emit LogTicketBought(week, raffle[week].numEntries, _entrant, _cNums, raffle[week].entries[_entrant].length, _value, now, _affID);
     }
@@ -555,11 +555,11 @@ contract Etheraffle is usingOraclize {
      * @param   _entrant    Address of the ticket holder.
      *
      */
-    function payWinnings(uint _week, uint _entryNum, , uint _matches, address _entrant) private {
-        require (eligibleForWithdraw(_week, matches));
+    function payWinnings(uint _week, uint _entryNum, uint _matches, address _entrant) private {
+        require (eligibleForWithdraw(_week, _matches));
         invalidateEntry(_week, _entrant, _entryNum);
         modifyUnclaimed(false, _week, raffle[_week].winAmts[_matches - 3]);
-        transferWinnings(_entrant, raffle[_week].winAmts[matches - 3]);
+        transferWinnings(_entrant, raffle[_week].winAmts[_matches - 3]);
         emit LogWithdraw(_week, _entrant, _entryNum, _matches, raffle[_week].winAmts[_matches - 3], now);
     }
     /**
@@ -606,7 +606,7 @@ contract Etheraffle is usingOraclize {
         return (
             _matches >= 3 &&
             raffle[_week].winAmts[_matches - 3] > 0 &&
-            raffle[_week].winAmts[_matches - 3] <= this.balance &&
+            raffle[_week].winAmts[_matches - 3] <= this.balance
         );
     }
     /**
@@ -839,7 +839,7 @@ contract Etheraffle is usingOraclize {
      */
     function accountForCosts(uint _cost) private {
         if (_cost > prizePool) return pauseContract(true, 1);
-        if (cost == 0) return; // TODO: Unnecessary? Will save a little gas except on deploy...
+        if (_cost == 0) return; // TODO: Unnecessary? Will save a little gas except on deploy...
         modifyPrizePool(false, _cost);
     }
     /**
@@ -867,7 +867,7 @@ contract Etheraffle is usingOraclize {
      */
     function accountForProfit(uint _profit) private {
         if (_profit == 0) return 
-        modifyPrizePool(false, profit);
+        modifyPrizePool(false, _profit);
     }
     /**
      * @notice  Distributes any profit earnt from a raffle. Half goes to 
@@ -1157,7 +1157,7 @@ contract Etheraffle is usingOraclize {
     function sendQuery(uint _delay, string _str, uint _weekNo, bool _isRandom, bool _isManual) internal onlyOraclize {
         bytes32 query = oraclize_query(_delay, "nested", _str, gasAmt);
         modifyQIDStruct(query, _weekNo, _isRandom, _isManual);
-        emit LogQuerySent(query, delay, now);
+        emit LogQuerySent(query, _delay, now);
     }
     /**
      *
