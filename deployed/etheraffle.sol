@@ -288,17 +288,6 @@ contract Etheraffle is usingOraclize {
      */
     /**
      * @notice  Sets the paused status of the contract to the bool 
-     *          passed in. This affects various of the contracts 
-     *          functions via the onlyIfNotPaused modifier.
-     *
-     * @param   _status     Desired pause status.
-     *
-     */
-    function pauseContract(bool _status) internal {
-        paused = _status;
-    }
-    /**
-     * @notice  Sets the paused status of the contract to the bool 
      *          passed in. Logs an event with a uint identifying the 
      *          reason for pausing the contract to the front-end 
      *          event watcher.
@@ -310,6 +299,17 @@ contract Etheraffle is usingOraclize {
     function pauseContract(bool _status, uint _id) internal {
         pauseContract(_status);
         LogFunctionsPaused(_id, now);
+    }
+    /**
+     * @notice  Sets the paused status of the contract to the bool 
+     *          passed in. This affects various of the contracts 
+     *          functions via the onlyIfNotPaused modifier.
+     *
+     * @param   _status     Desired pause status.
+     *
+     */
+    function pauseContract(bool _status) internal {
+        paused = _status;
     }
     /**
      *
