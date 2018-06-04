@@ -1,4 +1,7 @@
-/*
+/**
+ * NOTE: This v2 currently in testing phase, see deprecated for current main-chain version.
+ */
+/**
  *      Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 Smart-Contract!
  *      The 𝐎𝐍𝐋𝐘 decentralized, charitable blockchain lottery!
  *      
