@@ -1006,7 +1006,7 @@ contract Etheraffle is usingOraclize {
         if (raffle[_week].unclaimed > prizePool) return pauseContract(true, 3); // now a double check, is this bad?
         modifyPrizePool(false, raffle[_week].unclaimed);
         setWithdraw(_week, true);
-        emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, raffle[_week].unclaimed, now);
+        emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, now);
     }
     /**
      * @notice  Calculates the total prizes for a given tier using the 
