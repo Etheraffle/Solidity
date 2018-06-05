@@ -1,5 +1,5 @@
 /**
- * NOTE: This v2 currently in testing phase, see deprecated for current main-chain version.
+ * NOTE: This v2 currently in testing phase, see deprecated for current main-chain version. It's also more method call-y than v1, and so slightly more expensive in gas (for turnovers, not the end user!) but MUCH more readable/maintainable.
  */
 /**
  *      Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 Smart-Contract!
