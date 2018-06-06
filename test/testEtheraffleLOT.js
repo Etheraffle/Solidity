@@ -102,24 +102,25 @@ contract('etheraffleLOT', accounts => {
     balance = await contract.balanceOf(accounts[0])
     assert.equal(balance.toNumber(), 100000000)
     const data = web3Abi.encodeFunctionCall(txAbi, [accounts[8], 10000000, '0x00'])
-    await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, data: data, value: 0})
+    await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, data: data})
     balance = await contract.balanceOf(accounts[8])
     assert.equal(balance.toNumber(), 10000000)
     balance = await contract.balanceOf(accounts[0])
     assert.equal(balance.toNumber(), 90000000)
   })
 
-  // it('Account can\'t transfer tokens if insufficient balance', async () => {
-  //   const contract = await LOT.deployed()
-  //   const data = web3Abi.encodeFunctionCall(txAbi, [accounts[0], 11, '0x00'])
-  //   try {
-  //     await LOT.web3.eth.sendTransaction({from: accounts[8], to: contract.address, data: data, value: 0})
-  //     assert.fail('Should not have been able to send tokens!')
-  //   } catch (e) {
-  //     // console.log('Error when sending more tokens than balance: ', e)
-  //     // Transaction failed as expected!
-  //   }
-  // })
+  it('Account can\'t transfer tokens if insufficient balance', async () => {
+    const contract = await LOT.deployed()
+    let balance = await contract.balanceOf(accounts[8])
+    const data = web3Abi.encodeFunctionCall(txAbi, [accounts[0], balance + 1, '0x00'])
+    try {
+      await LOT.web3.eth.sendTransaction({from: accounts[8], to: contract.address, data: data})
+      assert.fail('Account should not be able to send more tokens than it owns!')
+    } catch (e) {
+      // console.log('Error when attempting to send more tokens than owned: ', e)
+      // Transaction failed as expected!
+    }
+  })
 
   it('Only freezers can freeze token', async () => {
     const contract = await LOT.deployed()
