@@ -3,7 +3,7 @@ const { assert }    = require("chai")
     , truffleAssert = require('truffle-assertions')
     , FreeLOT       = artifacts.require('etheraffleFreeLOT')
 
-contract('freeLOT', accounts => {
+contract('etheraffleFreeLOT', accounts => {
   
   it('Contract should be owned by account[0]', async () => {
     const contract  = await FreeLOT.deployed()
