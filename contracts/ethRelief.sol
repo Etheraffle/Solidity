@@ -47,8 +47,8 @@ contract ReceiverInterface {
 
 contract EthRelief {
 
-    bool    upgraded;
-    address etheraffle;
+    bool    public upgraded;
+    address public etheraffle;
     /**
      * @dev  Modifier to prepend to functions rendering them
      *       only callable by the Etheraffle multisig address.
