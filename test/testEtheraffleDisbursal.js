@@ -1,5 +1,4 @@
 const { assert }    = require("chai")
-    // , web3Abi       = require('web3-eth-abi')
     , truffleAssert = require('truffle-assertions')
     , receiver      = artifacts.require('etherReceiverStub')
     , disbursal     = artifacts.require('etheraffleDisbursal')
@@ -29,6 +28,36 @@ contract('etheraffleDisbursal', accounts => {
     assert.equal(owner, accounts[0])
   })
 
+  it('Fallback function should accept ETH', async () => {
+    const contract = await disbursal.deployed()
+    let balance    = await disbursal.web3.eth.getBalance(contract.address)
+    assert.equal(balance.toNumber(), 0)
+    await disbursal.web3.eth.sendTransaction({to: contract.address, from: accounts[5], value: 10})
+    balance = await disbursal.web3.eth.getBalance(contract.address)
+    assert.equal(balance.toNumber(), 10)
+  })
+
+  if('Can\'t scuttle contract before it\'s been upgraded', async () => {
+    const contract = await disbursal.deployed()
+        , stub     = await receiver.deployed()
+        , owner    = await contract.etheraffle.call()
+    let upgraded   = await contract.upgraded.call()
+    assert.equal(upgraded, false)
+    try {
+      await contract.selfDestruct(owner)
+      assert.fail('Contract should not be able to be scuttled without upgrading first!')
+    } catch (e) {
+      // console.log('Error when attempted to scuttle before upgrading: ', e)
+      // Transaction failed as expected!
+    }
+  })
+
+  it('Contract has ETH in prior to upgrade', async () => {
+    const contract = await disbursal.deployed()
+    let balance    = await disbursal.web3.eth.getBalance(contract.address)
+    assert.equal(balance.toNumber(), 10) // From prior fallback test...
+  })
+
   it('Only owner can upgrade', async () => {
     const contract = await disbursal.deployed()
         , stub     = await receiver.deployed()
@@ -42,8 +71,32 @@ contract('etheraffleDisbursal', accounts => {
     }
     const upgrade = await contract.upgrade(stub.address, {from: owner})
     truffleAssert.eventEmitted(upgrade, 'LogUpgrade', ev => 
-      ev.toWhere == stub.address && ev.amountTransferred.toNumber() == 0
+      ev.toWhere == stub.address && ev.amountTransferred.toNumber() == 10
     )
   })
-  
+
+  it('This contract\'s balance moved entirely to upgrade contract', async () => {
+    const contract = await disbursal.deployed()
+        , stub     = await receiver.deployed()
+    let balance    = await disbursal.web3.eth.getBalance(contract.address)
+    assert.equal(balance.toNumber(), 0)
+    balance        = await disbursal.web3.eth.getBalance(stub.address)
+    assert.equal(balance.toNumber(), 10)
+  })
+
+  it('Only owner can scuttle contract once it\'s been upgraded', async () => {
+    const contract = await disbursal.deployed()
+        , owner    = await contract.etheraffle.call()
+        , upgraded = await contract.upgraded.call()
+    assert.equal(upgraded, true)
+    try {
+      await contract.selfDestruct(accounts[4], {from: accounts[4]})
+      assert.fail('Only owner can scuttle after contract upgrade!')
+    } catch (e) {
+      // console.log('Error when non-owner attempts to scuttle before upgrading: ', e)
+      // Transaction failed as expected!
+    }
+    await contract.selfDestruct(owner, {from: owner})
+  })
+
 })
