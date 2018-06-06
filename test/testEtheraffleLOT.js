@@ -3,6 +3,8 @@ const { assert }    = require("chai")
     , truffleAssert = require('truffle-assertions')
     , LOT           = artifacts.require('etheraffleLOT')
 
+// TODO: Write a module to check specifically for reverts in the try/catch catches.
+
 contract('etheraffleLOT', accounts => {
   
   it('Contract should be owned by account[0]', async () => {
@@ -35,7 +37,7 @@ contract('etheraffleLOT', accounts => {
   console.log('## Owner Abilities ##')
   
   it('Only owner can add & remove freezers', async () => {
-    const contract  = await LOT.deployed()
+    const contract = await LOT.deployed()
     await contract.addFreezer(accounts[1])
     let freezerCheck = await contract.canFreeze.call(accounts[1])
     assert.equal(freezerCheck, true)
@@ -53,15 +55,26 @@ contract('etheraffleLOT', accounts => {
       assert.fail('Non-owner should not be able to remove a freezer!')
     } catch (e) {
       // console.log('Error in non-owner trying to remove freezer: ', e)
+      // Transaction failed as expected!
     }
   })
 
-  // it('Only owner can change owner', async () => {
-  //   // const contract  = await LOT.deployed()
-  //   //     , owner     = await contract.etheraffle.call()
-  //   //     , isFreezer = await contract.canFreeze(owner)
-  //   // assert.equal(isFreezer, true)
-  // })
+  it('Only owner can change owner', async () => {
+    const contract = await LOT.deployed()
+    await contract.setEtheraffle(accounts[1])
+    let owner = await contract.etheraffle.call()
+    assert.equal(owner, accounts[1])
+    try {
+      await contract.setEtheraffle(accounts[0])
+      assert.fail('Non-owner should not be able to change owner!')
+    } catch (e) {
+      // console.log('Error in non-owner changing ownership: ', e)
+      // Transaction failed as expected!
+    }
+    await contract.setEtheraffle(accounts[0], {from: accounts[1]})
+    owner = await contract.etheraffle.call()
+    assert.equal(owner, accounts[0])
+  })
 
   // console.log('## Token Transfers ##')
   
