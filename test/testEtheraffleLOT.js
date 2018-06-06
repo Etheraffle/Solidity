@@ -59,7 +59,7 @@ contract('etheraffleLOT', accounts => {
 
   it('Only owner can change owner', async () => {
     const contract = await LOT.deployed()
-    await contract.setEtheraffle(accounts[1])
+        , change1  = await contract.setEtheraffle(accounts[1])
     let owner = await contract.etheraffle.call()
     assert.equal(owner, accounts[1])
     try {
@@ -69,9 +69,13 @@ contract('etheraffleLOT', accounts => {
       // console.log('Error in non-owner changing ownership: ', e)
       // Transaction failed as expected!
     }
-    await contract.setEtheraffle(accounts[0], {from: accounts[1]})
+    const change2 = await contract.setEtheraffle(accounts[0], {from: accounts[1]})
     owner = await contract.etheraffle.call()
     assert.equal(owner, accounts[0])
+    truffleAssert.eventEmitted(change1, 'LogEtheraffleChange', ev => 
+      ev.prevER == accounts[0] && ev.newER == accounts[1])
+    truffleAssert.eventEmitted(change2, 'LogEtheraffleChange', ev => 
+      ev.prevER == accounts[1] && ev.newER == accounts[0])
   })
   
   // 
