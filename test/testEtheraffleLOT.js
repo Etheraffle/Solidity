@@ -35,11 +35,11 @@ contract('etheraffleLOT', accounts => {
   
   
   it('Only owner can add & remove freezers', async () => {
-    const contract = await LOT.deployed()
-    await contract.addFreezer(accounts[1])
+    const contract   = await LOT.deployed()
+        , addFreezer = await contract.addFreezer(accounts[1])
     let freezerCheck = await contract.canFreeze.call(accounts[1])
     assert.equal(freezerCheck, true)
-    await contract.removeFreezer(accounts[1])
+    const removeFreezer = await contract.removeFreezer(accounts[1])
     freezerCheck = await contract.canFreeze.call(accounts[1])
     assert.equal(freezerCheck, false)
     try {
@@ -55,6 +55,12 @@ contract('etheraffleLOT', accounts => {
       // console.log('Error in non-owner trying to remove freezer: ', e)
       // Transaction failed as expected!
     }
+    truffleAssert.eventEmitted(addFreezer, 'LogFreezerAddition', ev => 
+      ev.newFreezer == accounts[1]
+    )
+    truffleAssert.eventEmitted(removeFreezer, 'LogFreezerRemoval', ev => 
+      ev.freezerRemoved == accounts[1]
+    )
   })
 
   it('Only owner can change owner', async () => {
@@ -73,9 +79,11 @@ contract('etheraffleLOT', accounts => {
     owner = await contract.etheraffle.call()
     assert.equal(owner, accounts[0])
     truffleAssert.eventEmitted(change1, 'LogEtheraffleChange', ev => 
-      ev.prevER == accounts[0] && ev.newER == accounts[1])
+      ev.prevER == accounts[0] && ev.newER == accounts[1]
+    )
     truffleAssert.eventEmitted(change2, 'LogEtheraffleChange', ev => 
-      ev.prevER == accounts[1] && ev.newER == accounts[0])
+      ev.prevER == accounts[1] && ev.newER == accounts[0]
+    )
   })
   
   // 
