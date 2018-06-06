@@ -114,11 +114,16 @@ contract('etheraffleLOT', accounts => {
     balance = await contract.balanceOf(accounts[0])
     assert.equal(balance.toNumber(), 100000000)
     const data = web3Abi.encodeFunctionCall(txAbi, [accounts[8], 10000000, '0x00'])
-    await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, data: data})
+        , tx   = await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, data: data})
     balance = await contract.balanceOf(accounts[8])
     assert.equal(balance.toNumber(), 10000000)
     balance = await contract.balanceOf(accounts[0])
     assert.equal(balance.toNumber(), 90000000)
+    /* Following breaks it even though the logs clearly show the transfer event firing. Must be something to do with the manual crafting of the tx?
+    truffleAssert.eventEmitted(tx, 'LogTransfer', ev => 
+      ev.from == accounts[0] && ev.to == accounts[8] && ev.value == 10000000 && ev.data == '0x00'
+    )
+    */
   })
 
   it('Account can\'t transfer tokens if insufficient balance', async () => {
