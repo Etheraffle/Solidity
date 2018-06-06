@@ -4,7 +4,6 @@ const { assert }    = require("chai")
     , LOT           = artifacts.require('etheraffleLOT')
 
 contract('etheraffleLOT', accounts => {
-
   
   it('Contract should be owned by account[0]', async () => {
     console.log('## Initial Contract Setup ##')
@@ -32,5 +31,40 @@ contract('etheraffleLOT', accounts => {
         , isFreezer = await contract.canFreeze(owner)
     assert.equal(isFreezer, true)
   })
+  
+  console.log('## Owner Abilities ##')
+  
+  it('Only owner can add & remove freezers', async () => {
+    const contract  = await LOT.deployed()
+    await contract.addFreezer(accounts[1])
+    let freezerCheck = await contract.canFreeze.call(accounts[1])
+    assert.equal(freezerCheck, true)
+    await contract.removeFreezer(accounts[1])
+    freezerCheck = await contract.canFreeze.call(accounts[1])
+    assert.equal(freezerCheck, false)
+    try {
+      await contract.addFreezer(accounts[9], {from: accounts[9]})
+      assert.fail('Non-owner should not be able to add a freezer!')
+    } catch (e) {
+      // console.log('Error in non-owner trying to add freezer: ', e)
+    }
+    try {
+      await contract.removeFreezer(accounts[0], {from: accounts[9]})
+      assert.fail('Non-owner should not be able to remove a freezer!')
+    } catch (e) {
+      // console.log('Error in non-owner trying to remove freezer: ', e)
+    }
+  })
+
+  // it('Only owner can change owner', async () => {
+  //   // const contract  = await LOT.deployed()
+  //   //     , owner     = await contract.etheraffle.call()
+  //   //     , isFreezer = await contract.canFreeze(owner)
+  //   // assert.equal(isFreezer, true)
+  // })
+
+  // console.log('## Token Transfers ##')
+  
+  // console.log('## Freeze Ability ##')
 
 })
