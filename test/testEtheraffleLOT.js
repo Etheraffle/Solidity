@@ -1,5 +1,5 @@
 const { assert }    = require("chai")
-// const web3Abi       = require('web3-eth-abi')
+    , web3Abi       = require('web3-eth-abi')
     , truffleAssert = require('truffle-assertions')
     , LOT           = artifacts.require('etheraffleLOT')
 
@@ -8,7 +8,6 @@ const { assert }    = require("chai")
 contract('etheraffleLOT', accounts => {
   
   it('Contract should be owned by account[0]', async () => {
-    console.log('## Initial Contract Setup ##')
     const contract  = await LOT.deployed()
         , contOwner = await contract.etheraffle.call()
     assert.equal(contOwner, accounts[0])
@@ -36,7 +35,6 @@ contract('etheraffleLOT', accounts => {
   
   
   it('Only owner can add & remove freezers', async () => {
-    console.log('## Owner Abilities ##')
     const contract = await LOT.deployed()
     await contract.addFreezer(accounts[1])
     let freezerCheck = await contract.canFreeze.call(accounts[1])
@@ -76,11 +74,54 @@ contract('etheraffleLOT', accounts => {
     assert.equal(owner, accounts[0])
   })
   
-  // console.log('## Token Transfers ##')
-  // can move if sufficient etc...
+  // 
+  /* Following two tests have to use overloaded version of tx func because it's first in the contract. Pulled it out to here so both have access to it from their respective closures. */
+  const txAbi = {
+    "constant": false,
+    "inputs": [
+        {"name": "_to",
+        "type": "address"},
+        {"name": "_value",
+        "type": "uint256"},
+        {"name": "_data",
+        "type": "bytes"}],
+    "name": "transfer",
+    "outputs": [
+        {"name": "",
+        "type": "bool"}
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+  
+  it('Account can transfer tokens if sufficient balance', async () => {
+    const contract = await LOT.deployed()
+    let balance = await contract.balanceOf(accounts[8])
+    assert.equal(balance.toNumber(), 0)
+    balance = await contract.balanceOf(accounts[0])
+    assert.equal(balance.toNumber(), 100000000)
+    const data = web3Abi.encodeFunctionCall(txAbi, [accounts[8], 10000000, '0x00'])
+    await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, data: data, value: 0})
+    balance = await contract.balanceOf(accounts[8])
+    assert.equal(balance.toNumber(), 10000000)
+    balance = await contract.balanceOf(accounts[0])
+    assert.equal(balance.toNumber(), 90000000)
+  })
+
+  // it('Account can\'t transfer tokens if insufficient balance', async () => {
+  //   const contract = await LOT.deployed()
+  //   const data = web3Abi.encodeFunctionCall(txAbi, [accounts[0], 11, '0x00'])
+  //   try {
+  //     await LOT.web3.eth.sendTransaction({from: accounts[8], to: contract.address, data: data, value: 0})
+  //     assert.fail('Should not have been able to send tokens!')
+  //   } catch (e) {
+  //     // console.log('Error when sending more tokens than balance: ', e)
+  //     // Transaction failed as expected!
+  //   }
+  // })
 
   it('Only freezers can freeze token', async () => {
-    console.log('## Freeze Ability ##')
     const contract = await LOT.deployed()
     await contract.setFrozen(true)
     let status = await contract.frozen.call()
