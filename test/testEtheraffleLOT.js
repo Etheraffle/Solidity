@@ -163,4 +163,44 @@ contract('etheraffleLOT', accounts => {
     balance = await contract.balanceOf(accounts[0])
     assert.equal(balance.toNumber(), 0)
   })
+  
+  it('Fallback function should revert', async () => {
+    const contract = await LOT.deployed()
+    try {
+      await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, value: 1})
+    } catch (e) {
+      // console.log('Error when checking if fallback reverts: ', e)
+      // Transaction failed as expected!
+    }
+  })
+  
+  it('Non-owners cannot scuttle the contract', async () => {
+    const contract = await LOT.deployed()
+    try {
+      await contract.selfDestruct({from: accounts[4]})
+      assert.fail('Only owner should be able to destroy contract!')
+    } catch (e) {
+      // console.log('Error attempting to destroy contract: ', e)
+      // Transaction failed as expected!
+    }
+  })
+
+  it('Contract can only be scuttled when frozen', async () => {
+    const contract = await LOT.deployed()
+        , owner    = await contract.etheraffle.call()
+    let status     = await contract.frozen.call()
+    assert.equal(status, false)
+    try {
+      await contract.selfDestruct({from: owner})
+      assert.fail('Contract should not be scuttleable when not frozen!')
+    } catch (e) {
+      // console.log('Error attempting to destroy contract whilst token isn\'t frozen: ', e)
+      // Transaction failed as expected!
+    }
+    await contract.setFrozen(true, {from: owner})
+    status = await contract.frozen.call()
+    assert.equal(status, true)
+    await contract.selfDestruct({from: owner})
+  })
+
 })
