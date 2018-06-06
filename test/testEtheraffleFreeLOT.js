@@ -1,7 +1,7 @@
 const { assert }    = require("chai")
-const web3Abi       = require('web3-eth-abi')
-const truffleAssert = require('truffle-assertions')
-const FreeLOT       = artifacts.require('etheraffleFreeLOT')
+    , web3Abi       = require('web3-eth-abi')
+    , truffleAssert = require('truffle-assertions')
+    , FreeLOT       = artifacts.require('etheraffleFreeLOT')
 
 contract('freeLOT', accounts => {
   
