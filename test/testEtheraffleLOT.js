@@ -34,9 +34,9 @@ contract('etheraffleLOT', accounts => {
     assert.equal(isFreezer, true)
   })
   
-  console.log('## Owner Abilities ##')
   
   it('Only owner can add & remove freezers', async () => {
+    console.log('## Owner Abilities ##')
     const contract = await LOT.deployed()
     await contract.addFreezer(accounts[1])
     let freezerCheck = await contract.canFreeze.call(accounts[1])
@@ -75,9 +75,31 @@ contract('etheraffleLOT', accounts => {
     owner = await contract.etheraffle.call()
     assert.equal(owner, accounts[0])
   })
-
-  // console.log('## Token Transfers ##')
   
-  // console.log('## Freeze Ability ##')
+  // console.log('## Token Transfers ##')
+  // can move if sufficient etc...
+
+  it('Only freezers can freeze token', async () => {
+    console.log('## Freeze Ability ##')
+    const contract = await LOT.deployed()
+    await contract.setFrozen(true)
+    let status = await contract.frozen.call()
+    assert.equal(status, true)
+    await contract.setFrozen(false)
+    status = await contract.frozen.call()
+    assert.equal(status, false)
+    try {
+      await contract.setFrozen(true, {from: accounts[5]})
+      assert.fail("Non-freezers should not be able to freeze token!")
+    } catch (e) {
+      // console.log('Error when attempt to freeze token as a non-freezer: ', e)
+      // Transaction failed as expected!
+    }
+  })
+
+  // token txs when frozen!
+  
+  
+  
 
 })
