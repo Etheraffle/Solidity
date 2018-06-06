@@ -140,8 +140,27 @@ contract('etheraffleLOT', accounts => {
   })
 
   // token txs when frozen!
-  
-  
-  
-
+  it('Tokens can\'t be moved when frozen', async () => {
+    const contract = await LOT.deployed()
+    await contract.setFrozen(true)
+    let status = await contract.frozen.call()
+    assert.equal(status, true)
+    let balance = await contract.balanceOf(accounts[0])
+    const data = web3Abi.encodeFunctionCall(txAbi, [accounts[4], balance, '0x00'])
+    try {
+      await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, data: data})
+      assert.fail('Account should not be able to move tokens when they\'re frozen!')
+    } catch (e) {
+      // console.log('Error when attempting to move tokens when frozen: ', e)
+      // Transaction failed as expected!
+    }
+    await contract.setFrozen(false)
+    status = await contract.frozen.call()
+    assert.equal(status, false)
+    await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, data: data})
+    let balanceAcc4 = await contract.balanceOf(accounts[4])
+    assert.equal(balanceAcc4.toNumber(), balance.toNumber())
+    balance = await contract.balanceOf(accounts[0])
+    assert.equal(balance.toNumber(), 0)
+  })
 })
