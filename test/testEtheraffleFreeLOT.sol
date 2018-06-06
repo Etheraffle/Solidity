@@ -7,7 +7,7 @@ import "../contracts/etheraffleFreeLOT.sol";
 // Note this file name can't have hyphens or underscores in it.
 // Attempt to rewrite these entire tests in JS too...
 
-contract TestFreeLOT {
+contract TestEtheraffleFreeLOT {
 
     /* Truffle's account[0] */
     address public owner = 0x627306090abaB3A6e1400e9345bC60c78a8BEf57;
