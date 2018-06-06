@@ -213,6 +213,16 @@ contract('etheraffleFreeLOT', accounts => {
     }
   })
 
+  it('Fallback function should revert', async () => {
+    const contract = await FreeLOT.deployed()
+    try {
+      await FreeLOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, value: 1})
+    } catch (e) {
+      // console.log('Error when checking if fallback reverts: ', e)
+      // Transaction failed as expected!
+    }
+  })
+
   it('Only owner can scuttle the contract', async () => {
     const contract = await FreeLOT.deployed()
     try {
@@ -223,14 +233,5 @@ contract('etheraffleFreeLOT', accounts => {
     }
     const owner = await contract.etheraffle.call()
     await contract.selfDestruct({from: owner})
-  })
-
-  it('Fallback function should revert', async () => {
-    const contract = await FreeLOT.deployed()
-    try {
-      await FreeLOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, value: 10})
-    } catch (e) {
-      console.log('Error when checking if fallback reverts: ', e)
-    }
   })
 })
