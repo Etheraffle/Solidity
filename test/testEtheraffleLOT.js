@@ -124,10 +124,10 @@ contract('etheraffleLOT', accounts => {
 
   it('Only freezers can freeze token', async () => {
     const contract = await LOT.deployed()
-    await contract.setFrozen(true)
-    let status = await contract.frozen.call()
+        , freeze1  = await contract.setFrozen(true)
+    let status     = await contract.frozen.call()
     assert.equal(status, true)
-    await contract.setFrozen(false)
+    const freeze2  = await contract.setFrozen(false)
     status = await contract.frozen.call()
     assert.equal(status, false)
     try {
@@ -137,6 +137,8 @@ contract('etheraffleLOT', accounts => {
       // console.log('Error when attempt to freeze token as a non-freezer: ', e)
       // Transaction failed as expected!
     }
+    truffleAssert.eventEmitted(freeze1, 'LogFrozenStatus', ev => ev.status)
+    truffleAssert.eventEmitted(freeze2, 'LogFrozenStatus', ev => !ev.status)
   })
 
   // token txs when frozen!
