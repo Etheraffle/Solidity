@@ -36,7 +36,7 @@ pragma solidity^0.4.20;
 // import "github.com/oraclize/ethereum-api/oraclizeAPI.sol"; // Truffle uses the actual sol files
 // import "github.com/Arachnid/solidity-stringutils/src/strings.sol"; // Truffle uses the actual sol files
 import "./strings.sol";
-import "./usingOraclize.sol";
+import "installed_contracts/oraclize-api/contracts/usingOraclize.sol";
 
 contract ReceiverInterface {
     function receiveEther() external payable {}
