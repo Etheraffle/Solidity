@@ -6,7 +6,6 @@ const { assert }    = require("chai")
 contract('etheraffleDisbursal', accounts => {
   
   it('Contract should be owned by account[0]', async () => {
-    console.log(accounts.map((e, i) => `account ${i} address: ${e}`))
     const contract  = await disbursal.deployed()
         , contOwner = await contract.etheraffle.call()
     assert.equal(contOwner, accounts[0])
