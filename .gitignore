@@ -3,9 +3,6 @@
 # Misc
 /solidity(temp)
 /node_modules
-/ethereum-bridge
-/installed_contracts
-
 
 # misc
 .DS_Store
