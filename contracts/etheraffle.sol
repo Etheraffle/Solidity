@@ -212,7 +212,7 @@ contract Etheraffle is usingOraclize {
      * 0x7ee65fe55accd9430f425379851fe768270c6699 - EthRelief
      * 0xc39f7bB97B31102C923DaF02bA3d1bD16424F4bb - FreeLOT
      */
-    function constructor(address _etheraffle, address _disburse, address _ethRelief, address _freeLOT) public payable {
+    function Etheraffle(address _etheraffle, address _disburse, address _ethRelief, address _freeLOT) public payable {
         week         = getWeek();
         etheraffle   = _etheraffle;
         disburseAddr = _disburse;
