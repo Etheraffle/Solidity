@@ -199,13 +199,25 @@ contract Etheraffle is usingOraclize {
      *          instantiates the FreeLOT contract. Sets up an 
      *          initial raffle struct.
      *
+     * @param   _etheraffle Address of the Etheraffle multisig.
+     *
+     * @param   _disburse   Address of the disbursal contract.
+     *
+     * @param   _ethRelief  Address of the EthRelief contract.
+     *
+     * @param   _freeLOT    Address of the freeLOT contract.
+     *
+     * 0x97f535e98cf250cdd7ff0cb9b29e4548b609a0bd - Etheraffle
+     * 0xb6a5f50b5ce5909a9c75ce27fec96e5de393af61 - Disbursal
+     * 0x7ee65fe55accd9430f425379851fe768270c6699 - EthRelief
+     * 0xc39f7bB97B31102C923DaF02bA3d1bD16424F4bb - FreeLOT
      */
-    function Etheraffle() payable {
+    function Etheraffle(address _etheraffle, address _disburse, address _ethRelief, address _freeLOT) payable {
         week         = getWeek();
-        etheraffle   = 0x97f535e98cf250cdd7ff0cb9b29e4548b609a0bd;
-        disburseAddr = 0xb6a5f50b5ce5909a9c75ce27fec96e5de393af61;
-        ethRelief    = 0x7ee65fe55accd9430f425379851fe768270c6699;
-        freeLOT      = FreeLOTInterface(0xc39f7bB97B31102C923DaF02bA3d1bD16424F4bb);
+        etheraffle   = _etheraffle;
+        disburseAddr = _disburse;
+        ethRelief    = _ethRelief;
+        freeLOT      = FreeLOTInterface(_freeLOT);
         setUpRaffleStruct(week, 2500000000000000, (week * WEEKDUR) + BIRTHDAY);
     }
     /**
