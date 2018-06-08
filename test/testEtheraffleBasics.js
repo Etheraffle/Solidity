@@ -96,8 +96,19 @@ contract('Etheraffle', accounts => {
     assert.equal(oracCost.toNumber(), 1500000000000000)
     assert.equal(upAddr, '0x0000000000000000000000000000000000000000')
   })
-  // uint[]  public pctOfPool    = [520, 114, 47, 319]; // ppt...
-  // uint[]  public odds         = [56, 1032, 54200, 13983816]; // Rounded down to nearest whole 
+
+  it('Check all initialised arrays' , async () => {
+    const contract  = await etheraffle.deployed()
+        , pctOfPool = [520, 114, 47, 319]
+        , odds      = [56, 1032, 54200, 13983816]
+    pctOfPool
+      .map(async (_, i) => await contract.pctOfPool.call(i))
+      .map((e, i) => e.then(res => assert.equal(res.toNumber(), pctOfPool[i])))
+    odds
+      .map(async (_, i) => await contract.odds(i))
+      .map((e, i) => e.then(res => assert.equal(res.toNumber(), odds[i])))
+  })
+
 })
 
 const rafEnd   = 500400
