@@ -7,7 +7,7 @@ const { assert }    = require("chai")
 
 // Run ethereum-bridge for oraclize w/ node bridge -a 9 -H 127.0.0.1 -p 9545 --dev
 
-contract('Etheraffle', accounts => {
+contract('EtheraffleBasics', accounts => {
   // Correct setup checks
   it('Contract should be owned by account[0]', async () => {
     const contract  = await etheraffle.deployed()
@@ -71,14 +71,14 @@ contract('Etheraffle', accounts => {
 
   it('First raffle struct should be set up correctly' , async () => {
     const contract = await etheraffle.deployed()
-        , struct   = await contract.raffle.call(getWeek())
         , tktPrice = await contract.tktPrice.call()
-    assert.equal(struct[0].toNumber(), tktPrice.toNumber()) // Ticket Price
-    assert.equal(struct[1].toNumber(), 0) // Unclaimed amt
-    assert.equal(struct[2].toNumber(), getTimestamp()) // Mon timestamp of raffle
+        , struct   = await contract.raffle.call(getWeek())
     assert.equal(struct[3], false) // Withdraw not open 
+    assert.equal(struct[1].toNumber(), 0) // Unclaimed amt
     assert.equal(struct[4].toNumber(), 0) // No entries yet
     assert.equal(struct[5].toNumber(), 0) // No free entries yet
+    assert.equal(struct[2].toNumber(), getTimestamp()) // Mon timestamp of raffle
+    assert.equal(struct[0].toNumber(), tktPrice.toNumber()) // Ticket Price
   })
     
   it('Contract should balance of 0.1 ETH', async () => {
