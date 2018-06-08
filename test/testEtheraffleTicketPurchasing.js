@@ -29,4 +29,33 @@ contract('EtheraffleTicketPurchasing', accounts => {
     }
   })
 
+  it('Log all ticket purchase details', async () => {
+    const contract = await etheraffle.deployed()
+        , week     = await contract.getWeek.call()
+        , struct   = await contract.raffle.call(week)
+        , tktPrice = struct[0].toNumber()
+        , entry    = [1,2,3,4,5,6]
+        , entrant  = accounts[5]
+        , affID    = 5
+        , tx       = await contract.enterRaffle(entry, affID, {from: entrant, value: tktPrice})
+    truffleAssert.eventEmitted(tx, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == tktPrice &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == entry[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
+    assert.equal(args.theEntrant, entrant)
+    assert.equal(args.personalEntryNumber.toNumber(), 1)
+    assert.equal(args.forRaffle.toNumber(), week)
+  })
+
+
 })
+
+// console.log('Events fired for multiple tkt purch: ', await getAllEvents(etheraffle.at(contract.address)))
+const getAllEvents = _contract => {
+  return new Promise((resolve, reject) => {
+    return _contract.allEvents({},{fromBlock:0, toBlock: 'latest'})
+    .get((err, res) => !err ? resolve(res) : console.log(err))
+  })
+}
