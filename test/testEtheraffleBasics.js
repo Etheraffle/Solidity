@@ -41,6 +41,16 @@ contract('Etheraffle', accounts => {
     assert.equal(curWeek.toNumber(), getWeek())
   })
 
+  it('Anyone should be able to add to prize pool', async () => {
+    const contract = await etheraffle.deployed()
+        , random   = getRandom(accounts.length - 1)
+        , value    = 1*10**18
+        , tx       = await contract.manuallyAddToPrizePool({from: accounts[random], value: value})
+    truffleAssert.eventEmitted(tx, 'LogPrizePoolAddition', ev => 
+      ev.fromWhom == accounts[random] && ev.howMuch.toNumber() == value
+    )
+  })
+
 })
 
 const rafEnd   = 500400
