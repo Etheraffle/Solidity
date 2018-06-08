@@ -20,6 +20,8 @@ contract('EtheraffleTicketPurchasing', accounts => {
         , affID    = 0
         , entryGT  = await contract.enterRaffle(entry, affID, {from: entrant, value: tktPrice + 1})
         , entryEQ  = await contract.enterRaffle(entry, affID, {from: entrant, value: tktPrice})
+    truffleAssert.eventEmitted(entryGT, 'LogTicketBought')
+    truffleAssert.eventEmitted(entryEQ, 'LogTicketBought')
     try {
       await contract.enterRaffle(entry, affID, {from: entrant, value: tktPrice - 1})
       assert.fail('Shouldn\'t be able to enter raffle for less than ticket price!')
@@ -107,7 +109,30 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(args.forRaffle.toNumber(), week)
   })
 
-  //'Can only enter on behalf of when paying >= ticket price'
+  it('Can only enter on behalf of when paying >= ticket price', async () => {
+    const contract   = await etheraffle.deployed()
+        , week       = await contract.getWeek.call()
+        , struct     = await contract.raffle.call(week)
+        , tktPrice   = struct[0].toNumber()
+        , numbers    = [7,8,9,10,11,12]
+        , affID      = 0
+        , buyer      = accounts[7]
+        , onBehalfOf = accounts[8] 
+        , entryGT  = await contract.enterOnBehalfOf(numbers, affID, onBehalfOf, {from: buyer, value: tktPrice + 1})
+        , entryEQ  = await contract.enterOnBehalfOf(numbers, affID, onBehalfOf, {from: buyer, value: tktPrice})
+    truffleAssert.eventEmitted(entryGT, 'LogTicketBought')
+    truffleAssert.eventEmitted(entryEQ, 'LogTicketBought')
+    try {
+      await contract.enterOnBehalfOf(numbers, affID, onBehalfOf, {from: buyer, value: tktPrice - 1})
+      assert.fail('Shouldn\'t be able to enter on behalf of another into a raffle for less than ticket price!')
+    } catch (e) {
+      // console.log('Error when buying ticket for someone else for less than ticket price: ', e)
+      // Transaction reverts as expected!
+    }
+  })
+  
+  // free entry (can pay if wish?)
+  // close the raffle somehow and test raffle closed entry.
 
 })
 
