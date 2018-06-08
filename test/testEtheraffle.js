@@ -14,6 +14,20 @@ contract('Etheraffle', accounts => {
         , contOwner = await contract.etheraffle.call()
     assert.equal(contOwner, accounts[0])
   })
+
+  it('Disbursal address should be set correctly', async () => {
+    const contract = await etheraffle.deployed()
+        , disb     = await disbursal.deployed()
+        , disbAddr = await contract.disburseAddr.call()
+    assert.equal(disbAddr, disb.address)
+  })
+
+  it('EthRelief address should be set correctly', async () => {
+    const contract = await etheraffle.deployed()
+        , ethRel   = await ethRelief.deployed()
+        , addr     = await contract.ethRelief.call()
+    assert.equal(addr, ethRel.address)
+  })
   
   it('Contract should balance of 0.1 ETH', async () => {
     const contract = await etheraffle.deployed()
