@@ -54,13 +54,14 @@ contract('EtheraffleTicketPurchasing', accounts => {
         , week     = await contract.getWeek.call()
         , struct   = await contract.raffle.call(week)
         , tktPrice = struct[0].toNumber()
-    accounts.map((e, i) => contract.enterRaffle((new Array(6).fill().map((_, j) => j + i + 1)), 0, {from: e, value: tktPrice}))
+        , affID    = 0
+    accounts.map((e, i) => contract.enterRaffle((new Array(6).fill().map((_, j) => j + i + 1)), affID, {from: e, value: tktPrice}))
             .map(async p => truffleAssert.eventEmitted(await p, 'LogTicketBought'))
   })
 
 })
 
-// console.log('Events fired for multiple tkt purch: ', await getAllEvents(etheraffle.at(contract.address)))
+/* Supply arg in form of: etheraffle.at(contract.address) */
 const getAllEvents = _contract => {
   return new Promise((resolve, reject) => {
     return _contract.allEvents({},{fromBlock:0, toBlock: 'latest'})
