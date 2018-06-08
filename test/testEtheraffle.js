@@ -1,6 +1,5 @@
 const { assert }    = require("chai")
     , moment        = require('moment')
-    , utils         = require('./utils')
     , truffleAssert = require('truffle-assertions')
     , ethRelief     = artifacts.require('ethRelief')
     , etheraffle    = artifacts.require('etheraffle')
@@ -18,7 +17,7 @@ contract('Etheraffle', accounts => {
   
   it('Contract should balance of 0.1 ETH', async () => {
     const contract = await etheraffle.deployed()
-    , balance  = etheraffle.web3.eth.getBalance(contract.address)
+        , balance  = etheraffle.web3.eth.getBalance(contract.address)
     assert.equal(balance.toNumber(), 1*10**17)
   })
 
@@ -29,3 +28,19 @@ contract('Etheraffle', accounts => {
   })
 
 })
+
+const rafEnd   = 500400
+    , weekDur  = 604800
+    , birthday = 1500249600
+
+const pastClosing = _curWeek => 
+  moment.utc().format('X') - ((_curWeek * weekDur) + birthday) > rafEnd
+
+const getCurWeek = () => 
+  Math.trunc((moment.utc().format('X') - birthday) / weekDur)
+
+const getWeek = () =>
+  pastClosing(getCurWeek()) ? getCurWeek() + 1 : getCurWeek()
+
+const getRandom = ceiling => 
+  Math.floor(Math.random() * ceiling) + 1
