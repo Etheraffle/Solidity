@@ -69,6 +69,35 @@ contract('Etheraffle', accounts => {
     assert.equal(struct[5].toNumber(), 0) // No free entries yet
   })
 
+  it('Check all initialised variables' , async () => {
+    const contract = await etheraffle.deployed()
+        , take     = await contract.take.call()
+        , gasAmt   = await contract.gasAmt.call()
+        , rafEnd   = await contract.rafEnd.call()
+        , gasPrc   = await contract.gasPrc.call()
+        , paused   = await contract.paused.call()
+        , wdrawBfr = await contract.wdrawBfr.call()
+        , upgraded = await contract.upgraded.call()
+        , tktPrice = await contract.tktPrice.call()
+        , oracCost = await contract.oracCost.call()
+        , upAddr   = await contract.upgradeAddr.call()
+        , resDel   = await contract.resultsDelay.call()
+        , matDel   = await contract.matchesDelay.call()
+    assert.equal(paused, false)
+    assert.equal(upgraded, false)
+    assert.equal(take.toNumber(), 150)
+    assert.equal(resDel.toNumber(), 3600)
+    assert.equal(matDel.toNumber(), 3600)
+    assert.equal(gasAmt.toNumber(), 500000)
+    assert.equal(rafEnd.toNumber(), 500400)
+    assert.equal(wdrawBfr.toNumber(), 6048000)
+    assert.equal(gasPrc.toNumber(), 20000000000)
+    assert.equal(tktPrice.toNumber(), 2500000000000000)
+    assert.equal(oracCost.toNumber(), 1500000000000000)
+    assert.equal(upAddr, '0x0000000000000000000000000000000000000000')
+  })
+  // uint[]  public pctOfPool    = [520, 114, 47, 319]; // ppt...
+  // uint[]  public odds         = [56, 1032, 54200, 13983816]; // Rounded down to nearest whole 
 })
 
 const rafEnd   = 500400
