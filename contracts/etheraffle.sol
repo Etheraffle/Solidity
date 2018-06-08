@@ -80,7 +80,7 @@ contract Etheraffle is usingOraclize {
     uint    public rafEnd       = 500400; // 7:00pm Saturdays
     uint    public wdrawBfr     = 6048000;
     uint    public gasPrc       = 20000000000; // 20 gwei
-    uint    public tktPrice     = 2000000000000000;
+    uint    public tktPrice     = 2500000000000000;
     uint    public oracCost     = 1500000000000000; // $1 @ $700
     uint[]  public pctOfPool    = [520, 114, 47, 319]; // ppt...
     uint[]  public odds         = [56, 1032, 54200, 13983816]; // Rounded down to nearest whole 
