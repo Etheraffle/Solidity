@@ -49,6 +49,14 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(args.forRaffle.toNumber(), week)
   })
 
+  it('Any account can purchase a tkt', async () => {
+    const contract = await etheraffle.deployed()
+        , week     = await contract.getWeek.call()
+        , struct   = await contract.raffle.call(week)
+        , tktPrice = struct[0].toNumber()
+    accounts.map((e, i) => contract.enterRaffle((new Array(6).fill().map((_, j) => j + i + 1)), 0, {from: e, value: tktPrice}))
+            .map(async p => truffleAssert.eventEmitted(await p, 'LogTicketBought'))
+  })
 
 })
 
