@@ -57,6 +57,18 @@ contract('Etheraffle', accounts => {
     assert.equal(prizePool.toNumber(), 1*10**18)
   })
 
+  it('First raffle struct should be set up correctly' , async () => {
+    const contract = await etheraffle.deployed()
+        , struct   = await contract.raffle.call(getWeek())
+        , tktPrice = await contract.tktPrice.call()
+    assert.equal(struct[0].toNumber(), tktPrice.toNumber()) // Ticket Price
+    assert.equal(struct[1].toNumber(), 0) // Unclaimed amt
+    assert.equal(struct[2].toNumber(), getTimestamp()) // Mon timestamp of raffle
+    assert.equal(struct[3], false) // Withdraw not open 
+    assert.equal(struct[4].toNumber(), 0) // No entries yet
+    assert.equal(struct[5].toNumber(), 0) // No free entries yet
+  })
+
 })
 
 const rafEnd   = 500400
@@ -66,11 +78,14 @@ const rafEnd   = 500400
 const pastClosing = _curWeek => 
   moment.utc().format('X') - ((_curWeek * weekDur) + birthday) > rafEnd
 
-const getCurWeek = () => 
+const getCurWeek = _ => 
   Math.trunc((moment.utc().format('X') - birthday) / weekDur)
 
-const getWeek = () =>
+const getWeek = _ =>
   pastClosing(getCurWeek()) ? getCurWeek() + 1 : getCurWeek()
+
+const getTimestamp = _ => 
+  (getWeek() * weekDur) + birthday
 
 const getRandom = ceiling => 
   Math.floor(Math.random() * ceiling) + 1
