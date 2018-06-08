@@ -86,6 +86,8 @@ contract Etheraffle is usingOraclize {
     uint[]  public odds         = [56, 1032, 54200, 13983816]; // Rounded down to nearest whole 
     uint  constant WEEKDUR      = 604800;
     uint  constant BIRTHDAY     = 1500249600;//Etheraffle's birthday <3
+
+    /* TODO: Implement these strings on deploy */
     // string randomStr1 = "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random[\"data\", \"serialNumber\"]','\\n{\"jsonrpc\": \"2.0\",\"method\":\"generateSignedIntegers\",\"id\":\"";
     // string randomStr2 = "\",\"params\":{\"n\":\"6\",\"min\":1,\"max\":49,\"replacement\":false,\"base\":10,\"apiKey\":${[decrypt] BKM3j7tH7qBIQKuadP5kJ547Au1uB1Zo41u6tCfLPT3GDGJJCEpXLS87u1xlYsFu/i21zycQJgVFWzev+ZSjflQKsOCFbdN5oUSiR/GvD5nuLblzG6H+xq2lVdZ0lN/EZjrCmgMfaF0r3uo/FKcRdAnbf2wxKQ5Vfg==}}']";
     // string apiStr1    = "[URL] ['json(https://etheraffle.com/api/a).m','{\"r\":\"";
