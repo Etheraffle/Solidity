@@ -28,46 +28,6 @@ contract('Etheraffle', accounts => {
         , addr     = await contract.ethRelief.call()
     assert.equal(addr, ethRel.address)
   })
-  
-  it('Contract should balance of 0.1 ETH', async () => {
-    const contract = await etheraffle.deployed()
-        , balance  = etheraffle.web3.eth.getBalance(contract.address)
-    assert.equal(balance.toNumber(), 1*10**17)
-  })
-
-  it('Contract should calculate current week correctly', async () => {
-    const contract = await etheraffle.deployed()
-        , curWeek  = await contract.getWeek.call()
-    assert.equal(curWeek.toNumber(), getWeek())
-  })
-
-  it('Anyone should be able to add to prize pool', async () => {
-    const contract = await etheraffle.deployed()
-        , random   = getRandom(accounts.length - 1)
-        , value    = 1*10**18
-        , tx       = await contract.manuallyAddToPrizePool({from: accounts[random], value: value})
-    truffleAssert.eventEmitted(tx, 'LogPrizePoolAddition', ev => 
-      ev.fromWhom == accounts[random] && ev.howMuch.toNumber() == value
-    )
-  })
-
-  it('Contract should now have prize pool of 1 ETH', async () => {
-    const contract  = await etheraffle.deployed()
-        , prizePool = await contract.prizePool.call()
-    assert.equal(prizePool.toNumber(), 1*10**18)
-  })
-
-  it('First raffle struct should be set up correctly' , async () => {
-    const contract = await etheraffle.deployed()
-        , struct   = await contract.raffle.call(getWeek())
-        , tktPrice = await contract.tktPrice.call()
-    assert.equal(struct[0].toNumber(), tktPrice.toNumber()) // Ticket Price
-    assert.equal(struct[1].toNumber(), 0) // Unclaimed amt
-    assert.equal(struct[2].toNumber(), getTimestamp()) // Mon timestamp of raffle
-    assert.equal(struct[3], false) // Withdraw not open 
-    assert.equal(struct[4].toNumber(), 0) // No entries yet
-    assert.equal(struct[5].toNumber(), 0) // No free entries yet
-  })
 
   it('Check all initialised variables' , async () => {
     const contract = await etheraffle.deployed()
@@ -107,6 +67,46 @@ contract('Etheraffle', accounts => {
     odds
       .map(async (_, i) => await contract.odds(i))
       .map((e, i) => e.then(res => assert.equal(res.toNumber(), odds[i])))
+  })
+
+  it('First raffle struct should be set up correctly' , async () => {
+    const contract = await etheraffle.deployed()
+        , struct   = await contract.raffle.call(getWeek())
+        , tktPrice = await contract.tktPrice.call()
+    assert.equal(struct[0].toNumber(), tktPrice.toNumber()) // Ticket Price
+    assert.equal(struct[1].toNumber(), 0) // Unclaimed amt
+    assert.equal(struct[2].toNumber(), getTimestamp()) // Mon timestamp of raffle
+    assert.equal(struct[3], false) // Withdraw not open 
+    assert.equal(struct[4].toNumber(), 0) // No entries yet
+    assert.equal(struct[5].toNumber(), 0) // No free entries yet
+  })
+    
+  it('Contract should balance of 0.1 ETH', async () => {
+    const contract = await etheraffle.deployed()
+        , balance  = etheraffle.web3.eth.getBalance(contract.address)
+    assert.equal(balance.toNumber(), 1*10**17)
+  })
+
+  it('Contract should calculate current week correctly', async () => {
+    const contract = await etheraffle.deployed()
+        , curWeek  = await contract.getWeek.call()
+    assert.equal(curWeek.toNumber(), getWeek())
+  })
+
+  it('Anyone should be able to add to prize pool', async () => {
+    const contract = await etheraffle.deployed()
+        , random   = getRandom(accounts.length - 1)
+        , value    = 1*10**18
+        , tx       = await contract.manuallyAddToPrizePool({from: accounts[random], value: value})
+    truffleAssert.eventEmitted(tx, 'LogPrizePoolAddition', ev => 
+      ev.fromWhom == accounts[random] && ev.howMuch.toNumber() == value
+    )
+  })
+
+  it('Contract should now have prize pool of 1 ETH', async () => {
+    const contract  = await etheraffle.deployed()
+        , prizePool = await contract.prizePool.call()
+    assert.equal(prizePool.toNumber(), 1*10**18)
   })
 
 })
