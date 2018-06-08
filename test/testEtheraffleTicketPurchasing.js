@@ -59,6 +59,19 @@ contract('EtheraffleTicketPurchasing', accounts => {
             .map(async p => truffleAssert.eventEmitted(await p, 'LogTicketBought'))
   })
 
+  it('Raffle entries in struct should increment on entry', async () => {
+    const contract = await etheraffle.deployed()
+        , week     = await contract.getWeek.call()
+        , struct   = await contract.raffle.call(week)
+        , entries  = struct[4].toNumber()
+        , tktPrice = struct[0].toNumber()
+        , entry    = await contract.enterRaffle([1,2,3,4,5,6], 0, {from: accounts[0], value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought')
+    const newStruct  = await contract.raffle.call(week)
+        , newEntries = newStruct[4].toNumber()
+    assert.equal(newEntries, entries + 1)
+  })
+
 })
 
 /* Supply arg in form of: etheraffle.at(contract.address) */
