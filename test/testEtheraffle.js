@@ -1,5 +1,6 @@
 const { assert }    = require("chai")
     , moment        = require('moment')
+    , utils         = require('./utils')
     , truffleAssert = require('truffle-assertions')
     , ethRelief     = artifacts.require('ethRelief')
     , etheraffle    = artifacts.require('etheraffle')
@@ -20,4 +21,11 @@ contract('Etheraffle', accounts => {
     , balance  = etheraffle.web3.eth.getBalance(contract.address)
     assert.equal(balance.toNumber(), 1*10**17)
   })
+
+  it('Contract should calculate current week correctly', async () => {
+    const contract = await etheraffle.deployed()
+        , curWeek  = await contract.getWeek.call()
+    assert.equal(curWeek.toNumber(), getWeek())
+  })
+
 })
