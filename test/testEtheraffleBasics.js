@@ -51,7 +51,7 @@ contract('Etheraffle', accounts => {
     )
   })
 
-  it('Contract should have prize pool of 1 ETH', async () => {
+  it('Contract should now have prize pool of 1 ETH', async () => {
     const contract  = await etheraffle.deployed()
         , prizePool = await contract.prizePool.call()
     assert.equal(prizePool.toNumber(), 1*10**18)
