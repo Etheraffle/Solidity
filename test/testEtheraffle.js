@@ -14,4 +14,10 @@ contract('Etheraffle', accounts => {
         , contOwner = await contract.etheraffle.call()
     assert.equal(contOwner, accounts[0])
   })
+  
+  it('Contract should balance of 0.1 ETH', async () => {
+    const contract = await etheraffle.deployed()
+    , balance  = etheraffle.web3.eth.getBalance(contract.address)
+    assert.equal(balance.toNumber(), 1*10**17)
+  })
 })
