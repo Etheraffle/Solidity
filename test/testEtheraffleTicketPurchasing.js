@@ -544,9 +544,41 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(prizePoolAfter.toNumber(), prizePoolBefore.toNumber() + tktPrice)
   })
 
-  // it('FreeLOT on behalf of increments free entries & entries correctly', async () => {})
+  it('FreeLOT on behalf of increments free entries & entries correctly', async () => {
+    const contract      = await etheraffle.deployed()
+        , freeCont      = await freeLOT.deployed()
+        , week          = await contract.getWeek.call()
+        , structBefore  = await contract.raffle.call(week)
+        , numbers       = [7,8,9,10,11,12]
+        , tktPrice      = 1*10**17
+        , affID         = 0
+        , buyer         = accounts[0]
+        , onBehalfOf    = accounts[3]
+        , freeBal       = await freeCont.balanceOf.call(buyer)
+        , numEntBefore  = structBefore[4]
+        , freeEntBefore = structBefore[5]
+    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
+    const entry = await contract.enterOnBehalfOfFree(numbers, affID, onBehalfOf, {from: buyer, value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == tktPrice &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }]   = await getAllEvents(etheraffle.at(contract.address))
+        , numEntries   = await contract.getUserNumEntries(onBehalfOf, week)
+        , structAfter  = await contract.raffle.call(week)
+        , numEntAfter  = structAfter[4]
+        , freeEntAfter = structAfter[5]
+    assert.equal(args.theEntrant, onBehalfOf)
+    assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
+    assert.equal(args.forRaffle.toNumber(), week)
+    assert.equal(numEntAfter.toNumber(), numEntBefore.toNumber() + 1)    
+    assert.equal(freeEntAfter.toNumber(), freeEntBefore.toNumber() + 1)      
+  })
+
   // close the raffle somehow and test raffle closed entry.
   // test for functions not running if paused 
+  //test entries result in correct hashes in user arrays
 
 })
 
