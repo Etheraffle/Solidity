@@ -351,13 +351,12 @@ contract('EtheraffleTicketPurchasing', accounts => {
   // it('FreeLOT on behalf of increments free entries & entries correctly', async () => {})
 
   // close the raffle somehow and test raffle closed entry.
+  // test for functions not running if paused 
 
 })
 
 /* Supply arg in form of: etheraffle.at(contract.address) */
-const getAllEvents = _contract => {
-  return new Promise((resolve, reject) => {
-    return _contract.allEvents({},{fromBlock:0, toBlock: 'latest'})
-    .get((err, res) => !err ? resolve(res) : console.log(err))
-  })
-}
+const getAllEvents = _contract => 
+  new Promise((resolve, reject) => 
+    _contract.allEvents({},{fromBlock:0, toBlock: 'latest'})
+    .get((err, res) => !err ? resolve(res) : console.log(err)))
