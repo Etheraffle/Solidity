@@ -166,13 +166,14 @@ contract('EtheraffleTicketPurchasing', accounts => {
         , week       = await contract.getWeek.call()
         , numbers    = [7,8,9,10,11,12]
         , affID      = 0
+        , tktPrice   = 0
         , entrant    = accounts[0]
         , freeBal    = await freeCont.balanceOf.call(entrant)
     await freeCont.addDestroyer(contract.address) // ER contract needs to destroy FreeLOT tokens!
     assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
-    const entry = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: 0})
+    const entry = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: tktPrice})
     truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
-      ev.tktCost.toNumber() == 0 &&
+      ev.tktCost.toNumber() == tktPrice &&
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
@@ -209,7 +210,38 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(args.forRaffle.toNumber(), week)
   })
 
-  // it('FreeLOT entries increments free entries & entries correctly', async () => {})
+  it('FreeLOT entries increments free entries & entries correctly', async () => {
+    const contract    = await etheraffle.deployed()
+        , freeCont    = await freeLOT.deployed()
+        , week        = await contract.getWeek.call()
+        , struct      = await contract.raffle.call(week)
+        , numEntries  = struct[4]
+        , freeEntries = struct[5]
+        , numbers     = [7,8,9,10,11,12]
+        , affID       = 0
+        , tktPrice    = 0
+        , entrant     = accounts[0]
+        , freeBal     = await freeCont.balanceOf.call(entrant)
+    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
+    const entry        = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == tktPrice &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }]  = await getAllEvents(etheraffle.at(contract.address))
+        , userEntries = await contract.getUserNumEntries(entrant, week)
+    assert.equal(args.theEntrant, entrant)
+    assert.equal(args.personalEntryNumber.toNumber(), userEntries.toNumber())
+    assert.equal(args.forRaffle.toNumber(), week)
+    const structAfter      = await contract.raffle.call(week)
+        , numEntriesAfter  = structAfter[4]
+        , freeEntriesAfter = structAfter[5]
+    assert.equal(numEntriesAfter.toNumber(), numEntries.toNumber() + 1)
+    assert.equal(freeEntriesAfter.toNumber(), freeEntries.toNumber() + 1)
+  })
+
+
   // it('FreelOT entries increments user's numbers of entries correctly', async () => {})
   // it('FreeLOT entries destroys one of the entrant's freeLOT tokens', async () => {}) // check both events logged!
   // it('Free entries are not possible without entrant owning a FreeLOT token', async () => {})
