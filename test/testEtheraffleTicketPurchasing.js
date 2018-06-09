@@ -339,10 +339,33 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(freeBalAfter.toNumber(), freeBal.toNumber() - 1)
     assert.equal(prizePool.toNumber(), prizePoolAfter.toNumber())
   })
-
-  // Add an "enter on behalf of for free " function and test it thoroughly
   
-  // it('Can enter on behalf of another address for free using a FreeLOT token', async () => {})
+  it('Can enter on behalf of another address for free using a FreeLOT token', async () => {
+    const contract   = await etheraffle.deployed()
+        , freeCont   = await freeLOT.deployed()
+        , week       = await contract.getWeek.call()
+        , struct     = await contract.raffle.call(week)
+        , numbers    = [7,8,9,10,11,12]
+        , tktPrice   = 0
+        , affID      = 0
+        , buyer      = accounts[0]
+        , onBehalfOf = accounts[3]
+        , freeBal    = await freeCont.balanceOf.call(buyer)
+    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
+    const entry = await contract.enterOnBehalfOfFree(numbers, affID, onBehalfOf, {from: buyer, value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == tktPrice &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
+        , numEntries = await contract.getUserNumEntries(onBehalfOf, week)
+    assert.equal(args.theEntrant, onBehalfOf)
+    assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
+    assert.equal(args.forRaffle.toNumber(), week)
+  })
+
+
   // it('Can\'t enter on behalf of another address for free without a FreeLOT token', async () => {})
   // it('FreeLOT on behalf of entries increment correct user\'s entries', async () => {})
   // it('FreeLOT on behalf of entries do not increment prizepool', async () => {})
