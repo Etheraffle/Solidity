@@ -395,6 +395,27 @@ contract Etheraffle is usingOraclize {
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
+     * @notice  Function to enter the raffle on behalf of another address 
+     *          for free. Requires the caller's balance of the Etheraffle 
+     *          freeLOT token to be greater than zero. Function destroys 
+     *          one freeLOT token, increments the freeEntries variable in 
+     *          the raffle struct then purchases the ticket. Only callable 
+     *          when the contract is not paused. In the event of a win, only 
+     *          the onBehalfOf address can claim it.
+     *  
+     * @param   _cNums        Ordered array of entrant's six selected numbers.
+     *
+     * @param   _affID        Affiliate ID of the source of this entry.
+     *
+     * @param   _onBehalfOf   The address to be entered on behalf of.
+     *
+     */
+    function enterOnBehalfOfFree(uint[] _cNums, uint _affID, address _onBehalfOf) payable public onlyIfNotPaused {
+        decrementFreeLOT(msg.sender, 1);
+        incremementEntries(week, true);
+        buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
+    }
+    /**
      * @notice  Checks that a raffle struct has a ticket price set and whether 
      *          the caller's msg.value is greater than or equal to that price.
      *
