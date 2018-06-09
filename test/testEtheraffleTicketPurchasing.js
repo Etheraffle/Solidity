@@ -413,11 +413,37 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(behalfEntriesAfter.toNumber(), behalfEntriesBefore.toNumber() + 1)  
   })
 
-  // it('FreeLOT on behalf of entries do not increment prizepool', async () => {})
+  it('FreeLOT on behalf of entries do not increment prizepool', async () => {
+    const contract        = await etheraffle.deployed()
+        , freeCont        = await freeLOT.deployed()
+        , week            = await contract.getWeek.call()
+        , numbers         = [7,8,9,10,11,12]
+        , tktPrice        = 0
+        , affID           = 0
+        , buyer           = accounts[0]
+        , onBehalfOf      = accounts[3]
+        , freeBal         = await freeCont.balanceOf.call(buyer)
+        , prizePoolBefore = await contract.prizePool.call()
+    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
+    const entry = await contract.enterOnBehalfOfFree(numbers, affID, onBehalfOf, {from: buyer, value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == tktPrice &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }]     = await getAllEvents(etheraffle.at(contract.address))
+        , numEntries     = await contract.getUserNumEntries(onBehalfOf, week)
+        , prizePoolAfter = await contract.prizePool.call()
+    assert.equal(args.theEntrant, onBehalfOf)
+    assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
+    assert.equal(args.forRaffle.toNumber(), week)
+    assert.equal(prizePoolBefore.toNumber(), prizePoolAfter.toNumber())
+  })
+  
   // it('FreeLOT on behalf of entries destroy a FreeLOT token of the buyer not the recipient', async () => {})
   // it('FreeLOT on behalf of entries can pay for tickets if they wish', async () => {})
   // it('FreeLOT on behalf of increments free entries & entries correctly', async () => {})
-
+  // free entries that user pays for increments prizepool correctly! (for normal free and behalf of free!)
   // close the raffle somehow and test raffle closed entry.
   // test for functions not running if paused 
 
