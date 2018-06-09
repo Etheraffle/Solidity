@@ -223,7 +223,7 @@ contract('EtheraffleTicketPurchasing', accounts => {
         , entrant     = accounts[0]
         , freeBal     = await freeCont.balanceOf.call(entrant)
     assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
-    const entry        = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: tktPrice})
+    const entry = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: tktPrice})
     truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
       ev.tktCost.toNumber() == tktPrice &&
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
@@ -241,8 +241,31 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(freeEntriesAfter.toNumber(), freeEntries.toNumber() + 1)
   })
 
+  it('FreelOT entries increments user\'s numbers of entries correctly', async () => {
+    const contract    = await etheraffle.deployed()
+        , freeCont    = await freeLOT.deployed()
+        , week        = await contract.getWeek.call()
+        , numbers     = [7,8,9,10,11,12]
+        , affID       = 0
+        , tktPrice    = 0
+        , entrant     = accounts[0]
+        , userEntries = await contract.getUserNumEntries(entrant, week)
+        , freeBal     = await freeCont.balanceOf.call(entrant)
+    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
+    const entry = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == tktPrice &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }]       = await getAllEvents(etheraffle.at(contract.address))
+        , userEntriesAfter = await contract.getUserNumEntries(entrant, week)
+    assert.equal(args.theEntrant, entrant)
+    assert.equal(args.personalEntryNumber.toNumber(), userEntriesAfter.toNumber())
+    assert.equal(args.forRaffle.toNumber(), week)
+    assert.equal(userEntriesAfter.toNumber(), userEntries.toNumber() + 1)
+  })
 
-  // it('FreelOT entries increments user's numbers of entries correctly', async () => {})
   // it('FreeLOT entries destroys one of the entrant's freeLOT tokens', async () => {}) // check both events logged!
   // it('Free entries are not possible without entrant owning a FreeLOT token', async () => {})
   // it('Prize pool doesn't increment after a FreeLOT entry', async () => {})
