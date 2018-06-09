@@ -164,14 +164,12 @@ contract('EtheraffleTicketPurchasing', accounts => {
     const contract   = await etheraffle.deployed()
         , freeCont   = await freeLOT.deployed()
         , week       = await contract.getWeek.call()
-        // , struct     = await contract.raffle.call(week)
-        // , tktPrice   = struct[0].toNumber()
         , numbers    = [7,8,9,10,11,12]
         , affID      = 0
         , entrant    = accounts[0]
         , freeBal    = await freeCont.balanceOf.call(entrant)
-    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
     await freeCont.addDestroyer(contract.address) // ER contract needs to destroy FreeLOT tokens!
+    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
     const entry = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: 0})
     truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
       ev.tktCost.toNumber() == 0 &&
@@ -184,15 +182,38 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
     assert.equal(args.forRaffle.toNumber(), week)
   })
-
-
   
-  // it('FreeLOT entries can pay for tickets if they wish')
-  // it('FreeLOT entries increments free entries & entries correctly')
-  // it('FreelOT entries increments user's numbers of entries correctly')
-  // it('FreeLOT entries destroys one of the entrant's freeLOT tokens')
-  // it('Free entries are not possible without entrant owning a FreeLOT token')
-  // it('Prize pool doesn't increment after a FreeLOT entry')
+  it('FreeLOT entries can pay for tickets if they wish', async () => {
+    const contract   = await etheraffle.deployed()
+        , freeCont   = await freeLOT.deployed()
+        , week       = await contract.getWeek.call()
+        , numbers    = [7,8,9,10,11,12]
+        , affID      = 0
+        , tktPrice   = 1*10**18
+        , entrant    = accounts[0]
+        , freeBal    = await freeCont.balanceOf.call(entrant)
+        , prizePool  = await contract.prizePool.call()
+    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
+    const entry        = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: tktPrice})
+        , prizePoolNow = await contract.prizePool.call()
+    assert.equal(prizePoolNow.toNumber(), prizePool.toNumber() + tktPrice)
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == tktPrice &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
+        , numEntries = await contract.getUserNumEntries(entrant, week)
+    assert.equal(args.theEntrant, entrant)
+    assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
+    assert.equal(args.forRaffle.toNumber(), week)
+  })
+
+  // it('FreeLOT entries increments free entries & entries correctly', async () => {})
+  // it('FreelOT entries increments user's numbers of entries correctly', async () => {})
+  // it('FreeLOT entries destroys one of the entrant's freeLOT tokens', async () => {}) // check both events logged!
+  // it('Free entries are not possible without entrant owning a FreeLOT token', async () => {})
+  // it('Prize pool doesn't increment after a FreeLOT entry', async () => {})
 
   // close the raffle somehow and test raffle closed entry.
 
