@@ -312,9 +312,44 @@ contract('EtheraffleTicketPurchasing', accounts => {
     }
   })
   
-  // it('Prize pool doesn't increment after a FreeLOT entry', async () => {})
+  it('Prize pool doesn\'t increment after a FreeLOT entry', async () => {
+    const contract  = await etheraffle.deployed()
+        , freeCont  = await freeLOT.deployed()
+        , week      = await contract.getWeek.call()
+        , numbers   = [7,8,9,10,11,12]
+        , affID     = 0
+        , tktPrice  = 0
+        , entrant   = accounts[0]
+        , freeBal   = await freeCont.balanceOf.call(entrant)
+        , prizePool = await contract.prizePool.call()
+    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
+    const entry = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == tktPrice &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }]     = await getAllEvents(etheraffle.at(contract.address))
+        , userEntries    = await contract.getUserNumEntries(entrant, week)
+        , freeBalAfter   = await freeCont.balanceOf.call(entrant)
+        , prizePoolAfter = await contract.prizePool.call()
+    assert.equal(args.theEntrant, entrant)
+    assert.equal(args.personalEntryNumber.toNumber(), userEntries.toNumber())
+    assert.equal(args.forRaffle.toNumber(), week)
+    assert.equal(freeBalAfter.toNumber(), freeBal.toNumber() - 1)
+    assert.equal(prizePool.toNumber(), prizePoolAfter.toNumber())
+  })
 
   // Add an "enter on behalf of for free " function and test it thoroughly
+  
+  // it('Can enter on behalf of another address for free using a FreeLOT token', async () => {})
+  // it('Can\'t enter on behalf of another address for free without a FreeLOT token', async () => {})
+  // it('FreeLOT on behalf of entries increment correct user\'s entries', async () => {})
+  // it('FreeLOT on behalf of entries do not increment prizepool', async () => {})
+  // it('FreeLOT on behalf of entries destroy a FreeLOT token of the buyer not the recipient', async () => {})
+  // it('FreeLOT on behalf of entries can pay for tickets if they wish', async () => {})
+  // it('FreeLOT on behalf of increments free entries & entries correctly', async () => {})
+
   // close the raffle somehow and test raffle closed entry.
 
 })
