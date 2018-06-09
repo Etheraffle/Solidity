@@ -110,7 +110,7 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(args.forRaffle.toNumber(), week)
   })
 
-  it('Can only enter on behalf of when paying >= ticket price', async () => {
+  it('Can only enter on behalf of someone when paying >= ticket price', async () => {
     const contract   = await etheraffle.deployed()
         , week       = await contract.getWeek.call()
         , struct     = await contract.raffle.call(week)
@@ -132,7 +132,33 @@ contract('EtheraffleTicketPurchasing', accounts => {
     }
   })
 
-  
+  it('Entries on behalf of increments the correct user\'s number of entries', async () => {
+    const contract     = await etheraffle.deployed()
+        , week         = await contract.getWeek.call()
+        , struct       = await contract.raffle.call(week)
+        , tktPrice     = struct[0].toNumber()
+        , numbers      = [7,8,9,10,11,12]
+        , affID        = 0
+        , buyer        = accounts[7]
+        , onBehalfOf   = accounts[8] 
+        , numEntries   = await contract.getUserNumEntries(onBehalfOf, week)
+        , buyerEntries = await contract.getUserNumEntries(buyer, week)
+        , entry        = await contract.enterOnBehalfOf(numbers, affID, onBehalfOf, {from: buyer, value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == tktPrice &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
+        , entriesNow = await contract.getUserNumEntries(onBehalfOf, week)
+        , buyerEntriesNow = await contract.getUserNumEntries(buyer, week)
+    assert.equal(args.theEntrant, onBehalfOf)
+    assert.equal(args.personalEntryNumber.toNumber(), entriesNow.toNumber())
+    assert.equal(args.forRaffle.toNumber(), week)
+    assert.equal(entriesNow.toNumber(), numEntries.toNumber() + 1)
+    assert.equal(buyerEntriesNow.toNumber(), buyerEntries.toNumber())
+  })
+
 
   it('Can enter raffle for free using a FreeLOT token', async () => {
     const contract   = await etheraffle.deployed()
@@ -159,7 +185,7 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(args.forRaffle.toNumber(), week)
   })
 
-  // it('Entries on behalf of increments correct user's number of entries)
+
   
   // it('FreeLOT entries can pay for tickets if they wish')
   // it('FreeLOT entries increments free entries & entries correctly')
