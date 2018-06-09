@@ -1,9 +1,10 @@
 const { assert }    = require("chai")
-    , moment        = require('moment')
+    // , moment        = require('moment')
     , truffleAssert = require('truffle-assertions')
-    , ethRelief     = artifacts.require('ethRelief')
+    // , ethRelief     = artifacts.require('ethRelief')
     , etheraffle    = artifacts.require('etheraffle')
-    , disbursal     = artifacts.require('etheraffleDisbursal')
+    , freeLOT       = artifacts.require('etheraffleFreeLOT')
+    // , disbursal     = artifacts.require('etheraffleDisbursal')
 
 contract('EtheraffleTicketPurchasing', accounts => {
   // Test all three methods for buying tickets!! Check correct struc vars afterwards
@@ -130,8 +131,43 @@ contract('EtheraffleTicketPurchasing', accounts => {
       // Transaction reverts as expected!
     }
   })
+
   
-  // free entry (can pay if wish?)
+
+  it('Can enter raffle for free using a FreeLOT token', async () => {
+    const contract   = await etheraffle.deployed()
+        , freeCont   = await freeLOT.deployed()
+        , week       = await contract.getWeek.call()
+        // , struct     = await contract.raffle.call(week)
+        // , tktPrice   = struct[0].toNumber()
+        , numbers    = [7,8,9,10,11,12]
+        , affID      = 0
+        , entrant    = accounts[0]
+        , freeBal    = await freeCont.balanceOf.call(entrant)
+    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
+    await freeCont.addDestroyer(contract.address) // ER contract needs to destroy FreeLOT tokens!
+    const entry = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: 0})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == 0 &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
+        , numEntries = await contract.getUserNumEntries(entrant, week)
+    assert.equal(args.theEntrant, entrant)
+    assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
+    assert.equal(args.forRaffle.toNumber(), week)
+  })
+
+  // it('Entries on behalf of increments correct user's number of entries)
+  
+  // it('FreeLOT entries can pay for tickets if they wish')
+  // it('FreeLOT entries increments free entries & entries correctly')
+  // it('FreelOT entries increments user's numbers of entries correctly')
+  // it('FreeLOT entries destroys one of the entrant's freeLOT tokens')
+  // it('Free entries are not possible without entrant owning a FreeLOT token')
+  // it('Prize pool doesn't increment after a FreeLOT entry')
+
   // close the raffle somehow and test raffle closed entry.
 
 })
