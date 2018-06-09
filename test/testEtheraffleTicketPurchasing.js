@@ -344,7 +344,6 @@ contract('EtheraffleTicketPurchasing', accounts => {
     const contract   = await etheraffle.deployed()
         , freeCont   = await freeLOT.deployed()
         , week       = await contract.getWeek.call()
-        , struct     = await contract.raffle.call(week)
         , numbers    = [7,8,9,10,11,12]
         , tktPrice   = 0
         , affID      = 0
@@ -366,7 +365,24 @@ contract('EtheraffleTicketPurchasing', accounts => {
   })
 
 
-  // it('Can\'t enter on behalf of another address for free without a FreeLOT token', async () => {})
+  it('Can\'t enter on behalf of another address for free without a FreeLOT token', async () => {
+    const contract   = await etheraffle.deployed()
+        , freeCont   = await freeLOT.deployed()
+        , numbers    = [7,8,9,10,11,12]
+        , tktPrice   = 0
+        , affID      = 0
+        , buyer      = accounts[6]
+        , onBehalfOf = accounts[3]
+        , freeBal    = await freeCont.balanceOf.call(buyer)
+    assert.equal(freeBal.toNumber(), 0, 'FreeLOT balance above zero!')
+    try {
+      await contract.enterOnBehalfOfFree(numbers, affID, onBehalfOf, {from: buyer, value: tktPrice})
+      assert.fail('Shouldn\'t be able to enter on behalf of for free if holding no FreeLOT tokens!')
+    } catch (e) {
+      // console.log('Error when attempting free entry on behalf of whilst holding 0 FreeLOT: ', e)
+      // Transaction reverts as expected!
+    }
+  })
   // it('FreeLOT on behalf of entries increment correct user\'s entries', async () => {})
   // it('FreeLOT on behalf of entries do not increment prizepool', async () => {})
   // it('FreeLOT on behalf of entries destroy a FreeLOT token of the buyer not the recipient', async () => {})
