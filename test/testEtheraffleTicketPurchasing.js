@@ -190,14 +190,11 @@ contract('EtheraffleTicketPurchasing', accounts => {
         , week       = await contract.getWeek.call()
         , numbers    = [7,8,9,10,11,12]
         , affID      = 0
-        , tktPrice   = 1*10**18
+        , tktPrice   = 1*10**17
         , entrant    = accounts[0]
         , freeBal    = await freeCont.balanceOf.call(entrant)
-        , prizePool  = await contract.prizePool.call()
     assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
     const entry        = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: tktPrice})
-        , prizePoolNow = await contract.prizePool.call()
-    assert.equal(prizePoolNow.toNumber(), prizePool.toNumber() + tktPrice)
     truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
       ev.tktCost.toNumber() == tktPrice &&
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
@@ -209,6 +206,33 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
     assert.equal(args.forRaffle.toNumber(), week)
   })
+
+  it('FreeLOT entries with payment increment prize pool correctly', async () => {
+    const contract   = await etheraffle.deployed()
+        , freeCont   = await freeLOT.deployed()
+        , week       = await contract.getWeek.call()
+        , numbers    = [7,8,9,10,11,12]
+        , affID      = 0
+        , tktPrice   = 1*10**17
+        , entrant    = accounts[0]
+        , freeBal    = await freeCont.balanceOf.call(entrant)
+        , prizePool  = await contract.prizePool.call()
+    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
+    const entry = await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == tktPrice &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
+    , numEntries = await contract.getUserNumEntries(entrant, week)
+    , prizePoolNow = await contract.prizePool.call()
+    assert.equal(args.theEntrant, entrant)
+    assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
+    assert.equal(args.forRaffle.toNumber(), week)
+    assert.equal(prizePoolNow.toNumber(), prizePool.toNumber() + tktPrice)
+  })
+
 
   it('FreeLOT entries increments free entries & entries correctly', async () => {
     const contract    = await etheraffle.deployed()
@@ -521,7 +545,6 @@ contract('EtheraffleTicketPurchasing', accounts => {
   })
 
   // it('FreeLOT on behalf of increments free entries & entries correctly', async () => {})
-  // free entries that user pays for increments prizepool correctly! (for normal free and behalf of free!)
   // close the raffle somehow and test raffle closed entry.
   // test for functions not running if paused 
 
