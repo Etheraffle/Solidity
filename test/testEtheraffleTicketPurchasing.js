@@ -383,7 +383,36 @@ contract('EtheraffleTicketPurchasing', accounts => {
       // Transaction reverts as expected!
     }
   })
-  // it('FreeLOT on behalf of entries increment correct user\'s entries', async () => {})
+
+  it('FreeLOT on behalf of entries increment correct user\'s entries', async () => {
+    const contract            = await etheraffle.deployed()
+        , freeCont            = await freeLOT.deployed()
+        , week                = await contract.getWeek.call()
+        , numbers             = [7,8,9,10,11,12]
+        , tktPrice            = 0
+        , affID               = 0
+        , buyer               = accounts[0]
+        , onBehalfOf          = accounts[3]
+        , buyerEntriesBefore  = await contract.getUserNumEntries(buyer, week)
+        , behalfEntriesBefore = await contract.getUserNumEntries(onBehalfOf, week)
+        , freeBal    = await freeCont.balanceOf.call(buyer)
+    assert.isAbove(freeBal.toNumber(), 0, 'FreeLOT balance is zero!')
+    const entry = await contract.enterOnBehalfOfFree(numbers, affID, onBehalfOf, {from: buyer, value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
+      ev.tktCost.toNumber() == tktPrice &&
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
+    )
+    /* Can't access indexed logs via truffleAssert hence following */
+    const [{ args }]         = await getAllEvents(etheraffle.at(contract.address))
+        , buyerEntriesAfter  = await contract.getUserNumEntries(buyer, week)
+        , behalfEntriesAfter = await contract.getUserNumEntries(onBehalfOf, week)
+    assert.equal(args.theEntrant, onBehalfOf)
+    assert.equal(args.personalEntryNumber.toNumber(), behalfEntriesAfter.toNumber())
+    assert.equal(args.forRaffle.toNumber(), week)
+    assert.equal(buyerEntriesAfter.toNumber(), buyerEntriesBefore.toNumber())
+    assert.equal(behalfEntriesAfter.toNumber(), behalfEntriesBefore.toNumber() + 1)  
+  })
+
   // it('FreeLOT on behalf of entries do not increment prizepool', async () => {})
   // it('FreeLOT on behalf of entries destroy a FreeLOT token of the buyer not the recipient', async () => {})
   // it('FreeLOT on behalf of entries can pay for tickets if they wish', async () => {})
