@@ -8,22 +8,29 @@ const { assert }    = require("chai")
 contract('Etheraffle LOT Token Tests', accounts => {
   
   it('Contract should be owned by account[0]', async () => {
+    // Get contract owner -> check it's account[0]
     const contract  = await LOT.deployed()
         , contOwner = await contract.etheraffle.call()
     assert.equal(contOwner, accounts[0], 'Owner is not account[0]!')
   })
 
   it('Total supply should equal initial minting of 100000000', async () => {
+    // Get total supply -> compared to expected total supply
     const contract  = await LOT.deployed()
         , totSupply = await contract.totalSupply()
-    assert.equal(totSupply.toNumber(), 100000000)
+        , amount    = 100000000
+    assert.equal(totSupply.toNumber(), amount, 'Total supply doesn\'t equal initial minting!')
   })
 
-  it('Owner\'s balance should equal total supply of 100000000', async () => {
-    const contract = await LOT.deployed()
-        , owner    = await contract.etheraffle.call()
-        , balance  = await contract.balanceOf(owner)
-    assert.equal(balance.toNumber(), 100000000)
+  it('Owner\'s balance should equal total supply.', async () => {
+    // Get total supply -> get owner balance -> check they match
+    const contract  = await LOT.deployed()
+        , owner     = await contract.etheraffle.call()
+        , balance   = await contract.balanceOf(owner)
+        , totSupply = await contract.totalSupply.call()
+        , amount    = 100000000
+    assert.equal(totSupply.toNumber(), amount, 'Total supply doesn\'t equal expected amount!')
+    assert.equal(balance.toNumber(), totSupply.toNumber(), 'Owner\'s balance doesn\'t equal total supply!')
   })
 
   it('Owner should be a freezer', async () => {
@@ -36,34 +43,34 @@ contract('Etheraffle LOT Token Tests', accounts => {
   
   
   it('Owner can add & remove freezers', async () => {
-    // Use owner to dd subject as freezer -> check sibject is freezer -> remove subject as freezer -> check subject is no longer freezer
+    // Use owner to dd subject as freezer -> check subject is freezer -> remove subject as freezer -> check subject is no longer freezer
     const contract   = await LOT.deployed()
         , owner      = await contract.etheraffle.call()
         , notOwner   = accounts[7]
-        , subject    = accounts[1]
-        , addFreezer = await contract.addFreezer(subject, {from: owner})
-    let isFreezer = await contract.canFreeze.call(subject)
+        , guineaPig    = accounts[1]
+        , addFreezer = await contract.addFreezer(guineaPig, {from: owner})
+    let isFreezer = await contract.canFreeze.call(guineaPig)
     assert.isTrue(isFreezer, 'Account is not a freezer!')
     assert.notEqual(owner, notOwner, 'Owner and not owner are the same account!')
-    const removeFreezer = await contract.removeFreezer(subject, {from: owner})
-    isFreezer = await contract.canFreeze.call(subject)
+    const removeFreezer = await contract.removeFreezer(guineaPig, {from: owner})
+    isFreezer = await contract.canFreeze.call(guineaPig)
     assert.isFalse(isFreezer, 'Account has not been removed from freezer list!')
     truffleAssert.eventEmitted(addFreezer, 'LogFreezerAddition', ev => 
-      ev.newFreezer == subject
+      ev.newFreezer == guineaPig
     )
     truffleAssert.eventEmitted(removeFreezer, 'LogFreezerRemoval', ev => 
-      ev.freezerRemoved == subject
+      ev.freezerRemoved == guineaPig
     )
   })
 
   it('Non-owner cannot add or remove freezers', async () => {
     // As non-owner add subject as freezer -> check tx fails -> remove owner as freezer -> check tx fails.
-    const contract   = await LOT.deployed()
-        , owner      = await contract.etheraffle.call()
-        , notOwner   = accounts[7]
-        , subject    = accounts[1]
+    const contract  = await LOT.deployed()
+        , owner     = await contract.etheraffle.call()
+        , notOwner  = accounts[7]
+        , guineaPig = accounts[1]
     try {
-      await contract.addFreezer(subject, {from: notOwner})
+      await contract.addFreezer(guineaPig, {from: notOwner})
       assert.fail('Non-owner should not be able to add a freezer!')
     } catch (e) {
       // console.log('Error in non-owner trying to add freezer: ', e)
@@ -78,27 +85,36 @@ contract('Etheraffle LOT Token Tests', accounts => {
     }
   })
 
-  it('Only owner can change owner', async () => {
-    const contract = await LOT.deployed()
-        , change1  = await contract.setEtheraffle(accounts[1])
+  it('Owner can change owner', async () => {
+    //  Get owner -> change owner -> check new owner -> change owner back -> check for original owner
+    const contract  = await LOT.deployed()
+        , guineaPig = accounts[6]
     let owner = await contract.etheraffle.call()
-    assert.equal(owner, accounts[1])
+    const originalOwner = owner
+    assert.notEqual(owner, guineaPig, 'Onwer is same account as guinea pig account!')
+    const change1 = await contract.setEtheraffle(guineaPig, {from: owner})
+    owner = await contract.etheraffle.call()
+    assert.equal(owner, guineaPig, 'Owner should now be the guinea pig account!')
+    const change2 = await contract.setEtheraffle(originalOwner, {from: guineaPig})
+    owner = await contract.etheraffle.call()
+    assert.equal(owner, originalOwner, 'Owner should now be the original owner again!')
+    truffleAssert.eventEmitted(change1, 'LogEtheraffleChange', ev => ev.prevER == originalOwner && ev.newER == guineaPig)
+    truffleAssert.eventEmitted(change2, 'LogEtheraffleChange', ev => ev.prevER == guineaPig && ev.newER == originalOwner)
+  })
+
+  it('Non-owner cannot change owner', async () => {
+    // Check an account is not owner -> attempt to change owner -> check it fails.
+    const contract = await LOT.deployed()
+        , owner = await contract.etheraffle.call()
+        , guineaPig = accounts[4]
+    assert.notEqual(owner, guineaPig, 'Owner and guinea pig account are the same!')
     try {
-      await contract.setEtheraffle(accounts[0])
+      await contract.setEtheraffle(guineaPig, {from: guineaPig})
       assert.fail('Non-owner should not be able to change owner!')
     } catch (e) {
-      // console.log('Error in non-owner changing ownership: ', e)
-      // Transaction failed as expected!
+      //console.log('Error in non-owner changing ownership: ', e)
+      // Transaction reverts as expected!
     }
-    const change2 = await contract.setEtheraffle(accounts[0], {from: accounts[1]})
-    owner = await contract.etheraffle.call()
-    assert.equal(owner, accounts[0])
-    truffleAssert.eventEmitted(change1, 'LogEtheraffleChange', ev => 
-      ev.prevER == accounts[0] && ev.newER == accounts[1]
-    )
-    truffleAssert.eventEmitted(change2, 'LogEtheraffleChange', ev => 
-      ev.prevER == accounts[1] && ev.newER == accounts[0]
-    )
   })
   
   /* Following two tests have to use overloaded version of tx func because it's first in the contract. Pulled it out to here so both have access to it from their respective closures. */
@@ -175,7 +191,7 @@ contract('Etheraffle LOT Token Tests', accounts => {
   })
 
   it('Non-freezers cannot freeze/unfreeze token', async () => {
-    // Ensure account is not freezer -> attempt to freeze token -> check token is not frozen
+    // Pick account -> ensure account is not freezer -> attempt to freeze token -> check token is not frozen
     const contract     = await LOT.deployed()
         , freezer      = accounts[7]
         , isFreezer    = await contract.canFreeze.call(freezer)
@@ -193,7 +209,7 @@ contract('Etheraffle LOT Token Tests', accounts => {
   })
 
   it('Tokens can be moved when not frozen', async () => {
-    // Ensure contract not frozen -> move tokens -> check tokens have moved correctly
+    // Ensure contract not frozen -> move an amount of tokens -> check amount of tokens have moved correctly
     const contract          = await LOT.deployed()
         , dummyData         = '0x00'
         , amount            = 100000
@@ -210,7 +226,6 @@ contract('Etheraffle LOT Token Tests', accounts => {
         , receiverBalAfter = await contract.balanceOf(receiver)
     assert.equal(moverBalAfter.toNumber(), moverBalBefore.toNumber() - amount)
     assert.equal(receiverBalAfter.toNumber(), receiverBalBefore.toNumber() + amount)
-    // truffleAssert.eventEmitted(tx, 'LogTransfer', ev => ev.value == amount) // Can't check events with manual tx crafting
   })
 
   it('Tokens can\'t be moved when frozen', async () => {
