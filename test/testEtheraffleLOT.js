@@ -47,7 +47,7 @@ contract('Etheraffle LOT Token Tests', accounts => {
     assert.notEqual(owner, notOwner, 'Owner and not owner are the same account!')
     const removeFreezer = await contract.removeFreezer(subject, {from: owner})
     isFreezer = await contract.canFreeze.call(subject)
-    assert.isNotTrue(isFreezer, 'Account has not been removed from freezer list!')
+    assert.isFalse(isFreezer, 'Account has not been removed from freezer list!')
     truffleAssert.eventEmitted(addFreezer, 'LogFreezerAddition', ev => 
       ev.newFreezer == subject
     )
@@ -161,13 +161,13 @@ contract('Etheraffle LOT Token Tests', accounts => {
         , isFreezer = await contract.canFreeze.call(freezer)
     let status      = await contract.frozen.call()
     assert.isTrue(isFreezer, 'Freezer is not a freezer!')
-    assert.isNotTrue(status, 'Token is already frozen!')
+    assert.isFalse(status, 'Token is already frozen!')
     const freeze1 = await contract.setFrozen(true, {from: freezer})
     status = await contract.frozen.call()
     assert.isTrue(status, 'Token has not been frozen!')
     const freeze2 = await contract.setFrozen(false, {from: freezer})
     status = await contract.frozen.call()
-    assert.isNotTrue(status, 'Token is still frozen!')
+    assert.isFalse(status, 'Token is still frozen!')
     truffleAssert.eventEmitted(freeze1, 'LogFrozenStatus', ev => ev.status)
     truffleAssert.eventEmitted(freeze2, 'LogFrozenStatus', ev => !ev.status)
   })
@@ -177,7 +177,7 @@ contract('Etheraffle LOT Token Tests', accounts => {
         , freezer      = accounts[7]
         , isFreezer    = await contract.canFreeze.call(freezer)
         , statusBefore = await contract.frozen.call()
-    assert.isNotTrue(isFreezer, 'Freezer is not supposed to be a freezer!')
+    assert.isFalse(isFreezer, 'Freezer is not supposed to be a freezer!')
     try {
       await contract.setFrozen(true, {from: freezer})
       assert.fail("Non-freezers should not be able to freeze token!")
