@@ -173,6 +173,7 @@ contract('Etheraffle LOT Token Tests', accounts => {
   })
 
   it('Non-freezers cannot freeze/unfreeze token', async () => {
+    // Ensure account is not freezer -> attempt to freeze token -> check token is not frozen
     const contract     = await LOT.deployed()
         , freezer      = accounts[7]
         , isFreezer    = await contract.canFreeze.call(freezer)
@@ -189,29 +190,53 @@ contract('Etheraffle LOT Token Tests', accounts => {
     assert.equal(statusBefore, statusAfter, 'Frozen status has changed!')
   })
 
-  // token txs when frozen!
+  it('Tokens can be moved when not frozen', async () => {
+    // Ensure contract not frozen -> move tokens -> check tokens have moved correctly
+    const contract          = await LOT.deployed()
+        , dummyData         = '0x00'
+        , amount            = 100000
+        , mover             = accounts[0]
+        , receiver          = accounts[4]
+        , status            = await contract.frozen.call()
+        , moverBalBefore    = await contract.balanceOf(mover)
+        , receiverBalBefore = await contract.balanceOf(receiver)
+        , data              = web3Abi.encodeFunctionCall(txAbi, [receiver, amount, dummyData])
+    assert.isAbove(moverBalBefore.toNumber(), amount, 'Token mover doesn\'t have sufficient tokens to move!')
+    assert.isFalse(status, 'Token is frozen!')
+    const tx               = await LOT.web3.eth.sendTransaction({from: mover, to: contract.address, data: data})
+        , moverBalAfter    = await contract.balanceOf(mover)
+        , receiverBalAfter = await contract.balanceOf(receiver)
+    assert.equal(moverBalAfter.toNumber(), moverBalBefore.toNumber() - amount)
+    assert.equal(receiverBalAfter.toNumber(), receiverBalBefore.toNumber() + amount)
+    // truffleAssert.eventEmitted(tx, 'LogTransfer', ev => ev.value == amount) // Can't check events with manual tx crafting
+  })
+
   it('Tokens can\'t be moved when frozen', async () => {
-    const contract = await LOT.deployed()
+    // Freeze contract -> attempt to move tokens
+    const contract  = await LOT.deployed()
+        , mover     = accounts[0]
+        , receiver  = accounts[4]
+        , dummyData = '0x00'
     await contract.setFrozen(true)
     let status = await contract.frozen.call()
-    assert.equal(status, true)
-    let balance = await contract.balanceOf(accounts[0])
-    const data = web3Abi.encodeFunctionCall(txAbi, [accounts[4], balance, '0x00'])
+    assert.isTrue(status, 'Token is not frozen!')
+    let balance = await contract.balanceOf(mover)
+    const data = web3Abi.encodeFunctionCall(txAbi, [receiver, balance, dummyData])
     try {
-      await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, data: data})
+      await LOT.web3.eth.sendTransaction({from: mover, to: contract.address, data: data})
       assert.fail('Account should not be able to move tokens when they\'re frozen!')
     } catch (e) {
       // console.log('Error when attempting to move tokens when frozen: ', e)
       // Transaction failed as expected!
     }
-    await contract.setFrozen(false)
-    status = await contract.frozen.call()
-    assert.equal(status, false)
-    await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, data: data})
-    let balanceAcc4 = await contract.balanceOf(accounts[4])
-    assert.equal(balanceAcc4.toNumber(), balance.toNumber())
-    balance = await contract.balanceOf(accounts[0])
-    assert.equal(balance.toNumber(), 0)
+    // await contract.setFrozen(false)
+    // status = await contract.frozen.call()
+    // assert.isFalse(status, 'Token is still frozen!')
+    // await LOT.web3.eth.sendTransaction({from: mover, to: contract.address, data: data})
+    // let balanceAcc4 = await contract.balanceOf(receiver)
+    // assert.equal(balanceAcc4.toNumber(), balance.toNumber())
+    // balance = await contract.balanceOf(mover)
+    // assert.equal(balance.toNumber(), 0)
   })
   
   it('Fallback function should revert', async () => {
@@ -223,11 +248,38 @@ contract('Etheraffle LOT Token Tests', accounts => {
       // Transaction failed as expected!
     }
   })
-  
-  it('Non-owners cannot scuttle the contract', async () => {
-    const contract = await LOT.deployed()
+
+  it('Contract cannot be scuttled when token is not frozen', async () => {
+    // Ensure contract not frozen -> attempt to scuttle -> check it failed
+    const contract  = await LOT.deployed()
+        , owner     = await contract.etheraffle.call()
+        , canFreeze = await contract.canFreeze.call(owner)
+    assert.isTrue(canFreeze, 'Owner needs to be able to freeze!')
+    await contract.setFrozen(false, {from: owner})
+    const status = await contract.frozen.call()
+    assert.isFalse(status, 'Token needs to be unfrozen!')
     try {
-      await contract.selfDestruct({from: accounts[4]})
+      await contract.selfDestruct({from: owner})
+      assert.fail('Contract should not be scuttleable when not frozen!')
+    } catch (e) {
+      // console.log('Error attempting to destroy contract whilst token isn\'t frozen: ', e)
+      // Transaction reverts as expected!
+    }
+  })
+
+  it('Non-owners cannot scuttle the contract', async () => {
+    // Ensure contract is frozen -> attempt to scuttle as a non owner -> check it failed
+    const contract  = await LOT.deployed()
+        , owner     = await contract.etheraffle.call()
+        , nonOwner  = accounts[3]
+        , canFreeze = await contract.canFreeze.call(owner)
+    assert.notEqual(owner, nonOwner, 'Non owner & owner are the same account!')
+    assert.isTrue(canFreeze, 'Owner needs to be able to freeze!')
+    await contract.setFrozen(true, {from: owner})
+    const status = await contract.frozen.call()
+    assert.isTrue(status, 'Token needs to be frozen to test scuttling!')
+    try {
+      await contract.selfDestruct({from: nonOwner})
       assert.fail('Only owner should be able to destroy contract!')
     } catch (e) {
       // console.log('Error attempting to destroy contract: ', e)
@@ -235,21 +287,15 @@ contract('Etheraffle LOT Token Tests', accounts => {
     }
   })
 
-  it('Contract can only be scuttled when frozen', async () => {
-    const contract = await LOT.deployed()
-        , owner    = await contract.etheraffle.call()
-    let status     = await contract.frozen.call()
-    assert.equal(status, false)
-    try {
-      await contract.selfDestruct({from: owner})
-      assert.fail('Contract should not be scuttleable when not frozen!')
-    } catch (e) {
-      // console.log('Error attempting to destroy contract whilst token isn\'t frozen: ', e)
-      // Transaction failed as expected!
-    }
+  it('Contract can only be scuttled by owner when token is frozen', async () => {
+    // Check owner can freeze -> freeze token -> check is frozen -> scuttle contract
+    const contract  = await LOT.deployed()
+        , owner     = await contract.etheraffle.call()
+        , canFreeze = await contract.canFreeze.call(owner)
+    assert.isTrue(canFreeze, 'Owner needs to be able to freeze!')
     await contract.setFrozen(true, {from: owner})
-    status = await contract.frozen.call()
-    assert.equal(status, true)
+    const status = await contract.frozen.call()
+    assert.isTrue(status, 'Token needs to be frozen to test scuttling!')
     await contract.selfDestruct({from: owner})
   })
 
