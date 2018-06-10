@@ -10,7 +10,7 @@ contract('Etheraffle LOT Token Tests', accounts => {
   it('Contract should be owned by account[0]', async () => {
     const contract  = await LOT.deployed()
         , contOwner = await contract.etheraffle.call()
-    assert.equal(contOwner, accounts[0])
+    assert.equal(contOwner, accounts[0], 'Owner is not account[0]!')
   })
 
   it('Total supply should equal initial minting of 100000000', async () => {
@@ -101,7 +101,6 @@ contract('Etheraffle LOT Token Tests', accounts => {
     )
   })
   
-  // 
   /* Following two tests have to use overloaded version of tx func because it's first in the contract. Pulled it out to here so both have access to it from their respective closures. */
   const txAbi = {
     "constant": false,
@@ -122,29 +121,32 @@ contract('Etheraffle LOT Token Tests', accounts => {
     "type": "function"
   }
   
-  it('Account can transfer tokens if sufficient balance', async () => {
-    const contract = await LOT.deployed()
-    let balance = await contract.balanceOf(accounts[8])
-    assert.equal(balance.toNumber(), 0)
-    balance = await contract.balanceOf(accounts[0])
-    assert.equal(balance.toNumber(), 100000000)
-    const data = web3Abi.encodeFunctionCall(txAbi, [accounts[8], 10000000, '0x00'])
-        , tx   = await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, data: data})
-    balance = await contract.balanceOf(accounts[8])
-    assert.equal(balance.toNumber(), 10000000)
-    balance = await contract.balanceOf(accounts[0])
-    assert.equal(balance.toNumber(), 90000000)
-    /* Following breaks it even though the logs clearly show the transfer event firing. Must be something to do with the manual crafting of the tx?
-    truffleAssert.eventEmitted(tx, 'LogTransfer', ev => 
-      ev.from == accounts[0] && ev.to == accounts[8] && ev.value == 10000000 && ev.data == '0x00'
-    )
-    */
+  it('Account can transfer tokens if they have sufficient balance', async () => {
+    // Query account's balance -> attempt to move fewer tokens than balance -> check it transfers correctly.
+    const contract           = await LOT.deployed()
+        , mover              = accounts[0]
+        , recipient          = accounts[8]
+        , amount             = 10000000
+        , dummyData          = '0x00'
+        , balMoverBefore     = await contract.balanceOf(mover)
+        , balRecipientBefore = await contract.balanceOf(recipient)
+    assert.isAbove(balMoverBefore.toNumber(), amount, 'Mover doesn\'t have sufficient tokens to send tx!')
+    const data = web3Abi.encodeFunctionCall(txAbi, [recipient, amount, dummyData])
+    await LOT.web3.eth.sendTransaction({from: mover, to: contract.address, data: data})
+    const balMoverAfter     = await contract.balanceOf(mover)
+        , balRecipientAfter = await contract.balanceOf(recipient)
+    assert.equal(balMoverAfter.toNumber(), balMoverBefore.toNumber() - amount, 'Mover\'s tokens didn\'t decrement by correct amount!')
+    assert.equal(balRecipientAfter.toNumber(), balRecipientBefore.toNumber() + amount, 'Receipients\'s tokens didn\'t increment by correct amount!')
   })
 
   it('Account can\'t transfer tokens if insufficient balance', async () => {
-    const contract = await LOT.deployed()
-    let balance = await contract.balanceOf(accounts[8])
-    const data = web3Abi.encodeFunctionCall(txAbi, [accounts[0], balance + 1, '0x00'])
+    // Query accounts balance -> attempt to move balance + 1 tokens -> check for fail.
+    const contract  = await LOT.deployed()
+        , guineaPig = accounts[8]
+        , recipient = accounts[0]
+        , balance   = await contract.balanceOf(guineaPig)
+        , dummyData = '0x00'
+        , data      = web3Abi.encodeFunctionCall(txAbi, [recipient, balance + 1, dummyData])
     try {
       await LOT.web3.eth.sendTransaction({from: accounts[8], to: contract.address, data: data})
       assert.fail('Account should not be able to send more tokens than it owns!')
@@ -229,17 +231,10 @@ contract('Etheraffle LOT Token Tests', accounts => {
       // console.log('Error when attempting to move tokens when frozen: ', e)
       // Transaction failed as expected!
     }
-    // await contract.setFrozen(false)
-    // status = await contract.frozen.call()
-    // assert.isFalse(status, 'Token is still frozen!')
-    // await LOT.web3.eth.sendTransaction({from: mover, to: contract.address, data: data})
-    // let balanceAcc4 = await contract.balanceOf(receiver)
-    // assert.equal(balanceAcc4.toNumber(), balance.toNumber())
-    // balance = await contract.balanceOf(mover)
-    // assert.equal(balance.toNumber(), 0)
   })
   
   it('Fallback function should revert', async () => {
+    // Call fallback function -> check it fails
     const contract = await LOT.deployed()
     try {
       await LOT.web3.eth.sendTransaction({from: accounts[0], to: contract.address, value: 1})
