@@ -154,23 +154,39 @@ contract('Etheraffle LOT Token Tests', accounts => {
     }
   })
 
-  it('Only freezers can freeze token', async () => {
-    const contract = await LOT.deployed()
-        , freeze1  = await contract.setFrozen(true)
-    let status     = await contract.frozen.call()
-    assert.equal(status, true)
-    const freeze2  = await contract.setFrozen(false)
+  it('Freezers can freeze/unfreeze token', async () => {
+    // Get owner -> check owner is freezer -> freeze token -> check token is frozen -> unfreeze token -> check token is unfrozen.
+    const contract  = await LOT.deployed()
+        , freezer   = await contract.etheraffle.call()
+        , isFreezer = await contract.canFreeze.call(freezer)
+    let status      = await contract.frozen.call()
+    assert.isTrue(isFreezer, 'Freezer is not a freezer!')
+    assert.isNotTrue(status, 'Token is already frozen!')
+    const freeze1 = await contract.setFrozen(true, {from: freezer})
     status = await contract.frozen.call()
-    assert.equal(status, false)
+    assert.isTrue(status, 'Token has not been frozen!')
+    const freeze2 = await contract.setFrozen(false, {from: freezer})
+    status = await contract.frozen.call()
+    assert.isNotTrue(status, 'Token is still frozen!')
+    truffleAssert.eventEmitted(freeze1, 'LogFrozenStatus', ev => ev.status)
+    truffleAssert.eventEmitted(freeze2, 'LogFrozenStatus', ev => !ev.status)
+  })
+
+  it('Non-freezers cannot freeze/unfreeze token', async () => {
+    const contract     = await LOT.deployed()
+        , freezer      = accounts[7]
+        , isFreezer    = await contract.canFreeze.call(freezer)
+        , statusBefore = await contract.frozen.call()
+    assert.isNotTrue(isFreezer, 'Freezer is not supposed to be a freezer!')
     try {
-      await contract.setFrozen(true, {from: accounts[5]})
+      await contract.setFrozen(true, {from: freezer})
       assert.fail("Non-freezers should not be able to freeze token!")
     } catch (e) {
       // console.log('Error when attempt to freeze token as a non-freezer: ', e)
-      // Transaction failed as expected!
+      // Transaction reverts as expected!
     }
-    truffleAssert.eventEmitted(freeze1, 'LogFrozenStatus', ev => ev.status)
-    truffleAssert.eventEmitted(freeze2, 'LogFrozenStatus', ev => !ev.status)
+    const statusAfter = await contract.frozen.call()
+    assert.equal(statusBefore, statusAfter, 'Frozen status has changed!')
   })
 
   // token txs when frozen!
