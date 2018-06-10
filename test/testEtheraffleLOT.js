@@ -27,40 +27,55 @@ contract('Etheraffle LOT Token Tests', accounts => {
   })
 
   it('Owner should be a freezer', async () => {
+    // Check owner is freezer
     const contract  = await LOT.deployed()
         , owner     = await contract.etheraffle.call()
         , isFreezer = await contract.canFreeze(owner)
-    assert.equal(isFreezer, true)
+    assert.isTrue(isFreezer, 'Owner is not a freezer!')
   })
   
   
-  it('Only owner can add & remove freezers', async () => {
+  it('Owner can add & remove freezers', async () => {
+    // Use owner to dd subject as freezer -> check sibject is freezer -> remove subject as freezer -> check subject is no longer freezer
     const contract   = await LOT.deployed()
-        , addFreezer = await contract.addFreezer(accounts[1])
-    let freezerCheck = await contract.canFreeze.call(accounts[1])
-    assert.equal(freezerCheck, true)
-    const removeFreezer = await contract.removeFreezer(accounts[1])
-    freezerCheck = await contract.canFreeze.call(accounts[1])
-    assert.equal(freezerCheck, false)
+        , owner      = await contract.etheraffle.call()
+        , notOwner   = accounts[7]
+        , subject    = accounts[1]
+        , addFreezer = await contract.addFreezer(subject, {from: owner})
+    let isFreezer = await contract.canFreeze.call(subject)
+    assert.isTrue(isFreezer, 'Account is not a freezer!')
+    assert.notEqual(owner, notOwner, 'Owner and not owner are the same account!')
+    const removeFreezer = await contract.removeFreezer(subject, {from: owner})
+    isFreezer = await contract.canFreeze.call(subject)
+    assert.isNotTrue(isFreezer, 'Account has not been removed from freezer list!')
+    truffleAssert.eventEmitted(addFreezer, 'LogFreezerAddition', ev => 
+      ev.newFreezer == subject
+    )
+    truffleAssert.eventEmitted(removeFreezer, 'LogFreezerRemoval', ev => 
+      ev.freezerRemoved == subject
+    )
+  })
+
+  it('Non-owner cannot add or remove freezers', async () => {
+    // As non-owner add subject as freezer -> check tx fails -> remove owner as freezer -> check tx fails.
+    const contract   = await LOT.deployed()
+        , owner      = await contract.etheraffle.call()
+        , notOwner   = accounts[7]
+        , subject    = accounts[1]
     try {
-      await contract.addFreezer(accounts[9], {from: accounts[9]})
+      await contract.addFreezer(subject, {from: notOwner})
       assert.fail('Non-owner should not be able to add a freezer!')
     } catch (e) {
       // console.log('Error in non-owner trying to add freezer: ', e)
+      // Transaction reverts as expected!
     }
     try {
-      await contract.removeFreezer(accounts[0], {from: accounts[9]})
+      await contract.removeFreezer(owner, {from: notOwner})
       assert.fail('Non-owner should not be able to remove a freezer!')
     } catch (e) {
       // console.log('Error in non-owner trying to remove freezer: ', e)
-      // Transaction failed as expected!
+      // Transaction reverts as expected!
     }
-    truffleAssert.eventEmitted(addFreezer, 'LogFreezerAddition', ev => 
-      ev.newFreezer == accounts[1]
-    )
-    truffleAssert.eventEmitted(removeFreezer, 'LogFreezerRemoval', ev => 
-      ev.freezerRemoved == accounts[1]
-    )
   })
 
   it('Only owner can change owner', async () => {
