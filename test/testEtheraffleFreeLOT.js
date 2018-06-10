@@ -34,14 +34,14 @@ contract('Etheraffle FreeLOT Token Tests', accounts => {
   it('Owner can add & remove a minter', async () => {
     // Check if account is minter -> set them as minter -> check if minter now -> remove minter -> check if minter now.
     const contract      = await FreeLOT.deployed()
-        , gerbil        = accounts[5]
-        , checkIfMinter = await contract.isMinter.call(gerbil)
+        , guineaPig     = accounts[5]
+        , checkIfMinter = await contract.isMinter.call(guineaPig)
     assert.isNotTrue(checkIfMinter, 'Account already a minter!')
-    const addMinter     = await contract.addMinter(gerbil)
-        , isNowMinter   = await contract.isMinter.call(gerbil)
+    const addMinter     = await contract.addMinter(guineaPig)
+        , isNowMinter   = await contract.isMinter.call(guineaPig)
     assert.isTrue(isNowMinter, 'Account not succesfully made a minter!')
-    const rmMinter      = await contract.removeMinter(gerbil)
-        , isMinter      = await contract.isMinter.call(gerbil)
+    const rmMinter      = await contract.removeMinter(guineaPig)
+        , isMinter      = await contract.isMinter.call(guineaPig)
     assert.isNotTrue(isMinter, 'Account not removed from minter list!')
     truffleAssert.eventEmitted(addMinter, 'LogMinterAddition')
     truffleAssert.eventEmitted(rmMinter, 'LogMinterRemoval')
@@ -50,14 +50,14 @@ contract('Etheraffle FreeLOT Token Tests', accounts => {
   it('Owner can add & remove a destroyer', async () => {
     // Check if account is destroyer -> set them as destroyer -> check if destroyer now -> remove destroyer -> check if destroyer now.
     const contract         = await FreeLOT.deployed()
-        , gerbil           = accounts[5]
-        , checkIfDestroyer = await contract.isDestroyer.call(gerbil)
+        , guineaPig        = accounts[5]
+        , checkIfDestroyer = await contract.isDestroyer.call(guineaPig)
     assert.isNotTrue(checkIfDestroyer, 'Account already a destroyer!')
-    const addDestroyer     = await contract.addDestroyer(gerbil)
-        , isNowDestroyer   = await contract.isDestroyer.call(gerbil)
+    const addDestroyer     = await contract.addDestroyer(guineaPig)
+        , isNowDestroyer   = await contract.isDestroyer.call(guineaPig)
     assert.isTrue(isNowDestroyer, 'Account is not now a destroyer!')
-    const rmDestroyer      = await contract.removeDestroyer(gerbil)
-        , isDestroyer      = await contract.isDestroyer.call(gerbil)
+    const rmDestroyer      = await contract.removeDestroyer(guineaPig)
+        , isDestroyer      = await contract.isDestroyer.call(guineaPig)
     assert.isNotTrue(isDestroyer, 'Account is still a destroyer!')
     truffleAssert.eventEmitted(addDestroyer, 'LogDestroyerAddition')
     truffleAssert.eventEmitted(rmDestroyer, 'LogDestroyerRemoval')
