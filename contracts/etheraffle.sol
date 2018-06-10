@@ -696,7 +696,7 @@ contract Etheraffle is usingOraclize {
      */
     function openForWithdraw(uint _week) view internal returns (bool) {
         return (
-            winNumbersSet(_week) &&
+            winningNumbersSet(_week) &&
             raffle[_week].wdrawOpen &&
             raffle[_week].timeStamp > 0 &&
             now - raffle[_week].timeStamp < wdrawBfr &&
@@ -798,7 +798,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     function randomCallback(bytes32 _myID, string _result) internal onlyOraclize {
-        require(!winNumbersSet(qID[_myID].weekNo));
+        require(!winningNumbersSet(qID[_myID].weekNo));
         reclaimUnclaimed();
         performAccounting(qID[_myID].weekNo);
         setWinningNumbers(qID[_myID].weekNo, _result);
@@ -814,7 +814,7 @@ contract Etheraffle is usingOraclize {
      * @return  True if winning numbers are set correctly in raffle struct.
      *
      */
-    function winNumbersSet(uint _week) internal view returns (bool) {
+    function winningNumbersSet(uint _week) internal view returns (bool) {
         return raffle[_week].winNums.length > 0;
     }
     /**
@@ -892,8 +892,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     function calcProfit(uint _week) internal view returns (uint) {
-        return (raffle[_week].numEntries > 0 && 
-                raffle[_week].numEntries > raffle[_week].freeEntries)
+        return (raffle[_week].numEntries > 0 && raffle[_week].numEntries > raffle[_week].freeEntries)
             ? ((raffle[_week].numEntries - raffle[_week].freeEntries) * tktPrice * take) / 1000
             : 0;
     }
