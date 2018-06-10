@@ -1,12 +1,10 @@
 const { assert }    = require("chai")
-    // , moment        = require('moment')
+    , abi           = require('ethereumjs-abi')
     , truffleAssert = require('truffle-assertions')
-    // , ethRelief     = artifacts.require('ethRelief')
     , etheraffle    = artifacts.require('etheraffle')
     , freeLOT       = artifacts.require('etheraffleFreeLOT')
-    // , disbursal     = artifacts.require('etheraffleDisbursal')
-
-contract('EtheraffleTicketPurchasing', accounts => {
+    
+contract('Etheraffle Ticket Purchasing Tests', accounts => {
   // Test all three methods for buying tickets!! Check correct struc vars afterwards
   // Edit the raf end variable and check it reverts when trying to enter raffle! (no struct...)
   // set up the "next" raffles struct manually then enter that one and test vars etc!
@@ -63,13 +61,30 @@ contract('EtheraffleTicketPurchasing', accounts => {
             .map(async p => truffleAssert.eventEmitted(await p, 'LogTicketBought'))
   })
 
+  it('Chosen numbers are hashed and stored correctly', async () => {
+    const contract = await etheraffle.deployed()
+        , week     = await contract.getWeek.call()
+        , struct   = await contract.raffle.call(week)
+        , tktPrice = struct[0].toNumber()
+        , numbers  = [1,2,3,4,5,6]
+        , entrant  = accounts[0]
+        , affID    = 0
+        , entry    = await contract.enterRaffle(numbers, affID, {from: entrant, value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought')
+    const entryNum = await contract.getUserNumEntries(entrant, week)
+        , hash     = await contract.getChosenNumbersHash(entrant, week, entryNum)
+        , numsHash = '0x' + abi.soliditySHA3(['uint', 'uint', 'uint', 'uint', 'uint', 'uint'], numbers).toString('hex')
+    assert.equal(hash, numsHash)
+  })
+
   it('Raffle entries in struct should increment on entry', async () => {
     const contract = await etheraffle.deployed()
         , week     = await contract.getWeek.call()
         , struct   = await contract.raffle.call(week)
         , entries  = struct[4].toNumber()
         , tktPrice = struct[0].toNumber()
-        , entry    = await contract.enterRaffle([1,2,3,4,5,6], 0, {from: accounts[0], value: tktPrice})
+        , entrant  = accounts[0]
+        , entry    = await contract.enterRaffle([1,2,3,4,5,6], 0, {from: entrant, value: tktPrice})
     truffleAssert.eventEmitted(entry, 'LogTicketBought')
     const newStruct  = await contract.raffle.call(week)
         , newEntries = newStruct[4].toNumber()
@@ -576,9 +591,9 @@ contract('EtheraffleTicketPurchasing', accounts => {
     assert.equal(freeEntAfter.toNumber(), freeEntBefore.toNumber() + 1)      
   })
 
+  //test entries result in correct hashes in user arrays
   // close the raffle somehow and test raffle closed entry.
   // test for functions not running if paused 
-  //test entries result in correct hashes in user arrays
 
 })
 
