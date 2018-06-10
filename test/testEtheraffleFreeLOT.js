@@ -27,55 +27,69 @@ contract('Etheraffle FreeLOT Token Tests', accounts => {
     const contract = await FreeLOT.deployed()
         , isMinter = await contract.isMinter.call(accounts[0])
         , isDestroyer = await contract.isDestroyer.call(accounts[0])
-    assert.equal(isMinter, true)
-    assert.equal(isDestroyer, true)
+    assert.isTrue(isMinter, 'isMinter returned false!')
+    assert.isTrue(isDestroyer, 'isDestroyer returned false!')
   })
 
   it('Owner can add & remove a minter', async () => {
+    // Check if account is minter -> set them as minter -> check if minter now -> remove minter -> check if minter now.
     const contract      = await FreeLOT.deployed()
-        , checkIfMinter = await contract.isMinter.call(accounts[5])
-    assert.equal(checkIfMinter, false)
-    const addMinter     = await contract.addMinter(accounts[5])
-        , isNowMinter   = await contract.isMinter.call(accounts[5])
-    assert.equal(isNowMinter, true)
-    const rmMinter      = await contract.removeMinter(accounts[5])
-        , isMinter      = await contract.isMinter.call(accounts[5])
-    assert.equal(isMinter, false)
+        , gerbil        = accounts[5]
+        , checkIfMinter = await contract.isMinter.call(gerbil)
+    assert.isNotTrue(checkIfMinter, 'Account already a minter!')
+    const addMinter     = await contract.addMinter(gerbil)
+        , isNowMinter   = await contract.isMinter.call(gerbil)
+    assert.isTrue(isNowMinter, 'Account not succesfully made a minter!')
+    const rmMinter      = await contract.removeMinter(gerbil)
+        , isMinter      = await contract.isMinter.call(gerbil)
+    assert.isNotTrue(isMinter, 'Account not removed from minter list!')
     truffleAssert.eventEmitted(addMinter, 'LogMinterAddition')
     truffleAssert.eventEmitted(rmMinter, 'LogMinterRemoval')
   })
 
   it('Owner can add & remove a destroyer', async () => {
+    // Check if account is destroyer -> set them as destroyer -> check if destroyer now -> remove destroyer -> check if destroyer now.
     const contract         = await FreeLOT.deployed()
-        , checkIfDestroyer = await contract.isDestroyer.call(accounts[5])
-    assert.equal(checkIfDestroyer, false)
-    const addDestroyer     = await contract.addDestroyer(accounts[5])
-        , isNowDestroyer   = await contract.isDestroyer.call(accounts[5])
-    assert.equal(isNowDestroyer, true)
-    const rmDestroyer      = await contract.removeDestroyer(accounts[5])
-        , isDestroyer      = await contract.isDestroyer.call(accounts[5])
-    assert.equal(isDestroyer, false)
+        , gerbil           = accounts[5]
+        , checkIfDestroyer = await contract.isDestroyer.call(gerbil)
+    assert.isNotTrue(checkIfDestroyer, 'Account already a destroyer!')
+    const addDestroyer     = await contract.addDestroyer(gerbil)
+        , isNowDestroyer   = await contract.isDestroyer.call(gerbil)
+    assert.isTrue(isNowDestroyer, 'Account is not now a destroyer!')
+    const rmDestroyer      = await contract.removeDestroyer(gerbil)
+        , isDestroyer      = await contract.isDestroyer.call(gerbil)
+    assert.isNotTrue(isDestroyer, 'Account is still a destroyer!')
     truffleAssert.eventEmitted(addDestroyer, 'LogDestroyerAddition')
     truffleAssert.eventEmitted(rmDestroyer, 'LogDestroyerRemoval')
   })
 
   it('Minters can mint tokens', async () => {
-    const contract = await FreeLOT.deployed()
-        , isMinter = await contract.isMinter(accounts[0])
-    assert.equal(isMinter, true)
-        , mint     = await contract.mint(accounts[1], 100)
-        , balance  = await contract.balanceOf.call(accounts[1])
-    assert.equal(balance, 100)
+    // Check account is minter -> mint tokens to another account -> check tokens minted correctly.
+    const contract  = await FreeLOT.deployed()
+        , minter    = accounts[0]
+        , mintee    = accounts[1]
+        , amount    = 100
+        , isMinter  = await contract.isMinter(minter)
+        , balBefore = await contrac.balanceOf(mintee)
+    assert.isTrue(isMinter, 'Account is not a minter!')
+        , mint     = await contract.mint(mintee, amount)
+        , balAfter = await contract.balanceOf.call(mintee)
+    assert.equal(balAfter, balBefore + amount, 'Mintee\'s account has not incremented by amount minted!')
     truffleAssert.eventEmitted(mint, 'LogMinting')
   })
 
   it('Destroyers can destroy tokens', async () => {
-    const contract = await FreeLOT.deployed()
-        , isDestroyer = await contract.isDestroyer(accounts[0])
-    assert.equal(isDestroyer, true)
-        , destroy  = await contract.destroy(accounts[1], 50)
-        , balance  = await contract.balanceOf.call(accounts[1])
-    assert.equal(balance, 50)
+    // Check account is destroyer -> destroy tokens of another account -> check tokens destroyed correctly.
+    const contract    = await FreeLOT.deployed()
+        , amount      = 50
+        , destroyer   = accounts[0]
+        , destroyee   = accounts[1]
+        , balBefore   = await contract.balanceOf(destroyee)
+        , isDestroyer = await contract.isDestroyer(destroyer)
+    assert.isTrue(isDestroyer, 'Account is not a destroyer!')
+        , destroy  = await contract.destroy(destroyee, amount)
+        , balAfter = await contract.balanceOf.call(destroyee)
+    assert.equal(balAfter, balBefore - amount, 'Destroyee\'s account not decremented by amount destroyed!')
     truffleAssert.eventEmitted(destroy, 'LogDestruction')
   })
   
