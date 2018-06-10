@@ -88,7 +88,7 @@ contract('Etheraffle Disbursal Tests', accounts => {
     const contract = await disbursal.deployed()
         , owner    = await contract.etheraffle.call()
         , upgraded = await contract.upgraded.call()
-    assert.equal(upgraded, true)
+    assert.isTrue(upgraded, 'Upgraded var returned false!')
     try {
       await contract.selfDestruct(accounts[4], {from: accounts[4]})
       assert.fail('Only owner can scuttle after contract upgrade!')
