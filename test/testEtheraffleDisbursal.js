@@ -3,7 +3,7 @@ const { assert }    = require("chai")
     , receiver      = artifacts.require('etherReceiverStub')
     , disbursal     = artifacts.require('etheraffleDisbursal')
 
-contract('etheraffleDisbursal', accounts => {
+contract('Etheraffle Disbursal Tests', accounts => {
   
   it('Contract should be owned by account[0]', async () => {
     const contract  = await disbursal.deployed()

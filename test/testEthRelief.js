@@ -3,7 +3,7 @@ const { assert }    = require("chai")
     , ethRelief     = artifacts.require('ethRelief')
     , receiver      = artifacts.require('etherReceiverStub')
 
-contract('EthRelief', accounts => {
+contract('EthRelief Tests', accounts => {
   
   it('Contract should be owned by account[0]', async () => {
     const contract  = await ethRelief.deployed()

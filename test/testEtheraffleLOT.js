@@ -5,7 +5,7 @@ const { assert }    = require("chai")
 
 // TODO: Write a module to check specifically for reverts in the try/catch catches.
 
-contract('etheraffleLOT', accounts => {
+contract('Etheraffle LOT Token Tests', accounts => {
   
   it('Contract should be owned by account[0]', async () => {
     const contract  = await LOT.deployed()

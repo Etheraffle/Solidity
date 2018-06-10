@@ -7,7 +7,7 @@ const { assert }    = require("chai")
 
 // Run ethereum-bridge for oraclize w/ node bridge -a 9 -H 127.0.0.1 -p 9545 --dev
 
-contract('EtheraffleBasics', accounts => {
+contract('Etheraffle Basics Tests', accounts => {
   // Correct setup checks
   it('Contract should be owned by account[0]', async () => {
     const contract  = await etheraffle.deployed()
