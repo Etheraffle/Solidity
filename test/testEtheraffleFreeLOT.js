@@ -36,13 +36,13 @@ contract('Etheraffle FreeLOT Token Tests', accounts => {
     const contract      = await FreeLOT.deployed()
         , guineaPig     = accounts[5]
         , checkIfMinter = await contract.isMinter.call(guineaPig)
-    assert.isNotTrue(checkIfMinter, 'Account already a minter!')
+    assert.isFalse(checkIfMinter, 'Account already a minter!')
     const addMinter     = await contract.addMinter(guineaPig)
         , isNowMinter   = await contract.isMinter.call(guineaPig)
     assert.isTrue(isNowMinter, 'Account not succesfully made a minter!')
     const rmMinter      = await contract.removeMinter(guineaPig)
         , isMinter      = await contract.isMinter.call(guineaPig)
-    assert.isNotTrue(isMinter, 'Account not removed from minter list!')
+    assert.isFalse(isMinter, 'Account not removed from minter list!')
     truffleAssert.eventEmitted(addMinter, 'LogMinterAddition')
     truffleAssert.eventEmitted(rmMinter, 'LogMinterRemoval')
   })
@@ -52,13 +52,13 @@ contract('Etheraffle FreeLOT Token Tests', accounts => {
     const contract         = await FreeLOT.deployed()
         , guineaPig        = accounts[5]
         , checkIfDestroyer = await contract.isDestroyer.call(guineaPig)
-    assert.isNotTrue(checkIfDestroyer, 'Account already a destroyer!')
+    assert.isFalse(checkIfDestroyer, 'Account already a destroyer!')
     const addDestroyer     = await contract.addDestroyer(guineaPig)
         , isNowDestroyer   = await contract.isDestroyer.call(guineaPig)
     assert.isTrue(isNowDestroyer, 'Account is not now a destroyer!')
     const rmDestroyer      = await contract.removeDestroyer(guineaPig)
         , isDestroyer      = await contract.isDestroyer.call(guineaPig)
-    assert.isNotTrue(isDestroyer, 'Account is still a destroyer!')
+    assert.isFalse(isDestroyer, 'Account is still a destroyer!')
     truffleAssert.eventEmitted(addDestroyer, 'LogDestroyerAddition')
     truffleAssert.eventEmitted(rmDestroyer, 'LogDestroyerRemoval')
   })
@@ -70,11 +70,11 @@ contract('Etheraffle FreeLOT Token Tests', accounts => {
         , mintee    = accounts[1]
         , amount    = 100
         , isMinter  = await contract.isMinter(minter)
-        , balBefore = await contrac.balanceOf(mintee)
+        , balBefore = await contract.balanceOf(mintee)
     assert.isTrue(isMinter, 'Account is not a minter!')
         , mint     = await contract.mint(mintee, amount)
         , balAfter = await contract.balanceOf.call(mintee)
-    assert.equal(balAfter, balBefore + amount, 'Mintee\'s account has not incremented by amount minted!')
+    assert.equal(balAfter, balBefore.toNumber() + amount, 'Mintee\'s account has not incremented by amount minted!')
     truffleAssert.eventEmitted(mint, 'LogMinting')
   })
 
@@ -86,6 +86,7 @@ contract('Etheraffle FreeLOT Token Tests', accounts => {
         , destroyee   = accounts[1]
         , balBefore   = await contract.balanceOf(destroyee)
         , isDestroyer = await contract.isDestroyer(destroyer)
+    assert.isAbove(balBefore.toNumber(), amount, 'Can\'t destroy more tokens than account holds!')
     assert.isTrue(isDestroyer, 'Account is not a destroyer!')
         , destroy  = await contract.destroy(destroyee, amount)
         , balAfter = await contract.balanceOf.call(destroyee)
