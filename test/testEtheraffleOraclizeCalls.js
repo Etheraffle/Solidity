@@ -7,7 +7,7 @@ const { assert }    = require("chai")
 
 contract('Etheraffle Oraclize Tests', accounts => {
   
-  it('Only owner can set Oraclize strings', async () => {
+  it('Non-owner cannot set Oraclize strings', async () => {
     // Change string as non-owner -> Check tx fails.
     const contract = await etheraffle.deployed()
         , owner    = await contract.etheraffle.call()
@@ -26,7 +26,7 @@ contract('Etheraffle Oraclize Tests', accounts => {
     }
   })
 
-  it('Owner can set Oraclize strings correctly', async () => {
+  it('Owner can set Oraclize strings', async () => {
     // Get owner -> change strings as owner -> check they match.
     const contract = await etheraffle.deployed()
         , owner    = await contract.etheraffle.call()
