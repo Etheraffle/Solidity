@@ -46,3 +46,11 @@ contract('Etheraffle Oraclize Tests', accounts => {
   })
 
 })
+
+//_contract = etheraffle.at(contract.address)
+const getAllEvents = _contract => {
+  return new Promise((resolve, reject) => {
+    return _contract.allEvents({},{fromBlock:0, toBlock: 'latest'})
+    .get((err, res) => !err ? resolve(res) : console.log(err))
+  })
+}
