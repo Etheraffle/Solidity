@@ -6,6 +6,15 @@ const { assert }    = require("chai")
 // Correct Orac callback time = struct timestamp + rafend
 
 contract('Etheraffle Oraclize Tests', accounts => {
+
+  it('Contract should have prize pool of 1 ETH', async () => {
+    // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH
+    const contract  = await etheraffle.deployed()
+        , amount    = 1*10**18
+    await contract.manuallyAddToPrizePool({from: account[6], value: amount})
+    const prizePool = await contract.prizePool.call()
+    assert.equal(prizePool.toNumber(), amount, 'Prize pool is not 1 ETH!')
+  })
   
   it('Non-owner cannot set Oraclize strings', async () => {
     // Change string as non-owner -> Check tx fails.
@@ -16,7 +25,7 @@ contract('Etheraffle Oraclize Tests', accounts => {
         , api1     = 'can'
         , api2     = 'set'
         , caller   = accounts[5]
-    assert.notEqual(owner, caller, 'Function caller is not different to owner!')
+    assert.notEqual(owner, caller, 'Function caller is same address contract owner!')
     try {
       await contract.manuallySetOraclizeString(random1, random2, api1, api2, {from: caller})
       assert.fail('Only contract owner should be able to set Oraclize strings!')
@@ -39,10 +48,10 @@ contract('Etheraffle Oraclize Tests', accounts => {
         , random2After = await contract.randomStr2.call()
         , api1After    = await contract.apiStr1.call()
         , api2After    = await contract.apiStr2.call()
-    assert.equal(random1, random1After, 'Random1 string not set correctly!')
-    assert.equal(random2, random2After, 'Random2 string not set correctly!')
-    assert.equal(api1, api1After, 'Api1 string not set correctly!')
-    assert.equal(api2, api2After, 'Api2 string not set correctly!')
+    assert.equal(random1, random1After, 'Random1 string was not set correctly!')
+    assert.equal(random2, random2After, 'Random2 string was not set correctly!')
+    assert.equal(api1, api1After, 'Api1 string was not set correctly!')
+    assert.equal(api2, api2After, 'Api2 string was not set correctly!')
   })
 
 })
