@@ -944,7 +944,7 @@ contract Etheraffle is usingOraclize {
      *
      *      ##########################################
      *      ###                                    ###
-     *      ###          Random Callback           ###
+     *      ###        Etheraffle Callback         ###
      *      ###                                    ###
      *      ##########################################
      *
