@@ -13,7 +13,7 @@ const { assert }    = require("chai")
 
 contract('Etheraffle Oraclize Tests Part I', accounts => {
 
-  it('Contract should have prize pool of 1 ETH. (Setup)', async () => {
+  it('Contract should have prize pool of 1 ETH.', async () => {
     // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
     const contract  = await etheraffle.deployed()
         , amount    = 1*10**18
@@ -22,7 +22,7 @@ contract('Etheraffle Oraclize Tests Part I', accounts => {
     assert.equal(prizePool.toNumber(), amount, 'Prize pool is not 1 ETH!')
   })
   
-  it('Owner can set Oraclize strings correctly. (Setup)', async () => {
+  it('Owner can set Oraclize strings correctly.', async () => {
     // Get owner -> change strings as owner -> check they match.
     const contract = await etheraffle.deployed()
         , owner    = await contract.etheraffle.call()
@@ -120,19 +120,14 @@ contract('Etheraffle Oraclize Tests Part I', accounts => {
 
 contract('Etheraffle Oraclize Tests Part II', accounts => {
 
-  it('Contract should have prize pool of 1 ETH. (Setup)', async () => {
+  it('Contract should setup correctly', async () => {
     // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
     const contract  = await etheraffle.deployed()
         , amount    = 1*10**18
+        , owner     = await contract.etheraffle.call()
     await contract.manuallyAddToPrizePool({from: accounts[6], value: amount})
     const prizePool = await contract.prizePool.call()
     assert.equal(prizePool.toNumber(), amount, 'Prize pool is not 1 ETH!')
-  })
-
-  it('Owner can set Oraclize strings correctly. (Setup)', async () => {
-    // Get owner -> change strings as owner -> check they match.
-    const contract = await etheraffle.deployed()
-        , owner    = await contract.etheraffle.call()
     await contract.manuallySetOraclizeString(random1, random2, api1, api2, {from: owner})
     const random1After = await contract.randomStr1.call()
         , random2After = await contract.randomStr2.call()
@@ -214,19 +209,14 @@ contract('Etheraffle Oraclize Tests Part II', accounts => {
 
 contract('Etheraffle Oraclize Tests Part III', accounts => {
 
-  it('Contract should have prize pool of 1 ETH. (Setup)', async () => {
+  it('Contract should setup correctly', async () => {
     // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
     const contract  = await etheraffle.deployed()
         , amount    = 1*10**18
+        , owner     = await contract.etheraffle.call()
     await contract.manuallyAddToPrizePool({from: accounts[6], value: amount})
     const prizePool = await contract.prizePool.call()
     assert.equal(prizePool.toNumber(), amount, 'Prize pool is not 1 ETH!')
-  })
-
-  it('Owner can set Oraclize strings correctly. (Setup)', async () => {
-    // Get owner -> change strings as owner -> check they match.
-    const contract = await etheraffle.deployed()
-        , owner    = await contract.etheraffle.call()
     await contract.manuallySetOraclizeString(random1, random2, api1, api2, {from: owner})
     const random1After = await contract.randomStr1.call()
         , random2After = await contract.randomStr2.call()
@@ -238,7 +228,8 @@ contract('Etheraffle Oraclize Tests Part III', accounts => {
     assert.equal(api2, api2After, 'Api2 string was not set correctly!')
   })
 
-  it('Manual Random queries don\'t recursively create another query.', async () => {
+  it('Manual Random.org api Oraclize queries don\'t recursively create another query.', async () => {
+    // Craft manual Random query -> check it emits correct event -> wait 20 seconds and check a second query isn't created
     const contract = await etheraffle.deployed()
         , owner    = await contract.etheraffle.call()
         , week     = 5
@@ -248,14 +239,51 @@ contract('Etheraffle Oraclize Tests Part III', accounts => {
         , status   = false
         , oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
     await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID)
-    await createDelay(20000) // Give time for Oraclize callback to occur...
+    await createDelay(20000)
     const queryEvents = await getQueryEvents(etheraffle.at(contract.address), week)
     assert.equal(queryEvents.length, 1, 'A second Oraclize query should not have been sent!')
   })
-  
 
 })
 
+contract('Etheraffle Oraclize Tests Part IV', accounts => {
+
+  it('Contract should setup correctly', async () => {
+    // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
+    const contract  = await etheraffle.deployed()
+        , amount    = 1*10**18
+        , owner     = await contract.etheraffle.call()
+    await contract.manuallyAddToPrizePool({from: accounts[6], value: amount})
+    const prizePool = await contract.prizePool.call()
+    assert.equal(prizePool.toNumber(), amount, 'Prize pool is not 1 ETH!')
+    await contract.manuallySetOraclizeString(random1, random2, api1, api2, {from: owner})
+    const random1After = await contract.randomStr1.call()
+        , random2After = await contract.randomStr2.call()
+        , api1After    = await contract.apiStr1.call()
+        , api2After    = await contract.apiStr2.call()
+    assert.equal(random1, random1After, 'Random1 string was not set correctly!')
+    assert.equal(random2, random2After, 'Random2 string was not set correctly!')
+    assert.equal(api1, api1After, 'Api1 string was not set correctly!')
+    assert.equal(api2, api2After, 'Api2 string was not set correctly!')
+  })
+ 
+  it('Manual Etheraffle api Oraclize queries don\'t recursively create another query.', async () => {
+    // Craft manual ER query -> check it emits correct event -> wait 20 seconds and check a second query isn't created
+    const contract = await etheraffle.deployed()
+        , owner    = await contract.etheraffle.call()
+        , week     = 5
+        , delay    = 0
+        , isRandom = false
+        , isManual = true
+        , status   = false
+        , oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
+    await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID)
+    await createDelay(20000)
+    const queryEvents = await getQueryEvents(etheraffle.at(contract.address), week)
+    assert.equal(queryEvents.length, 1, 'A second Oraclize query should not have been sent!')
+  })
+
+})
 
 const createDelay = time =>
   new Promise(resolve => setTimeout(resolve, time))
@@ -276,3 +304,33 @@ const getQueryEvents = (_contract, _week) =>
     _contract.LogQuerySent({forRaffle: _week},{fromBlock: 0, toBlock: "latest"}).get((err, res) =>
       err ? reject(null) : resolve(res)))
      
+/*
+  Check contract status is changed per an oraclize query
+  
+  enter x number of times and do the maths to calc the prizes correctly
+  check events fired by orac cbs to make sure timings are correct for the recursion
+  check manual ones don't cause recursion
+  check non manual ones DO cause recursion
+  make api have a true/false flag? change the string to make random calls for real, vs "random" from api? Check flag exists first, since it won't for the real api one!
+
+    await createDelay(20000) // Give time for Oraclize callback to occur...
+    const oracEvent = await getOraclizeCallback(etheraffle.at(contract.address), week)
+    assert.equal(oracEvent.length, 1, 'More than one Oraclize callback event occurred!')
+    console.log('oracEvents: ', oracEvent)
+    oracEvent.map(({event, args: {queryID, result, forRaffle}}) => {
+      assert.equal(event, 'LogOraclizeCallback', 'Wrong event was retrieved!')
+      assert.equal(queryID, qID, 'Callback was for wrong QID!')
+      assert.equal(JSON.parse(result)[0].length, 6, 'Wrong number of random numbers retrieved!')
+      assert.equal(forRaffle.toNumber(), week, 'Callback was for wrong raffle number!')
+    })  
+    // can test for all the correct event fires too from the randomCallback function etc.
+  
+
+  Events emitted during test:
+  ---------------------------
+
+  LogQuerySent(queryID: 0xb6d9e12e63c4098a55e05fa6437a6e28078f9ea34940e4f466705c9ed60b528a, dueAt: 0, sendTime: 1529178710)
+  LogOraclizeCallback(functionCaller: 0x5aeda56215b167893e80b4fe645ba6d5bab767de, queryID: 0x396f7f998bfc1a43748e886f2992cf4e29722b785ec704612c18f951272685b7, result: [[31, 32, 39, 27, 35, 21], 391], forRaffle: <indexed>, atTime: 1529178731)
+  LogFundsDisbursed(forRaffle: <indexed>, oraclizeTotal: 23000000000000000, amount: 0, toAddress: <indexed>, atTime: 1529178731)    LogWinningNumbers(forRaffle: <indexed>, numberOfEntries: 0, wNumbers: 31,32,39,27,35,21, currentPrizePool: 977000000000000000, randomSerialNo: 391, atTime: 1529178731)    LogOraclizeCallback(functionCaller: 0x5aeda56215b167893e80b4fe645ba6d5bab767de, queryID: 0xff4252f307a6baf4775936efd1ff0211a1bcd650f1d1cfcd2332c29b597fff8c, result: [1, 0, 0, 0], forRaffle: <indexed>, atTime: 1529178733)    LogFunctionsPaused(identifier: 4, atTime: 1529178733)
+  LogPrizePoolsUpdated(newMainPrizePool: 977000000000000000, forRaffle: <indexed>, ticketPrice: 0, unclaimedPrizePool: 0, winningAmounts: 0,0,0,0, atTime: 1529178733)
+*/
