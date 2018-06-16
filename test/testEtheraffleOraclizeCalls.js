@@ -2,7 +2,13 @@ const { assert }    = require("chai")
     // , moment        = require('moment')
     , truffleAssert = require('truffle-assertions')
     , etheraffle    = artifacts.require('etheraffle')
-
+    , random1       = "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random[\"data\", \"serialNumber\"]','\\n{\"jsonrpc\": \"2.0\",\"method\":\"generateSignedIntegers\",\"id\":\""
+    , random2       = "\",\"params\":{\"n\":\"6\",\"min\":1,\"max\":49,\"replacement\":false,\"base\":10,\"apiKey\":${[decrypt] BBxn5oQTs8LKRkJb32LS+dHf/c//H3sSjehJchlucpdFGEjBwtSu08okSPoSkoQQpPCW56kz7PoGm5VEc8r722oEg01AdB03CbURpSxU5cF9Q7MeyNAaDUcTOvlX1L2T/h/k4PUD6FEIvtynHZrSMisEF+r7WJxgiA==}}']"
+    , api1          = "[URL] ['json(https://etheraffle.com/api/test).m','{\"r\":\""
+    , api2          = "\",\"k\":${[decrypt] BEhjzZIYd3GIvFUu4rWqwYOFKucnwToOUpP3x/svZVz/Vo68c6yIiq8k6XQDmPLajzSTD/TrpR5cF4BnLLhNDtELy7hQyMmFTuUa3JXBs0G0f4d7cTeIX8IG37KxtNfcvUafJy25}}']"
+    , fakeRandom1   = "[URL] ['json(https://etheraffle.com/api/test).m','{\"r\":\""
+    , fakeRandom2   = "\",\"k\":${[decrypt] BEhjzZIYd3GIvFUu4rWqwYOFKucnwToOUpP3x/svZVz/Vo68c6yIiq8k6XQDmPLajzSTD/TrpR5cF4BnLLhNDtELy7hQyMmFTuUa3JXBs0G0f4d7cTeIX8IG37KxtNfcvUafJy25}}']"
+    
 // Correct Orac callback time = struct timestamp + rafend
 
 contract('Etheraffle Oraclize Tests', accounts => {
@@ -39,10 +45,6 @@ contract('Etheraffle Oraclize Tests', accounts => {
     // Get owner -> change strings as owner -> check they match.
     const contract = await etheraffle.deployed()
         , owner    = await contract.etheraffle.call()
-        , random1  = "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random[\"data\", \"serialNumber\"]','\\n{\"jsonrpc\": \"2.0\",\"method\":\"generateSignedIntegers\",\"id\":\""
-        , random2  = "\",\"params\":{\"n\":\"6\",\"min\":1,\"max\":49,\"replacement\":false,\"base\":10,\"apiKey\":${[decrypt] BBxn5oQTs8LKRkJb32LS+dHf/c//H3sSjehJchlucpdFGEjBwtSu08okSPoSkoQQpPCW56kz7PoGm5VEc8r722oEg01AdB03CbURpSxU5cF9Q7MeyNAaDUcTOvlX1L2T/h/k4PUD6FEIvtynHZrSMisEF+r7WJxgiA==}}']"
-        , api1     = "[URL] ['json(https://etheraffle.com/api/test).m','{\"r\":\""
-        , api2     = "\",\"k\":${[decrypt] BEhjzZIYd3GIvFUu4rWqwYOFKucnwToOUpP3x/svZVz/Vo68c6yIiq8k6XQDmPLajzSTD/TrpR5cF4BnLLhNDtELy7hQyMmFTuUa3JXBs0G0f4d7cTeIX8IG37KxtNfcvUafJy25}}']"
     await contract.manuallySetOraclizeString(random1, random2, api1, api2, {from: owner})
     const random1After = await contract.randomStr1.call()
         , random2After = await contract.randomStr2.call()
@@ -53,7 +55,13 @@ contract('Etheraffle Oraclize Tests', accounts => {
     assert.equal(api1, api1After, 'Api1 string was not set correctly!')
     assert.equal(api2, api2After, 'Api2 string was not set correctly!')
   })
-
+  //Check callbacks don't work when paused
+  //Check qid structs are made correctly for both types
+  //enter x number of times and do the maths to calc the prizes correctly
+  //check events fired by orac cbs to make sure timings are correct for the recursion
+  //check manual ones don't cause recursion
+  //check non manual ones DO cause recursion
+  //make api have a true/false flag? change the string to make random calls for real, vs "random" from api? Check flag exists first, since it won't for the real api one!
 })
 
 //_contract = etheraffle.at(contract.address)
