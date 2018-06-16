@@ -123,6 +123,20 @@ contract('Etheraffle Oraclize Tests', accounts => {
   })
 
   
+  // await createDelay(20000) // Give time for Oraclize callback to occur...
+  //   const oracEvent = await getOraclizeCallback(etheraffle.at(contract.address), week)
+  //   assert.equal(oracEvent.length, 1, 'More than one Oraclize callback event occurred!')
+  //   console.log('oracEvents: ', oracEvent)
+  //   oracEvent.map(({event, args: {queryID, result, forRaffle}}) => {
+  //     assert.equal(event, 'LogOraclizeCallback', 'Wrong event was retrieved!')
+  //     assert.equal(queryID, qID, 'Callback was for wrong QID!')
+  //     assert.equal(JSON.parse(result)[0].length, 6, 'Wrong number of random numbers retrieved!')
+  //     assert.equal(forRaffle.toNumber(), week, 'Callback was for wrong raffle number!')
+  //   })  
+  //   // can test for all the correct event fires too from the randomCallback function etc.
+  // 
+
+  
   //Check callbacks don't work when paused
   //Check qid structs are made correctly for both types
   //enter x number of times and do the maths to calc the prizes correctly
@@ -136,37 +150,12 @@ const createDelay = time =>
   new Promise(resolve => setTimeout(resolve, time))
 
 //_contract = etheraffle.at(contract.address)
-const getAllEvents = _contract => {
-  return new Promise((resolve, reject) => {
-    return _contract.allEvents({},{fromBlock:0, toBlock: 'latest'})
-    .get((err, res) => !err ? resolve(res) : console.log(err))
-  })
-}
+const getAllEvents = _contract => 
+  new Promise((resolve, reject) => 
+    _contract.allEvents({},{fromBlock:0, toBlock: 'latest'}).get((err, res) => 
+      !err ? resolve(res) : console.log(err)))
 
-// TODO: need a fake rand API pathway too to manufacture a win to test that lot out. Cant test the "set oraclize string with it maybe? SO i don't have to add it to the main contract itself?" Also, do it in a totally separate test file I reckon...
-
-
-
-const getOraclizeCallback = (_contract, _week) => {
-return new Promise ((resolve, reject) => {
-  return _contract.LogOraclizeCallback({forRaffle: _week},{fromBlock: 0, toBlock: "latest"}).get((err,res) => {
-    return err ? reject(null) : resolve(res)
-    // if (err || res.length == 0) return resolve(null)
-    // return Promise.all(res.map(x => {return getStruct(x.args.queryID)}))
-    // .then(arr => {
-    //   return resolve(
-    //     arr.map((x,i) => {
-    //       return obj = {
-    //         qID:      res[i].args.queryID,
-    //         result:   res[i].args.result,
-    //         atTime:   moment.unix(JSON.parse(res[i].args.atTime)).format('dddd, MMMM Do, YYYY HH:mm:ss'),
-    //         weekNo:   x.length > 0 ? JSON.parse(x[0]) : 'Error retrieving struct',
-    //         isRandom: x.length > 0 ? x[1] : 'Error retrieving struct',
-    //         isManual: x.length > 0 ? x[2] : 'Error retrieving struct'
-    //       }
-    //     })
-    //   )
-    // })
-  })
-})
-}
+const getOraclizeCallback = (_contract, _week) => 
+  new Promise((resolve, reject) => 
+    _contract.LogOraclizeCallback({forRaffle: _week},{fromBlock: 0, toBlock: "latest"}).get((err,res) =>
+      err ? reject(null) : resolve(res)))
