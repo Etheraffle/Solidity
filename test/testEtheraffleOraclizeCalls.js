@@ -65,14 +65,14 @@ contract('Etheraffle Oraclize Tests', accounts => {
   })
 
   it('Non-owner cannot make a manual Oraclize query', async () => {
-    const contract = await etheraffle.deployed()
-        , owner = await contract.etheraffle.call()
+    const contract  = await etheraffle.deployed()
+        , owner     = await contract.etheraffle.call()
         , guineaPig = accounts[5]
-        , week = 1
-        , delay = 0
-        , random = false
-        , manual = true
-        , status = false
+        , week      = 1
+        , delay     = 0
+        , random    = false
+        , manual    = true
+        , status    = false
     assert.notEqual(owner, guineaPig, 'Guinea pig account is the same as owner!')
     try {
       await contract.manuallyMakeOraclizeCall(week, delay, random, manual, status, {from: guineaPig})
@@ -81,6 +81,29 @@ contract('Etheraffle Oraclize Tests', accounts => {
       // Transaction reverts as expected!
     }
   })
+
+  it('Owner can execute a Random.org api Oraclize query manually correctly', async () => {
+    // Craft query -> check struct is set correctly -> check relevant events fired.
+    let qID
+    const contract = await etheraffle.deployed()
+        , owner    = await contract.etheraffle.call()
+        , week     = 5
+        , delay    = 0
+        , isRandom = true
+        , isManual = true
+        , status   = false
+        , oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
+    await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID)
+    const struct = await contract.qID.call(qID)
+    assert.equal(struct[0].toNumber(), week, 'QID Struct week number doesn\'t match week number sent in query!')
+    assert.isTrue(struct[1], 'isRandom in struct should be true!')
+    assert.isTrue(struct[2], 'isManual in struct should be true!')
+  })
+
+
+  
+  //check manual random.org call
+  //check manual api call
   //Check callbacks don't work when paused
   //Check qid structs are made correctly for both types
   //enter x number of times and do the maths to calc the prizes correctly
@@ -90,10 +113,41 @@ contract('Etheraffle Oraclize Tests', accounts => {
   //make api have a true/false flag? change the string to make random calls for real, vs "random" from api? Check flag exists first, since it won't for the real api one!
 })
 
+const createDelay = time =>
+  new Promise(resolve => setTimeout(resolve, time))
+
 //_contract = etheraffle.at(contract.address)
 const getAllEvents = _contract => {
   return new Promise((resolve, reject) => {
     return _contract.allEvents({},{fromBlock:0, toBlock: 'latest'})
     .get((err, res) => !err ? resolve(res) : console.log(err))
   })
+}
+
+// TODO: need a fake rand API pathway too to manufacture a win to test that lot out. Cant test the "set oraclize string with it maybe? SO i don't have to add it to the main contract itself?" Also, do it in a totally separate test file I reckon...
+
+
+
+const getOraclizeCallback = (_contract, _week) => {
+return new Promise ((resolve, reject) => {
+  return _contract.LogOraclizeCallback({forRaffle: _week},{fromBlock: 0, toBlock: "latest"}).get((err,res) => {
+    return err ? reject(null) : resolve(res)
+    // if (err || res.length == 0) return resolve(null)
+    // return Promise.all(res.map(x => {return getStruct(x.args.queryID)}))
+    // .then(arr => {
+    //   return resolve(
+    //     arr.map((x,i) => {
+    //       return obj = {
+    //         qID:      res[i].args.queryID,
+    //         result:   res[i].args.result,
+    //         atTime:   moment.unix(JSON.parse(res[i].args.atTime)).format('dddd, MMMM Do, YYYY HH:mm:ss'),
+    //         weekNo:   x.length > 0 ? JSON.parse(x[0]) : 'Error retrieving struct',
+    //         isRandom: x.length > 0 ? x[1] : 'Error retrieving struct',
+    //         isManual: x.length > 0 ? x[2] : 'Error retrieving struct'
+    //       }
+    //     })
+    //   )
+    // })
+  })
+})
 }
