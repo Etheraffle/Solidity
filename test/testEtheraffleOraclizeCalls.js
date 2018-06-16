@@ -11,7 +11,7 @@ const { assert }    = require("chai")
     
 // Correct Orac callback time = struct timestamp + rafend
 
-contract('Etheraffle Oraclize Tests', accounts => {
+contract('Etheraffle Oraclize Tests Part I', accounts => {
 
   it('Contract should have prize pool of 1 ETH. (Setup)', async () => {
     // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
@@ -208,8 +208,54 @@ contract('Etheraffle Oraclize Tests Part II', accounts => {
     assert.isFalse(struct[1], 'isRandom in struct should be false!')
     assert.isTrue(struct[2], 'isManual in struct should be true!')
   })
+  
 
 })
+
+contract('Etheraffle Oraclize Tests Part III', accounts => {
+
+  it('Contract should have prize pool of 1 ETH. (Setup)', async () => {
+    // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
+    const contract  = await etheraffle.deployed()
+        , amount    = 1*10**18
+    await contract.manuallyAddToPrizePool({from: accounts[6], value: amount})
+    const prizePool = await contract.prizePool.call()
+    assert.equal(prizePool.toNumber(), amount, 'Prize pool is not 1 ETH!')
+  })
+
+  it('Owner can set Oraclize strings correctly. (Setup)', async () => {
+    // Get owner -> change strings as owner -> check they match.
+    const contract = await etheraffle.deployed()
+        , owner    = await contract.etheraffle.call()
+    await contract.manuallySetOraclizeString(random1, random2, api1, api2, {from: owner})
+    const random1After = await contract.randomStr1.call()
+        , random2After = await contract.randomStr2.call()
+        , api1After    = await contract.apiStr1.call()
+        , api2After    = await contract.apiStr2.call()
+    assert.equal(random1, random1After, 'Random1 string was not set correctly!')
+    assert.equal(random2, random2After, 'Random2 string was not set correctly!')
+    assert.equal(api1, api1After, 'Api1 string was not set correctly!')
+    assert.equal(api2, api2After, 'Api2 string was not set correctly!')
+  })
+
+  it('Manual Random queries don\'t recursively create another query.', async () => {
+    const contract = await etheraffle.deployed()
+        , owner    = await contract.etheraffle.call()
+        , week     = 5
+        , delay    = 0
+        , isRandom = true
+        , isManual = true
+        , status   = false
+        , oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
+    await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID)
+    await createDelay(20000) // Give time for Oraclize callback to occur...
+    const queryEvents = await getQueryEvents(etheraffle.at(contract.address), week)
+    assert.equal(queryEvents.length, 1, 'A second Oraclize query should not have been sent!')
+  })
+  
+
+})
+
 
 const createDelay = time =>
   new Promise(resolve => setTimeout(resolve, time))
@@ -224,3 +270,9 @@ const getOraclizeCallback = (_contract, _week) =>
   new Promise((resolve, reject) => 
     _contract.LogOraclizeCallback({forRaffle: _week},{fromBlock: 0, toBlock: "latest"}).get((err,res) =>
       err ? reject(null) : resolve(res)))
+
+const getQueryEvents = (_contract, _week) => 
+  new Promise((resolve, reject) => 
+    _contract.LogQuerySent({forRaffle: _week},{fromBlock: 0, toBlock: "latest"}).get((err, res) =>
+      err ? reject(null) : resolve(res)))
+     
