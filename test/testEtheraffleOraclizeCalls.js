@@ -83,7 +83,7 @@ contract('Etheraffle Oraclize Tests', accounts => {
   })
 
   it('Owner can execute a Random.org api Oraclize query manually correctly', async () => {
-    // Craft query -> check struct is set correctly -> check relevant events fired.
+    // Craft query -> check struct is set correctly -> check relevant struct is correct.
     let qID
     const contract = await etheraffle.deployed()
         , owner    = await contract.etheraffle.call()
@@ -94,16 +94,35 @@ contract('Etheraffle Oraclize Tests', accounts => {
         , status   = false
         , oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
     await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID)
-    const struct = await contract.qID.call(qID)
+    const struct      = await contract.qID.call(qID)
+        , statusAfter = await contract.paused.call()
+    assert.equal(status, statusAfter, 'Contract paused status was changed and shouldn\'t have been!')
     assert.equal(struct[0].toNumber(), week, 'QID Struct week number doesn\'t match week number sent in query!')
     assert.isTrue(struct[1], 'isRandom in struct should be true!')
     assert.isTrue(struct[2], 'isManual in struct should be true!')
   })
 
+  it('Owner can execute a Etheraffle api Oraclize query manually correctly', async () => {
+    // Craft query -> check struct is set correctly -> check relevant struct is correct.
+    let qID
+    const contract = await etheraffle.deployed()
+        , owner    = await contract.etheraffle.call()
+        , week     = 5
+        , delay    = 0
+        , isRandom = false
+        , isManual = true
+        , status   = false
+        , oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
+    await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID)
+    const struct      = await contract.qID.call(qID)
+        , statusAfter = await contract.paused.call()
+    assert.equal(status, statusAfter, 'Contract paused status was changed and shouldn\'t have been!')
+    assert.equal(struct[0].toNumber(), week, 'QID Struct week number doesn\'t match week number sent in query!')
+    assert.isNotTrue(struct[1], 'isRandom in struct should be false!')
+    assert.isTrue(struct[2], 'isManual in struct should be true!')
+  })
 
   
-  //check manual random.org call
-  //check manual api call
   //Check callbacks don't work when paused
   //Check qid structs are made correctly for both types
   //enter x number of times and do the maths to calc the prizes correctly
