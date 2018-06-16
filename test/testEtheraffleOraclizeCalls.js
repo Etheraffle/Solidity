@@ -49,7 +49,7 @@ contract('Etheraffle Oraclize Tests', accounts => {
     assert.notEqual(a2, a2After, 'Api2 string was changed and shouldn\'t have been!')
   })
 
-  it('Owner can set Oraclize strings.', async () => {
+  it('Owner can set Oraclize strings correctly.', async () => {
     // Get owner -> change strings as owner -> check they match.
     const contract = await etheraffle.deployed()
         , owner    = await contract.etheraffle.call()
@@ -125,6 +125,31 @@ contract('Etheraffle Oraclize Tests', accounts => {
 })
 
 contract('Etheraffle Oraclize Tests Part II', accounts => {
+
+  it('Contract should have prize pool of 1 ETH.', async () => {
+    // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
+    const contract  = await etheraffle.deployed()
+        , amount    = 1*10**18
+    await contract.manuallyAddToPrizePool({from: accounts[6], value: amount})
+    const prizePool = await contract.prizePool.call()
+    assert.equal(prizePool.toNumber(), amount, 'Prize pool is not 1 ETH!')
+  })
+
+  it('Owner can set Oraclize strings correctly.', async () => {
+    // Get owner -> change strings as owner -> check they match.
+    const contract = await etheraffle.deployed()
+        , owner    = await contract.etheraffle.call()
+    await contract.manuallySetOraclizeString(random1, random2, api1, api2, {from: owner})
+    const random1After = await contract.randomStr1.call()
+        , random2After = await contract.randomStr2.call()
+        , api1After    = await contract.apiStr1.call()
+        , api2After    = await contract.apiStr2.call()
+    assert.equal(random1, random1After, 'Random1 string was not set correctly!')
+    assert.equal(random2, random2After, 'Random2 string was not set correctly!')
+    assert.equal(api1, api1After, 'Api1 string was not set correctly!')
+    assert.equal(api2, api2After, 'Api2 string was not set correctly!')
+  })
+
   // Need to use fresh contract so there are no prior Oraclize Callbacks
   it('Oraclize callback function not executed when contract is paused.', async () => {
     // Pause contract -> craft & send query -> check the callback didn't fire an event -> unpause contract
@@ -146,17 +171,6 @@ contract('Etheraffle Oraclize Tests Part II', accounts => {
     // console.log('oracEvents: ', oracEvent)
   })
 
-  //Check callbacks don't work when paused
-  //Check contract status is changed per an oraclize query
-  //Check qid structs are made correctly for both types
-  //enter x number of times and do the maths to calc the prizes correctly
-  //check events fired by orac cbs to make sure timings are correct for the recursion
-  //check manual ones don't cause recursion
-  //check non manual ones DO cause recursion
-  //make api have a true/false flag? change the string to make random calls for real, vs "random" from api? Check flag exists first, since it won't for the real api one!
-  
-
-  
 })
 
 const createDelay = time =>
@@ -172,3 +186,4 @@ const getOraclizeCallback = (_contract, _week) =>
   new Promise((resolve, reject) => 
     _contract.LogOraclizeCallback({forRaffle: _week},{fromBlock: 0, toBlock: "latest"}).get((err,res) =>
       err ? reject(null) : resolve(res)))
+
