@@ -64,7 +64,7 @@ const { assert }    = require("chai")
 //     assert.notEqual(a2, a2After, 'Api2 string was changed and shouldn\'t have been!')
 //   })
 
-//   it('Non-owner cannot make a manual Oraclize query', async () => {
+//   it('Non-owner cannot make a manual Oraclize query.', async () => {
 //     // Craft query -> make query from non-owner account -> check it reverts.
 //     const contract  = await etheraffle.deployed()
 //         , owner     = await contract.etheraffle.call()
@@ -84,7 +84,7 @@ const { assert }    = require("chai")
 //   })
 
 //   it('Owner can execute a Random.org api Oraclize query manually correctly.', async () => {
-//     // Craft query -> Ensure tx succeeded -> check query sent event is fired
+//     // Craft query -> Ensure tx succeeded -> check query sent event is fired.
 //     const contract = await etheraffle.deployed()
 //         , owner    = await contract.etheraffle.call()
 //         , week     = 5
@@ -101,7 +101,7 @@ const { assert }    = require("chai")
 //   })
 
 //   it('Owner can execute a Etheraffle api Oraclize query manually correctly.', async () => {
-//     // Craft query -> Ensure tx succeeded -> check query sent event is fired
+//     // Craft query -> Ensure tx succeeded -> check query sent event is fired.
 //     const contract = await etheraffle.deployed()
 //         , owner    = await contract.etheraffle.call()
 //         , week     = 5
@@ -118,98 +118,9 @@ const { assert }    = require("chai")
 //   })
 // })
 
-// contract('Etheraffle Oraclize Tests Part II', accounts => {
+contract('Etheraffle Oraclize Tests Part II', accounts => {
 
-//   it('Contract should setup correctly', async () => {
-//     // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
-//     const contract  = await etheraffle.deployed()
-//         , amount    = 1*10**18
-//         , owner     = await contract.etheraffle.call()
-//     await contract.manuallyAddToPrizePool({from: accounts[6], value: amount})
-//     const prizePool = await contract.prizePool.call()
-//     assert.equal(prizePool.toNumber(), amount, 'Prize pool is not 1 ETH!')
-//     await contract.manuallySetOraclizeString(random1, random2, api1, api2, {from: owner})
-//     const random1After = await contract.randomStr1.call()
-//         , random2After = await contract.randomStr2.call()
-//         , api1After    = await contract.apiStr1.call()
-//         , api2After    = await contract.apiStr2.call()
-//     assert.equal(random1, random1After, 'Random1 string was not set correctly!')
-//     assert.equal(random2, random2After, 'Random2 string was not set correctly!')
-//     assert.equal(api1, api1After, 'Api1 string was not set correctly!')
-//     assert.equal(api2, api2After, 'Api2 string was not set correctly!')
-//   })
-
-//   // Need to use fresh contract so there are no prior Oraclize Callbacks
-//   it('Oraclize callback function not executed when contract is paused.', async () => {
-//     // Pause contract -> craft & send query -> check the callback didn't fire an event -> unpause contract
-//     const contract = await etheraffle.deployed()
-//         , owner    = await contract.etheraffle.call()
-//         , week     = 5
-//         , delay    = 0
-//         , isRandom = true
-//         , isManual = true
-//         , status   = false
-//     await contract.manuallySetPaused(true)
-//     let paused = await contract.paused.call()
-//     assert.isTrue(paused, 'Contract is not paused!')
-//     const oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
-//     await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', null, 'Query sent event should have fired!')
-//     await createDelay(20000) // Give time for Oraclize callback to occur...
-//     const oracEvent = await getOraclizeCallback(etheraffle.at(contract.address), week)
-//     assert.equal(oracEvent.length, 0, 'An Oraclize callback event should not have been emitted!')
-//     await contract.manuallySetPaused(false)
-//     paused = await contract.paused.call()
-//     assert.isFalse(paused, 'Contract is paused!')
-//   })
-
-//   it('Random.org api Oraclize query sets up QID correctly.', async () => {
-//     // Craft query -> check query sent event fired -> check struct is set correctly
-//     let qID
-//     const contract = await etheraffle.deployed()
-//         , owner    = await contract.etheraffle.call()
-//         , week     = 5
-//         , delay    = 0
-//         , isRandom = true
-//         , isManual = true
-//         , status   = false
-//         , oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
-//     await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID)
-//     it('Random.org Oraclize query sets up QID struct correctly.', async () => {
-//       const struct      = await contract.qID.call(qID)
-//           , statusAfter = await contract.paused.call()
-//       assert.equal(status, statusAfter, 'Contract paused status was changed and shouldn\'t have been!')
-//       assert.equal(struct[0].toNumber(), week, 'QID Struct week number doesn\'t match week number sent in query!')
-//       assert.isTrue(struct[1], 'isRandom in struct should be true!')
-//       assert.isTrue(struct[2], 'isManual in struct should be true!')
-//     })
-//   })
-
-//   it('Etheraffle api Oraclize query sets up QID correctly.', async () => {
-//     // Craft query -> check query sent event fired -> check struct is set correctly
-//     let qID
-//     const contract = await etheraffle.deployed()
-//         , owner    = await contract.etheraffle.call()
-//         , week     = 5
-//         , delay    = 0
-//         , isRandom = false
-//         , isManual = true
-//         , status   = false
-//         , oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
-//     await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID, 'Query sent event should have fired!')
-//     const struct      = await contract.qID.call(qID)
-//         , statusAfter = await contract.paused.call()
-//     assert.equal(status, statusAfter, 'Contract paused status was changed and shouldn\'t have been!')
-//     assert.equal(struct[0].toNumber(), week, 'QID Struct week number doesn\'t match week number sent in query!')
-//     assert.isFalse(struct[1], 'isRandom in struct should be false!')
-//     assert.isTrue(struct[2], 'isManual in struct should be true!')
-//   })
-  
-
-// })
-
-contract('Etheraffle Oraclize Tests Part III', accounts => {
-
-  it('Contract should setup correctly', async () => {
+  it('Contract should setup correctly.', async () => {
     // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
     const contract  = await etheraffle.deployed()
         , amount    = 1*10**18
@@ -228,8 +139,33 @@ contract('Etheraffle Oraclize Tests Part III', accounts => {
     assert.equal(api2, api2After, 'Api2 string was not set correctly!')
   })
 
-  it('Manual Random.org api Oraclize queries should not recursively create another query.', async () => {
-    // Craft manual Random query -> check it emits correct event -> wait 20 seconds and check a second query isn't created
+  // Need to use fresh contract so there are no prior Oraclize Callbacks
+  it('Oraclize callback function not executed when contract is paused.', async () => {
+    // Pause contract -> craft & send query -> check the callback didn't fire an event -> unpause contract.
+    const contract = await etheraffle.deployed()
+        , owner    = await contract.etheraffle.call()
+        , week     = 5
+        , delay    = 0
+        , isRandom = true
+        , isManual = true
+        , status   = true // Otherwise the orac call unpauses the contract!
+    await contract.manuallySetPaused(true)
+    let paused = await contract.paused.call()
+    assert.isTrue(paused, 'Contract is not paused!')
+    const oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
+    await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', null, 'Query sent event should have fired!')
+    await createDelay(20000) // Give time for Oraclize callback to occur...
+    // const oracEvent = await getOraclizeCallback(etheraffle.at(contract.address), week)(
+    const oracEvent = await filterEvents('LogOraclizeCallback', etheraffle.at(contract.address))
+    assert.equal(oracEvent.length, 0, 'An Oraclize callback event should not have been emitted!')
+    await contract.manuallySetPaused(false)
+    paused = await contract.paused.call()
+    assert.isFalse(paused, 'Contract is paused!')
+  })
+
+  it('Random.org api Oraclize query sets up QID correctly.', async () => {
+    // Craft query -> check query sent event fired -> check struct is set correctly.
+    let qID
     const contract = await etheraffle.deployed()
         , owner    = await contract.etheraffle.call()
         , week     = 5
@@ -239,72 +175,135 @@ contract('Etheraffle Oraclize Tests Part III', accounts => {
         , status   = false
         , oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
     await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID)
-    await createDelay(20000)
-    const queryEvents = await getQueryEvents(etheraffle.at(contract.address), week)
-    assert.equal(queryEvents.length, 1, 'A second Oraclize query should not have been sent!')
+    it('Random.org Oraclize query sets up QID struct correctly.', async () => {
+      const struct      = await contract.qID.call(qID)
+          , statusAfter = await contract.paused.call()
+      assert.equal(status, statusAfter, 'Contract paused status was changed and shouldn\'t have been!')
+      assert.equal(struct[0].toNumber(), week, 'QID Struct week number doesn\'t match week number sent in query!')
+      assert.isTrue(struct[1], 'isRandom in struct should be true!')
+      assert.isTrue(struct[2], 'isManual in struct should be true!')
+    })
   })
 
-  it('Should result in one Oraclize callback event', async () => {
-    // Get events from Oraclize cbs -> check only one fired -> check its params -> check its QID struct
-    await createDelay(20000)
+  it('Etheraffle api Oraclize query sets up QID correctly.', async () => {
+    // Craft query -> check query sent event fired -> check struct is set correctly.
+    let qID
     const contract = await etheraffle.deployed()
+        , owner    = await contract.etheraffle.call()
         , week     = 5
-        , oracCBs  = await filterEvents('LogOraclizeCallback', etheraffle.at(contract.address))
-        , { args } = oracCBs[0]
-    assert.equal(oracCBs.length, 1, 'More than one Oraclize callback was received!')
-    assert.equal(args.forRaffle.toNumber(), week, 'Oraclize callback was for the wrong week!')
-    assert.equal(JSON.parse(args.result).length, 2, 'Random.org results array length not correct!')
-    assert.equal(JSON.parse(args.result)[0].length, 6, 'Random.org random numbers array length not correct!')
-    const struct = await contract.qID.call(args.queryID)
-    assert.equal(struct[0], week, 'Query week number and struct week number do not agree!')
-    assert.isTrue(struct[1], 'isRandom in struct for this query ID should be true!')
-    assert.isTrue(struct[2], 'isManaul in struct for this query ID should be true!')
+        , delay    = 0
+        , isRandom = false
+        , isManual = true
+        , status   = false
+        , oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
+    await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID, 'Query sent event should have fired!')
+    const struct      = await contract.qID.call(qID)
+        , statusAfter = await contract.paused.call()
+    assert.equal(status, statusAfter, 'Contract paused status was changed and shouldn\'t have been!')
+    assert.equal(struct[0].toNumber(), week, 'QID Struct week number doesn\'t match week number sent in query!')
+    assert.isFalse(struct[1], 'isRandom in struct should be false!')
+    assert.isTrue(struct[2], 'isManual in struct should be true!')
   })
-
-  it('Should result in one LogWinningNumbers event', async () => {
-    // Get events for win nums -> check only one event -> check its params
-    await createDelay(20000)
-    const contract  = await etheraffle.deployed()
-        , week      = 5
-        , struct    = await contract.raffle.call(week)
-        , entries   = struct[4].toNumber()
-        , winNums   = await filterEvents('LogWinningNumbers', etheraffle.at(contract.address))
-        , prizePool = await contract.prizePool.call()
-        , { args }  = winNums[0]
-    assert.equal(winNums.length, 1, 'More than one winning numbers event was fired!')
-    assert.equal(args.wNumbers.length, 6, 'An incorrect amount of winning numbers were logged!')
-    assert.equal(args.forRaffle.toNumber(), week, 'Winning numbers event was for the wrong week!')
-    assert.equal(args.numberOfEntries.toNumber(), entries, 'Number of entries was incorrectly logged in winning numbers event!')
-    assert.equal(args.currentPrizePool.toNumber(), prizePool, 'Prize pool wasnt incorrectly logged in winning numbers event!')
-  })
-
-  it('Should result in one disbursal event', async () => {
-    // Get disbursal events -> check only one event -> check its params
-    await createDelay(20000)
-    const contract = await etheraffle.deployed()
-        , week     = 5
-        , gasAmt   = await contract.gasAmt.call()
-        , gasPrc   = await contract.gasPrc.call()
-        , oracCost = await contract.oracCost.call()
-        , oracTot  = ((gasAmt.toNumber() * gasPrc.toNumber()) + oracCost.toNumber()) * 2
-        , struct   = await contract.raffle.call(week)
-        , entries  = struct[4].toNumber()
-        , disb     = await filterEvents('LogFundsDisbursed', etheraffle.at(contract.address))
-        , { args } = disb[0]
-    assert.equal(entries, 0, 'There should have been no entries into this raffle!')
-    assert.equal(disb.length, 1, 'More than one disbursal event was fired!')
-    assert.equal(args.oraclizeTotal, oracTot, 'Oraclize total was calculated incorrectly!')
-    assert.equal(args.amount, 0, 'Amount disbursed should be zero!')
-  })
-
-  it('Contract should not be paused after manual Random.org callback', async () => {
-    // Check contract not paused
-    const contract = await etheraffle.deployed()
-        , paused   = await contract.paused.call()
-    assert.isFalse(paused, 'Contract should not be paused!')
-  })
-
 })
+
+// contract('Etheraffle Oraclize Tests Part III', accounts => {
+
+//   it('Contract should setup correctly.', async () => {
+//     // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
+//     const contract  = await etheraffle.deployed()
+//         , amount    = 1*10**18
+//         , owner     = await contract.etheraffle.call()
+//     await contract.manuallyAddToPrizePool({from: accounts[6], value: amount})
+//     const prizePool = await contract.prizePool.call()
+//     assert.equal(prizePool.toNumber(), amount, 'Prize pool is not 1 ETH!')
+//     await contract.manuallySetOraclizeString(random1, random2, api1, api2, {from: owner})
+//     const random1After = await contract.randomStr1.call()
+//         , random2After = await contract.randomStr2.call()
+//         , api1After    = await contract.apiStr1.call()
+//         , api2After    = await contract.apiStr2.call()
+//     assert.equal(random1, random1After, 'Random1 string was not set correctly!')
+//     assert.equal(random2, random2After, 'Random2 string was not set correctly!')
+//     assert.equal(api1, api1After, 'Api1 string was not set correctly!')
+//     assert.equal(api2, api2After, 'Api2 string was not set correctly!')
+//   })
+
+//   it('Manual Random.org api Oraclize queries should not recursively create another query.', async () => {
+//     // Craft manual Random query -> check it emits correct event -> wait 20 seconds and check a second query isn't created.
+//     const contract = await etheraffle.deployed()
+//         , owner    = await contract.etheraffle.call()
+//         , week     = 5
+//         , delay    = 0
+//         , isRandom = true
+//         , isManual = true
+//         , status   = false
+//         , oracCall = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
+//     await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID)
+//     await createDelay(20000)
+//     const queryEvents = await getQueryEvents(etheraffle.at(contract.address), week)
+//     assert.equal(queryEvents.length, 1, 'A second Oraclize query should not have been sent!')
+//   })
+
+//   it('Should result in one Oraclize callback event.', async () => {
+//     // Get events from Oraclize cbs -> check only one fired -> check its params -> check its QID struct.
+//     await createDelay(20000)
+//     const contract = await etheraffle.deployed()
+//         , week     = 5
+//         , oracCBs  = await filterEvents('LogOraclizeCallback', etheraffle.at(contract.address))
+//         , { args } = oracCBs[0]
+//     assert.equal(oracCBs.length, 1, 'More than one Oraclize callback was received!')
+//     assert.equal(args.forRaffle.toNumber(), week, 'Oraclize callback was for the wrong week!')
+//     assert.equal(JSON.parse(args.result).length, 2, 'Random.org results array length not correct!')
+//     assert.equal(JSON.parse(args.result)[0].length, 6, 'Random.org random numbers array length not correct!')
+//     const struct = await contract.qID.call(args.queryID)
+//     assert.equal(struct[0], week, 'Query week number and struct week number do not agree!')
+//     assert.isTrue(struct[1], 'isRandom in struct for this query ID should be true!')
+//     assert.isTrue(struct[2], 'isManaul in struct for this query ID should be true!')
+//   })
+
+//   it('Should result in one LogWinningNumbers event.', async () => {
+//     // Get events for win nums -> check only one event -> check its params.
+//     await createDelay(20000)
+//     const contract  = await etheraffle.deployed()
+//         , week      = 5
+//         , struct    = await contract.raffle.call(week)
+//         , entries   = struct[4].toNumber()
+//         , winNums   = await filterEvents('LogWinningNumbers', etheraffle.at(contract.address))
+//         , prizePool = await contract.prizePool.call()
+//         , { args }  = winNums[0]
+//     assert.equal(winNums.length, 1, 'More than one winning numbers event was fired!')
+//     assert.equal(args.wNumbers.length, 6, 'An incorrect amount of winning numbers were logged!')
+//     assert.equal(args.forRaffle.toNumber(), week, 'Winning numbers event was for the wrong week!')
+//     assert.equal(args.numberOfEntries.toNumber(), entries, 'Number of entries was incorrectly logged in winning numbers event!')
+//     assert.equal(args.currentPrizePool.toNumber(), prizePool, 'Prize pool wasnt incorrectly logged in winning numbers event!')
+//   })
+
+//   it('Should result in one disbursal event.', async () => {
+//     // Get disbursal events -> check only one event -> check its params.
+//     await createDelay(20000)
+//     const contract = await etheraffle.deployed()
+//         , week     = 5
+//         , gasAmt   = await contract.gasAmt.call()
+//         , gasPrc   = await contract.gasPrc.call()
+//         , oracCost = await contract.oracCost.call()
+//         , oracTot  = ((gasAmt.toNumber() * gasPrc.toNumber()) + oracCost.toNumber()) * 2
+//         , struct   = await contract.raffle.call(week)
+//         , entries  = struct[4].toNumber()
+//         , disb     = await filterEvents('LogFundsDisbursed', etheraffle.at(contract.address))
+//         , { args } = disb[0]
+//     assert.equal(entries, 0, 'There should have been no entries into this raffle!')
+//     assert.equal(disb.length, 1, 'More than one disbursal event was fired!')
+//     assert.equal(args.oraclizeTotal, oracTot, 'Oraclize total was calculated incorrectly!')
+//     assert.equal(args.amount, 0, 'Amount disbursed should be zero!')
+//   })
+
+//   it('Contract should not be paused after manual Random.org callback', async () => {
+//     // Check contract paused var -> assert that it's false.
+//     const contract = await etheraffle.deployed()
+//         , paused   = await contract.paused.call()
+//     assert.isFalse(paused, 'Contract should not be paused!')
+//   })
+
+// })
 
 // contract('Etheraffle Oraclize Tests Part IV', accounts => {
 
