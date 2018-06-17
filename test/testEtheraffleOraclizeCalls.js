@@ -245,11 +245,11 @@ contract('Etheraffle Oraclize Tests Part III', accounts => {
   })
 
   it('Should result in one Oraclize callback event', async () => {
-    // Get all contract events -> filter for Oraclize cbs -> check only one -> check it's params -> check its QID struct
+    // Get events from Oraclize cbs -> check only one fired -> check its params -> check its QID struct
     await createDelay(20000)
     const contract = await etheraffle.deployed()
         , week     = 5
-        , oracCBs  = await filterEvents('LogOraclizeCallback')(etheraffle.at(contract.address))
+        , oracCBs  = await filterEvents('LogOraclizeCallback', etheraffle.at(contract.address))
         , { args } = oracCBs[0]
     assert.equal(oracCBs.length, 1, 'More than one Oraclize callback was received!')
     assert.equal(args.forRaffle.toNumber(), week, 'Oraclize callback was for the wrong week!')
@@ -261,8 +261,24 @@ contract('Etheraffle Oraclize Tests Part III', accounts => {
     assert.isTrue(struct[2], 'isManaul in struct for this query ID should be true!')
   })
 
+  it('Should result in one LogWinningNumbers event', async () => {
+    // Get events for win nums -> check only one event -> check it's params
+    await createDelay(20000)
+    const contract  = await etheraffle.deployed()
+        , week      = 5
+        , struct    = await contract.raffle.call(week)
+        , entries   = struct[4].toNumber()
+        , winNums   = await filterEvents('LogWinningNumbers', etheraffle.at(contract.address))
+        , prizePool = await contract.prizePool.call()
+        , { args }  = winNums[0]
+    assert.equal(winNums.length, 1, 'More than one winning numbers event was fired!')
+    assert.equal(args.wNumbers.length, 6, 'An incorrect amount of winning numbers were logged!')
+    assert.equal(args.forRaffle.toNumber(), week, 'Winning numbers event was for the wrong week!')
+    assert.equal(args.numberOfEntries.toNumber(), entries, 'Number of entries was incorrectly logged in winning numbers event!')
+    assert.equal(args.currentPrizePool.toNumber(), prizePool, 'Prize pool wasnt incorrectly logged in winning numbers event!')
+  })
+
   // LogFundsDisbursed x 2
-  // LogWinningNumbers
   // check contract doesn't get paused!
 
 })
@@ -315,9 +331,9 @@ const getAllEvents = _contract =>
     _contract.allEvents({},{fromBlock:0, toBlock: 'latest'}).get((err, res) => 
       err ? reject(null) : resolve(res)))
 
-const filterEvents = str => contract => 
-    getAllEvents(contract)
-    .then(res => res.filter(({ event }) => event == str))
+const filterEvents = (_str, _contract) =>
+    getAllEvents(_contract)
+    .then(res => res.filter(({ event }) => event == _str))
     .catch(e => console.log(e))
 
 const getOraclizeCallback = (_contract, _week) => 
