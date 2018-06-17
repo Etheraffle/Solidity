@@ -297,6 +297,12 @@ contract('Etheraffle Oraclize Tests Part III', accounts => {
     assert.equal(args.amount, 0, 'Amount disbursed should be zero!')
   })
 
+  it('Contract should not be paused after manual Random.org callback', async () => {
+    // Check contract not paused
+    const contract = await etheraffle.deployed()
+        , paused   = await contract.paused.call()
+    assert.isFalse(paused, 'Contract should not be paused!')
+  })
 
 })
 
