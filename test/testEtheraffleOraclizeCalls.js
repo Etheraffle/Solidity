@@ -262,7 +262,7 @@ contract('Etheraffle Oraclize Tests Part III', accounts => {
   })
 
   it('Should result in one LogWinningNumbers event', async () => {
-    // Get events for win nums -> check only one event -> check it's params
+    // Get events for win nums -> check only one event -> check its params
     await createDelay(20000)
     const contract  = await etheraffle.deployed()
         , week      = 5
@@ -278,8 +278,25 @@ contract('Etheraffle Oraclize Tests Part III', accounts => {
     assert.equal(args.currentPrizePool.toNumber(), prizePool, 'Prize pool wasnt incorrectly logged in winning numbers event!')
   })
 
-  // LogFundsDisbursed x 2
-  // check contract doesn't get paused!
+  it('Should result in one disbursal event', async () => {
+    // Get disbursal events -> check only one event -> check its params
+    await createDelay(20000)
+    const contract = await etheraffle.deployed()
+        , week     = 5
+        , gasAmt   = await contract.gasAmt.call()
+        , gasPrc   = await contract.gasPrc.call()
+        , oracCost = await contract.oracCost.call()
+        , oracTot  = ((gasAmt.toNumber() * gasPrc.toNumber()) + oracCost.toNumber()) * 2
+        , struct   = await contract.raffle.call(week)
+        , entries  = struct[4].toNumber()
+        , disb     = await filterEvents('LogFundsDisbursed', etheraffle.at(contract.address))
+        , { args } = disb[0]
+    assert.equal(entries, 0, 'There should have been no entries into this raffle!')
+    assert.equal(disb.length, 1, 'More than one disbursal event was fired!')
+    assert.equal(args.oraclizeTotal, oracTot, 'Oraclize total was calculated incorrectly!')
+    assert.equal(args.amount, 0, 'Amount disbursed should be zero!')
+  })
+
 
 })
 
