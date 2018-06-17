@@ -245,24 +245,24 @@ contract('Etheraffle Oraclize Tests Part III', accounts => {
   })
 
   it('Should result in one Oraclize callback event', async () => {
-    // Get contract events -> filter for Oraclize cbs -> check only one -> check it's params
+    // Get all contract events -> filter for Oraclize cbs -> check only one -> check it's params -> check its QID struct
     await createDelay(20000)
     const contract = await etheraffle.deployed()
-        , events   = await getAllEvents(etheraffle.at(contract.address))
-        , oracCBs  = events.filter(({ event }) => event == 'LogOraclizeCallback')
-    console.log('Orac callbacks: ', oracCBs)
+        , week     = 5
+        , oracCBs  = await filterEvents('LogOraclizeCallback')(etheraffle.at(contract.address))
+        , { args } = oracCBs[0]
     assert.equal(oracCBs.length, 1, 'More than one Oraclize callback was received!')
+    assert.equal(args.forRaffle.toNumber(), week, 'Oraclize callback was for the wrong week!')
+    assert.equal(JSON.parse(args.result).length, 2, 'Random.org results array length not correct!')
+    assert.equal(JSON.parse(args.result)[0].length, 6, 'Random.org random numbers array length not correct!')
+    const struct = await contract.qID.call(args.queryID)
+    assert.equal(struct[0], week, 'Query week number and struct week number do not agree!')
+    assert.isTrue(struct[1], 'isRandom in struct for this query ID should be true!')
+    assert.isTrue(struct[2], 'isManaul in struct for this query ID should be true!')
   })
 
   // LogFundsDisbursed x 2
   // LogWinningNumbers
-  // 
-
-
-  //check remaining events 
-  // reclaimUnclaimed(); // LogReclaim -> shouldn't exist
-  // distributeFunds(_week, cost, profit); // LogFundsDisbursed x 1 if none, or 2 if some profit
-  // setWinningNumbers(qID[_myID].weekNo, _result); // LogWinningNumbers
   // check contract doesn't get paused!
 
 })
@@ -314,6 +314,11 @@ const getAllEvents = _contract =>
   new Promise((resolve, reject) => 
     _contract.allEvents({},{fromBlock:0, toBlock: 'latest'}).get((err, res) => 
       err ? reject(null) : resolve(res)))
+
+const filterEvents = str => contract => 
+    getAllEvents(contract)
+    .then(res => res.filter(({ event }) => event == str))
+    .catch(e => console.log(e))
 
 const getOraclizeCallback = (_contract, _week) => 
   new Promise((resolve, reject) => 
