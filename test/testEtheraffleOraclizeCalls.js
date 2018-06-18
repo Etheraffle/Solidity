@@ -465,6 +465,17 @@ contract('Etheraffle Oraclize Tests Part VI', accounts => {
     assert.equal(query[0].args.dueAt.toNumber(), dueTime, 'Recursive Oraclize query due time incorrect!')
   })
 
+  it('The new query\'s struct should have correct details.', async () => {
+    // Get query event -> get qid struct from event deets -> check structs data.
+    const contract = await etheraffle.deployed()
+        , getWeek  = await contract.getWeek.call()
+        , query    = await filterEvents('LogQuerySent', etheraffle.at(contract.address))
+        , struct   = await contract.qID.call(query[0].args.queryID)
+    console.log('the struct: ', struct, ' week: ', struct[0].toNumber())
+    assert.equal(struct[0].toNumber(), getWeek, 'Wrong week number in qID struct!')
+    assert.isTrue(struct[1], 'Oraclize query should be for a Random.org query!')
+    assert.isFalse(struct[2], 'Oraclize query should not be manual!')
+  })
 
 })
 
