@@ -448,6 +448,14 @@ contract('Etheraffle Oraclize Tests Part V', accounts => {
     await truffleAssert.eventEmitted(oracCall, 'LogQuerySent')
   })
 
+  it('Should create a new Oraclize query due at correct time.', async () => {
+    // Get query event -> calc due time from contract vars -> check for equality.
+    const contract     = await etheraffle.deployed()
+        , matchesDelay = await contract.matchesDelay.call()
+        , query        = await filterEvents('LogQuerySent', etheraffle.at(contract.address))
+    assert.equal(query[0].args.dueAt.toNumber(), matchesDelay, 'Recursive Oraclize query due time incorrect!')
+  })
+
 
 })
 
