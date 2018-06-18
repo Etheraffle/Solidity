@@ -413,6 +413,48 @@ contract('Etheraffle Oraclize Tests Part IV', accounts => {
   })
 })
 
+
+// Check Random recursion here...
+
+
+contract('Etheraffle Oraclize Tests Part VI', accounts => {
+
+  it('Contract should setup correctly.', async () => {
+    // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
+    const contract  = await etheraffle.deployed()
+        , amount    = 1*10**18
+        , owner     = await contract.etheraffle.call()
+    await contract.manuallyAddToPrizePool({from: accounts[6], value: amount})
+    const prizePool = await contract.prizePool.call()
+    assert.equal(prizePool.toNumber(), amount, 'Prize pool is not 1 ETH!')
+    await contract.manuallySetOraclizeString(random1, random2, api1, api2, {from: owner})
+    const random1After = await contract.randomStr1.call()
+        , random2After = await contract.randomStr2.call()
+        , api1After    = await contract.apiStr1.call()
+        , api2After    = await contract.apiStr2.call()
+    assert.equal(random1, random1After, 'Random1 string was not set correctly!')
+    assert.equal(random2, random2After, 'Random2 string was not set correctly!')
+    assert.equal(api1, api1After, 'Api1 string was not set correctly!')
+    assert.equal(api2, api2After, 'Api2 string was not set correctly!')
+  })
+
+  it('Non-manual Etheraffle api Oraclize queries should cause recursive query.', async () => {
+    // Craft manual Etheraffle query -> check it emits 2nd query sent event
+    const contract     = await etheraffle.deployed()
+        , owner        = await contract.etheraffle.call()
+        , week         = 5
+        , delay        = 0
+        , isRandom     = false
+        , isManual     = false
+        , status       = false
+        , oracCall     = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
+    await createDelay(30000)
+    await truffleAssert.eventEmitted(oracCall, 'LogQuerySent')
+  })
+
+
+})
+
 const createDelay = time =>
   new Promise(resolve => setTimeout(resolve, time))
 
@@ -427,8 +469,8 @@ const filterEvents = (_str, _contract) =>
     .catch(e => console.log('Error filtering events: ', e))
      
 /*
-  Check contract status is changed per an oraclize query
-  enter x number of times and do the maths to calc the prizes correctly
-  check events fired by orac cbs to make sure timings are correct for the recursion
   check non manual ones DO cause recursion
+  Check contract status is changed per an oraclize query
+  check events fired by orac cbs to make sure timings are correct for the recursion
+  enter x number of times and do the maths to calc the prizes correctly
 */
