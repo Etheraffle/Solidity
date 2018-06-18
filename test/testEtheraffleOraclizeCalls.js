@@ -370,7 +370,6 @@ contract('Etheraffle Oraclize Tests Part IV', accounts => {
     assert.equal(args.forRaffle.toNumber(), week, 'Prize pools updated for wrong week number!')
     assert.equal(args.ticketPrice.toNumber(), tktPrice, 'Prize pools calculated from wrong ticket price!')
     assert.equal(args.unclaimedPrizePool.toNumber(), 0, 'There should be no unclaimed prize pool in this raffle!')
-    console.log(args.winningAmounts)
     assert.equal(args.winningAmounts.length, 4, 'Incorrect number of winning amounts set!')
     args.winningAmounts.map(amt => assert.equal(amt.toNumber(), 0, 'All win amounts should be zero for this raffle!'))
     /* NB: Orac costs are accounted for via the Random.org call back, and so aren't reflected in this test. */
@@ -403,7 +402,7 @@ const getAllEvents = _contract => //_contract = etheraffle.at(contract.address)
 const filterEvents = (_str, _contract) =>
     getAllEvents(_contract)
     .then(res => res.filter(({ event }) => event == _str))
-    .catch(e => console.log(e))
+    .catch(e => console.log('Error filtering events: ', e))
      
 /*
   Check contract status is changed per an oraclize query
