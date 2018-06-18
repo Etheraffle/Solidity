@@ -413,8 +413,43 @@ contract('Etheraffle Oraclize Tests Part IV', accounts => {
   })
 })
 
+contract('Etheraffle Oraclize Tests Part V', accounts => {
 
-// Check Random recursion here...
+  it('Contract should setup correctly.', async () => {
+    // Add 1 ETH to prize pool -> query prize pool -> assert that it's 1ETH.
+    const contract  = await etheraffle.deployed()
+        , amount    = 1*10**18
+        , owner     = await contract.etheraffle.call()
+    await contract.manuallyAddToPrizePool({from: accounts[6], value: amount})
+    const prizePool = await contract.prizePool.call()
+    assert.equal(prizePool.toNumber(), amount, 'Prize pool is not 1 ETH!')
+    await contract.manuallySetOraclizeString(random1, random2, api1, api2, {from: owner})
+    const random1After = await contract.randomStr1.call()
+        , random2After = await contract.randomStr2.call()
+        , api1After    = await contract.apiStr1.call()
+        , api2After    = await contract.apiStr2.call()
+    assert.equal(random1, random1After, 'Random1 string was not set correctly!')
+    assert.equal(random2, random2After, 'Random2 string was not set correctly!')
+    assert.equal(api1, api1After, 'Api1 string was not set correctly!')
+    assert.equal(api2, api2After, 'Api2 string was not set correctly!')
+  })
+
+  it('Non-manual Random.org api Oraclize queries should cause recursive query.', async () => {
+    // Craft non-manual Random query -> check it emits 2nd query sent event
+    const contract     = await etheraffle.deployed()
+        , owner        = await contract.etheraffle.call()
+        , week         = 5
+        , delay        = 0
+        , isRandom     = true
+        , isManual     = false
+        , status       = false
+        , oracCall     = await contract.manuallyMakeOraclizeCall(week, delay, isRandom, isManual, status, {from: owner})
+    await createDelay(30000)
+    await truffleAssert.eventEmitted(oracCall, 'LogQuerySent')
+  })
+
+
+})
 
 
 contract('Etheraffle Oraclize Tests Part VI', accounts => {
@@ -439,7 +474,7 @@ contract('Etheraffle Oraclize Tests Part VI', accounts => {
   })
 
   it('Non-manual Etheraffle api Oraclize queries should cause recursive query.', async () => {
-    // Craft manual Etheraffle query -> check it emits 2nd query sent event
+    // Craft non-manual Etheraffle query -> check it emits 2nd query sent event
     const contract     = await etheraffle.deployed()
         , owner        = await contract.etheraffle.call()
         , week         = 5
@@ -452,7 +487,7 @@ contract('Etheraffle Oraclize Tests Part VI', accounts => {
     await truffleAssert.eventEmitted(oracCall, 'LogQuerySent')
   })
 
-  it('Should create an Oraclize query due at correct time.', async () => {
+  it('Should create a new Oraclize query due at correct time.', async () => {
     // Get query event -> calc due time from contract vars -> check for equality.
     const contract     = await etheraffle.deployed()
         , getWeek      = await contract.getWeek.call()
@@ -471,7 +506,6 @@ contract('Etheraffle Oraclize Tests Part VI', accounts => {
         , getWeek  = await contract.getWeek.call()
         , query    = await filterEvents('LogQuerySent', etheraffle.at(contract.address))
         , struct   = await contract.qID.call(query[0].args.queryID)
-    console.log('the struct: ', struct, ' week: ', struct[0].toNumber())
     assert.equal(struct[0].toNumber(), getWeek, 'Wrong week number in qID struct!')
     assert.isTrue(struct[1], 'Oraclize query should be for a Random.org query!')
     assert.isFalse(struct[2], 'Oraclize query should not be manual!')
