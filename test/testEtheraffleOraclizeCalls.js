@@ -376,6 +376,13 @@ contract('Etheraffle Oraclize Tests Part IV', accounts => {
     assert.equal(args.newMainPrizePool.toNumber(), prizePool, 'New prize pool should equal original prize pool in this unit test context!')
   })
 
+  it('Should set the winning amounts correctly in the raffle struct.', async () => {
+    const contract = await etheraffle.deployed()
+        , week     = 5
+        , winDeets = await contract.getWinningDetails(week)
+    winDeets[1].map(amt => assert.equal(amt.toNumber(), 0, 'Winning amount not set correctly!'))
+  })
+
   it('Should set withdraw to open in the raffle struct.', async () => {
     const contract  = await etheraffle.deployed()
         , week      = 5
