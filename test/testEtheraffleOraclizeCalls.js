@@ -376,6 +376,14 @@ contract('Etheraffle Oraclize Tests Part IV', accounts => {
     assert.equal(args.newMainPrizePool.toNumber(), prizePool, 'New prize pool should equal original prize pool in this unit test context!')
   })
 
+  it('Should set withdraw to open in the raffle struct.', async () => {
+    const contract  = await etheraffle.deployed()
+        , week      = 5
+        , struct    = await contract.raffle.call(week)
+        , wDraw     = struct[3]
+    assert.isTrue(wDraw, 'Withdraw should be true as set by the Etheraffle callback functions!')
+  })
+
   it('Contract should be paused due to week & getWeek() congruency/', async () => {
     // Check contract is paused -> check reason -> unpause contract.
     const contract = await etheraffle.deployed()
@@ -409,7 +417,9 @@ const filterEvents = (_str, _contract) =>
   
   enter x number of times and do the maths to calc the prizes correctly
   check events fired by orac cbs to make sure timings are correct for the recursion
-  check manual ones don't cause recursion
   check non manual ones DO cause recursion
-  make api have a true/false flag? change the string to make random calls for real, vs "random" from api? Check flag exists first, since it won't for the real api one!
+
+  check other affects too, like the wdraw bool being opening in the raffle struct
+  check winnint amounts etc are set into raffle struct
+  check winnning numbers are set in raffle struct.
 */
