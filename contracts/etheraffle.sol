@@ -1354,6 +1354,16 @@ contract Etheraffle is usingOraclize {
     function manuallySetRafEndTime(uint _newTime) external onlyEtheraffle {
         rafEnd = _newTime;
     }
+        /**
+     * @notice  Set the matches delay time. Number of seconds between 
+     *          the recursive Random.org api call, and the Etheraffle 
+     *          api call.
+     *
+     * @param   _newTime    The time desired in seconds.
+     */
+    function manuallySetMatchesDelayTime(uint _newTime) external onlyEtheraffle {
+        matchesDelay = _newTime;
+    }
     /**
      * @notice  Set the wdrawBfr time - the time a winner has to withdraw
      *          their winnings before the unclaimed prizepool is rolled
