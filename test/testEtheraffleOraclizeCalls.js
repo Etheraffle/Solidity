@@ -359,11 +359,25 @@ contract('Etheraffle Oraclize Tests Part IV', accounts => {
     assert.equal(JSON.parse(args.result).length, 4, 'Etheraffle matches array length not correct!')
   })
 
-  it('something', async () => {
+  it('Contract should be paused due to week & getWeek() congruency', async () => {
+    // Check contract is paused -> check reason -> unpause contract.
     const contract = await etheraffle.deployed()
-        , events = await getAllEvents(etheraffle.at(contract.address))
-    console.log('All events: ', events)
+        , owner    = await contract.etheraffle.call()
+        , oracCBs  = await filterEvents('LogFunctionsPaused', etheraffle.at(contract.address))
+        , { args } = oracCBs[0]
+    let paused     = await contract.paused.call()
+    assert.isTrue(paused, 'Contract should have been paused!')
+    assert.equal(args.identifier.toNumber(), 4, 'Functions should have been paused because of week congruency!')
+    await contract.manuallySetPaused(false, {from: owner})
+    paused = await contract.paused.call()
+    assert.isFalse(paused, 'Contract should be unpaused by now!')
   })
+
+  // it('something', async () => {
+  //   const contract = await etheraffle.deployed()
+  //       , events = await getAllEvents(etheraffle.at(contract.address))
+  //   console.log('All events: ', events)
+  // })
 
   //LogPrizePoolsUpdated
 
