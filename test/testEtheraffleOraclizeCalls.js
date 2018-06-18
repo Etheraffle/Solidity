@@ -297,6 +297,13 @@ contract('Etheraffle Oraclize Tests Part III', accounts => {
     assert.equal(args.amount, 0, 'Amount disbursed should be zero!')
   })
 
+  it('Should set the winning numbers correctly in the raffle struct.', async () => {
+    const contract = await etheraffle.deployed()
+        , week     = 5
+        , winDeets = await contract.getWinningDetails(week)
+    winDeets[0].map(amt => assert.isTrue(amt.toNumber() > 0 && amt.toNumber() <= 49, 'Winning number not within correct range!'))
+  })
+
   it('Contract should not be paused after manual Random.org callback', async () => {
     // Check contract paused var -> assert that it's false.
     const contract = await etheraffle.deployed()
@@ -421,12 +428,7 @@ const filterEvents = (_str, _contract) =>
      
 /*
   Check contract status is changed per an oraclize query
-  
   enter x number of times and do the maths to calc the prizes correctly
   check events fired by orac cbs to make sure timings are correct for the recursion
   check non manual ones DO cause recursion
-
-  check other affects too, like the wdraw bool being opening in the raffle struct
-  check winnint amounts etc are set into raffle struct
-  check winnning numbers are set in raffle struct.
 */
