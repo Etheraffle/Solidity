@@ -52,3 +52,50 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
    })
 
 })
+
+const createDelay = time =>
+  new Promise(resolve => setTimeout(resolve, time))
+
+const getAllEvents = _contract => // Where _contract = etheraffle.at(contract.address)
+  new Promise((resolve, reject) => 
+    _contract.allEvents({},{fromBlock:0, toBlock: 'latest'}).get((err, res) => 
+      err ? reject(null) : resolve(res)))
+
+const filterEvents = (_str, _contract) =>
+    getAllEvents(_contract)
+    .then(res => res.filter(({ event }) => event == _str))
+    .catch(e => console.log('Error filtering events: ', e))
+
+/* Payout Calculations from the smart contract re-written in JS */
+const calcPayout = (_odds, _tktPrice, _take, _numWinners, _prizePool, _pctOfPool) => 
+  oddsTotal(_odds, _tktPrice, _take, _numWinners) < splitsTotal(_prizePool, _pctOfPool, _numWinners) 
+    ? oddsSingle(_odds, _tktPrice, _take) 
+    : splitsSingle(_prizePool, _pctOfPool, _numWinners)
+
+const oddsTotal = (_odds, _tktPrice, _take, _numWinners) => 
+  oddsSingle(_odds, _tktPrice, _take) * _numWinners;
+
+const splitsTotal = (_prizePool, _pctOfPool, _numWinners) =>
+  splitsSingle(_prizePool, _pctOfPool, _numWinners) * _numWinners
+
+const oddsSingle = (_odds, _tktPrice, _take) =>
+  (_tktPrice * _odds * (1000 - _take)) / 1000
+
+const splitsSingle = (_prizePool, _pctOfPool, _numWinners) =>
+  (_prizePool * _pctOfPool) / (_numWinners * 1000)
+
+const waitForEvent = _event => 
+  new Promise((resolve, reject) => 
+    _event.watch((err, res) =>
+      err ? reject(err) : (resolve(res), _event.stopWatching())))
+
+const waitForConditionalEvent = (_event, _amt) => 
+  new Promise((resolve, reject) => 
+    _event.watch((err, res) => {
+      if (err) reject(err)
+      if (res.args.amount.toNumber() == _amt) {
+        resolve(res)
+        _event.stopWatching()
+      }
+    })
+  )
