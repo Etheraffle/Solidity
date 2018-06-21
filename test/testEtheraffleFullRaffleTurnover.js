@@ -150,6 +150,15 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     }
   })
 
+  it(`Should set matches delay to ${tempDelay} seconds`, async () => {
+    // Set matches delay to 30s -> check delay set correctly.
+    const contract = await etheraffle.deployed()
+        , owner    = await contract.etheraffle.call()
+    await contract.manuallySetMatchesDelayTime(tempDelay, {from: owner})
+    const newDelay = await contract.matchesDelay.call()
+    assert.equal(newDelay.toNumber(), tempDelay, 'New matches delay time not set!')
+  })
+
 })
 
 const createDelay = time =>
