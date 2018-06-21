@@ -534,7 +534,10 @@ contract Etheraffle is usingOraclize {
     function modifyPrizePool(bool _bool, uint _amt) private {
         if (!_bool) require (_amt <= prizePool);
         prizePool = _bool ? prizePool + _amt : prizePool - _amt;
+        // TODO: Remove temp event logging!
+        emit LogPrizePoolModification(_amt, _bool, now);
     }
+    event LogPrizePoolModification(uint amount, bool wasPrizeAddition, uint atTime);
     /**
      *
      *      ##########################################
@@ -860,6 +863,27 @@ contract Etheraffle is usingOraclize {
         distributeFunds(_week, cost, profit);
     }
     /**
+     * @notice  Takes oraclize random.org api call result string and splits
+     *          it at the commas into an array, parses those strings in that
+     *          array as integers and pushes them into the winning numbers
+     *          array in the raffle's struct. Fires event logging the data,
+     *          including the serial number of the random.org callback so
+     *          its veracity can be proven.
+     *
+     * @param   _week    The week number of the raffle in question.
+     *
+     * @param   _result   The results string from oraclize callback.
+     *
+     */
+    function setWinningNumbers(uint _week, string _result) internal {
+        string[] memory arr = stringToArray(_result);
+        for (uint i = 0; i < 6; i++){
+            raffle[_week].winNums.push(parseInt(arr[i]));
+        }
+        uint serialNo = parseInt(arr[6]);
+        emit LogWinningNumbers(_week, raffle[_week].numEntries, raffle[_week].winNums, prizePool, serialNo, now);
+    }
+    /**
      * @notice  Returns the cost of the Oraclize api calls
      *          (two per draw).
      *
@@ -904,7 +928,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     function accountForProfit(uint _profit) private {
-        if (_profit == 0) return 
+        if (_profit == 0) return
         modifyPrizePool(false, _profit);
     }
     /**
@@ -982,27 +1006,6 @@ contract Etheraffle is usingOraclize {
         return raffle[_week].winAmts.length > 0;
     }
     /**
-     * @notice  Takes oraclize random.org api call result string and splits
-     *          it at the commas into an array, parses those strings in that
-     *          array as integers and pushes them into the winning numbers
-     *          array in the raffle's struct. Fires event logging the data,
-     *          including the serial number of the random.org callback so
-     *          its veracity can be proven.
-     *
-     * @param   _week    The week number of the raffle in question.
-     *
-     * @param   _result   The results string from oraclize callback.
-     *
-     */
-    function setWinningNumbers(uint _week, string _result) internal {
-        string[] memory arr = stringToArray(_result);
-        for (uint i = 0; i < 6; i++){
-            raffle[_week].winNums.push(parseInt(arr[i]));
-        }
-        uint serialNo = parseInt(arr[6]);
-        emit LogWinningNumbers(_week, raffle[_week].numEntries, raffle[_week].winNums, prizePool, serialNo, now);
-    }
-    /**
      * @notice  Returns the number of seconds until the next occurring 
      *          raffle deadline.
      *
@@ -1041,7 +1044,7 @@ contract Etheraffle is usingOraclize {
             }
             raffle[_week].winAmts.push(amt);
         }
-        if (raffle[_week].unclaimed > prizePool) return pauseContract(true, 3); // now a double check, is this bad?
+        // if (raffle[_week].unclaimed > prizePool) return pauseContract(true, 3); // TODO: reinstate? (Would be a double check, is this bad?)
         modifyPrizePool(false, raffle[_week].unclaimed);
         setWithdraw(_week, true);
         emit LogPrizePoolsUpdated(prizePool, _week, raffle[_week].tktPrice, raffle[_week].unclaimed, raffle[_week].winAmts, now);
