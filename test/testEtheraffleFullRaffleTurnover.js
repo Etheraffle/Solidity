@@ -193,6 +193,21 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(ev.args.amount.toNumber(), profit, 'Profit and costs have not been accounted for!')
   })
 
+  it('Should disburse funds correctly', async () => {
+    // Watch for fund disbursal event -> ensure details correct.
+    const contract  = await etheraffle.deployed()
+        , conEvent  = await contract.LogFundsDisbursed({}, {fromBlock: 0, toBlock: 'latest'})
+        , week      = await contract.getWeek()
+        , struct    = await contract.raffle.call(week.toNumber() - 1)
+        , take      = await contract.take.call() // ppt 
+        , tktPrice  = struct[0].toNumber()
+        , entries   = struct[4].toNumber()
+        , profit    = Math.trunc(((tktPrice * entries) * take.toNumber()) / 1000)
+        , half      = Math.trunc(profit / 2)
+        , ev        = await waitForEvent(conEvent)
+    assert.equal(ev.args.amount.toNumber(), half, 'Disbursal event amount incorrect!')
+  })
+
 })
 
 const createDelay = time =>
