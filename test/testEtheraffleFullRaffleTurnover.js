@@ -278,7 +278,6 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
         , unclaimed = calcAmts.reduce((acc,e,i) => acc + (e * mockNums[i]), 0)
         , newPP     = calcPP - unclaimed
     assert.equal(args.ticketPrice.toNumber(), tktPrice, 'Ticket price for raffle was logged incorrectly!')
-    assert.equal(args.ticketPrice.toNumber(), tktPrice, 'Incorret ticket price in prize pools update event!')
     assert.equal(args.forRaffle.toNumber(), week.toNumber() - 1, 'Winning amounts set for wrong week number!')
     assert.equal(args.newMainPrizePool.toNumber(), newPP, 'Calculated new prize pool and event\'s new prize pool do not match!')
     assert.equal(args.unclaimedPrizePool.toNumber(), unclaimed, 'Calculated unclaimed amount and event\'s unclaimed amount do not match!')
@@ -369,7 +368,17 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.isFalse(isManual, 'Last Oraclize call should be an automated one!')
     assert.equal(week.toNumber(), weekNo, 'Last Oraclize call is for the wrong week!')
   })
+// that we can withdraw a prize 
+// that we can't re-withdraw a prize
+// that unclaimed sequestes pp correctly
+//that oraclize is accounted for correctly
+// Check contract status is changed per an oraclize query
+// enter x number of times and do the maths to calc the prizes correctly (inc free entries?)
 
+// win nums = 15, 14, 13, 12, 1, 2
+// acc one and seven wins two matches (so free go - test it out!) 
+// acc 9 wints 4 matches
+// acc 8 wins 3 matches
 })
 
 const createDelay = time =>
