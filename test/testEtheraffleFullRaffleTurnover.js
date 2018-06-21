@@ -159,6 +159,26 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(newDelay.toNumber(), tempDelay, 'New matches delay time not set!')
   })
 
+  it('Make a non-manual Random.org api Oraclize query', async () => {
+    // Craft non-manual Random.org query -> check it's qID strut is correct
+    let qID
+    const contract     = await etheraffle.deployed()
+        , owner        = await contract.etheraffle.call()
+        , week         = await contract.week.call()
+        , delay        = 0
+        , isRandom     = true
+        , isManual     = false
+        , status       = false
+        , oracCall     = await contract.manuallyMakeOraclizeCall(week.toNumber(), delay, isRandom, isManual, status, {from: owner})
+    await truffleAssert.eventEmitted(oracCall, 'LogQuerySent', ev => qID = ev.queryID)
+    const struct = await contract.qID.call(qID)
+        , paused = await contract.paused.call()
+    assert.equal(struct[0], week.toNumber(), 'Query week number and struct week number do not agree!')
+    assert.isTrue(struct[1], 'isRandom in struct for this query ID should be true!')
+    assert.isFalse(struct[2], 'isManual in struct for this query ID should be false!')
+    assert.isFalse(paused, 'Contract should not be paused!')
+  })
+
 })
 
 const createDelay = time =>
