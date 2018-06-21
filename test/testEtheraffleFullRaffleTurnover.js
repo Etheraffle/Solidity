@@ -313,6 +313,13 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(getWeek.toNumber(), week.toNumber(), `Week is ${week} & getWeek() is ${getWeek}!`)
   })
 
+  it('Contract should not be paused', async () => {
+    // Query paused variable -> ensure is false.
+    const contract = await etheraffle.deployed()
+        , paused   = await contract.paused.call()
+    assert.isFalse(paused, 'Conctract should not be paused!')
+  })
+
 })
 
 const createDelay = time =>
