@@ -125,7 +125,16 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     const rafEndCheck = await contract.rafEnd.call()
     assert.equal(rafEndCheck.toNumber(), rafEnd, 'New raffle end time was not set correctly!')
   })
- 
+  
+  it('Week number and getWeek() should return different values', async () => {
+    // get week from var -> get week from func -> check they differ by one.
+    await createDelay(15000)
+    const contract = await etheraffle.deployed()
+        , weekVar  = await contract.week.call()
+        , weekFunc = await contract.getWeek()
+    assert.equal(weekFunc.toNumber(), weekVar.toNumber() + 1, 'New raffle end time has not taken affect in getWeek function!')
+  })
+
 })
 
 const createDelay = time =>
