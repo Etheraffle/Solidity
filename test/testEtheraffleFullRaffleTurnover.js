@@ -179,6 +179,20 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.isFalse(paused, 'Contract should not be paused!')
   })
 
+  it('Should account for profit and costs in the prize pool', async () => {
+    // Watch for prize pool modifcation event for calculated amount -> assert veracity
+    const contract = await etheraffle.deployed()
+        , conEvent = contract.LogPrizePoolModification({}, {fromBlock: 0, toBlock: 'latest'})
+        , week     = await contract.getWeek()
+        , struct   = await contract.raffle.call(week.toNumber() - 1)
+        , take     = await contract.take.call() // ppt 
+        , tktPrice = struct[0].toNumber()
+        , entries  = struct[4].toNumber()
+        , profit   = Math.trunc(((tktPrice * entries) * take.toNumber()) / 1000)
+        , ev       = await waitForConditionalEvent(conEvent, profit)
+    assert.equal(ev.args.amount.toNumber(), profit, 'Profit and costs have not been accounted for!')
+  })
+
 })
 
 const createDelay = time =>
