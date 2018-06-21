@@ -286,6 +286,14 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     calcAmts.map((e,i) => assert.equal(contAmts[i], e, `Contract\'s win amount at index ${i} does not equal calculated amount!`))
   })
 
+  it('Withdraw should now be open', async () => {
+    // Query prev week -> get raffle struct -> ensure withdraw bool set to true.
+    const contract = await etheraffle.deployed()
+        , week     = await contract.getWeek()
+        , struct   = await contract.raffle.call(week.toNumber() - 1)
+    assert.isTrue(struct[3], 'Withdraw for raffle should be open!')
+  })
+
 })
 
 const createDelay = time =>
