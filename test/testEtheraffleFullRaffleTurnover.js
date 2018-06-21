@@ -305,6 +305,14 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(struct[0].toNumber(), tktPrice.toNumber(), `Raffle ticket price for week ${week} is not correct!`)
   })
 
+  it('Week and getWeek() should be congruent again', async () => {
+    // Query current week -> call getWeek() -> ensure they match.
+    const contract = await etheraffle.deployed()
+        , getWeek  = await contract.getWeek()
+        , week     = await contract.week.call()
+    assert.equal(getWeek.toNumber(), week.toNumber(), `Week is ${week} & getWeek() is ${getWeek}!`)
+  })
+
 })
 
 const createDelay = time =>
