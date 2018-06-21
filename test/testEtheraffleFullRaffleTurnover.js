@@ -320,6 +320,29 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.isFalse(paused, 'Conctract should not be paused!')
   })
 
+  it(`Can successfully enter the new current raffle`, async () => {
+    // Enter raffle -> check numEntries for correct raffle has incremented -> check prize pool has incremented correctly.
+    const contract      = await etheraffle.deployed()
+        , owner         = await contract.etheraffle.call()
+        , affID         = 0
+        , nums          = [1,2,3,4,5,6]
+        , week          = await contract.getWeek()
+        , ppBefore      = await contract.prizePool.call()
+      let struct          = await contract.raffle.call(week.toNumber())
+    const tktPrice      = struct[0].toNumber()
+        , entriesBefore = struct[4].toNumber()
+    try {
+      await contract.enterRaffle(nums, affID, {from: owner, value: tktPrice})
+    } catch (e) {
+      assert.fail('Should have been able to enter raffle successfully! Error: ', e)
+    }
+    struct = await contract.raffle.call(week.toNumber())
+    const entriesAfter = struct[4].toNumber()
+        , ppAfter      = await contract.prizePool.call()
+    assert.equal(entriesAfter, entriesBefore + 1, 'Incorrect number of entries into this raffle!')
+    assert.equal(ppAfter.toNumber(), ppBefore.toNumber() + tktPrice, 'Prize pool has not incremented correctly!')
+  })
+
 })
 
 const createDelay = time =>
