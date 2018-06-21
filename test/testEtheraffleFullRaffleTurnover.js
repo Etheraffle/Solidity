@@ -294,6 +294,17 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.isTrue(struct[3], 'Withdraw for raffle should be open!')
   })
 
+  it('New raffle struct should be set up correctly', async () => {
+    // Query current week -> get raffle struct -> ensure set up correctly.
+    const contract  = await etheraffle.deployed()
+        , week      = await contract.getWeek()
+        , tktPrice  = await contract.tktPrice.call()
+        , struct    = await contract.raffle.call(week.toNumber())
+        , timeStamp = birthday + (weekDur * week.toNumber())
+    assert.equal(struct[2].toNumber(), timeStamp, `Raffle time stamp for week ${week} is not correct!`)
+    assert.equal(struct[0].toNumber(), tktPrice.toNumber(), `Raffle ticket price for week ${week} is not correct!`)
+  })
+
 })
 
 const createDelay = time =>
