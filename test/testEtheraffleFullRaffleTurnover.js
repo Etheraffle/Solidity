@@ -51,6 +51,24 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(api2, api2After, 'Api2 string was not set correctly!')
    })
 
+   it('Percent of pool array should be correct', async () => {
+    // Check contract for pop vars -> assert same as vars in main function's scope
+    const contract  = await etheraffle.deployed()
+    pctOfPool.map(async (pop, i) => {
+      let contractPOP = await contract.pctOfPool.call(i)
+      assert.equal(contractPOP.toNumber(), pctOfPool[i], `Contract percent of pool at index ${i} is incorrect!`)
+    })
+  })
+
+  it('Odds array should be correct', async () => {
+    // Check contract for pop vars -> assert same as vars in main function's scope
+    const contract  = await etheraffle.deployed()
+    odds.map(async (odd, i) => {
+      let contractOdd = await contract.odds.call(i)
+      assert.equal(contractOdd.toNumber(), odds[i], `Contract odds at index ${i} are incorrect!`)
+    })
+  })
+
 })
 
 const createDelay = time =>
