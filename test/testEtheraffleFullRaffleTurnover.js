@@ -356,6 +356,20 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(args.dueAt.toNumber(), dueTime, 'Last Oraclize query is due back at incorrect time!')
   })
 
+  it('New Oraclize query struct should have correct details', async () => {
+    // Get last query event -> get qID struct from it -> ensure details in qID are correct.
+    const contract  = await etheraffle.deployed()
+        , week      = await contract.getWeek()
+        , { args }  = qArr[qArr.length - 1]
+        , qIDStruct = await contract.qID.call(args.queryID)
+        , weekNo    = qIDStruct[0].toNumber()
+        , isRandom  = qIDStruct[1]
+        , isManual  = qIDStruct[2]
+    assert.isTrue(isRandom, 'Last Oraclize call should be to Random.org!')
+    assert.isFalse(isManual, 'Last Oraclize call should be an automated one!')
+    assert.equal(week.toNumber(), weekNo, 'Last Oraclize call is for the wrong week!')
+  })
+
 })
 
 const createDelay = time =>
