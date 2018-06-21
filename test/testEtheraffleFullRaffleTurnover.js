@@ -135,6 +135,21 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(weekFunc.toNumber(), weekVar.toNumber() + 1, 'New raffle end time has not taken affect in getWeek function!')
   })
 
+  it('Raffles can no longer be entered due to next struct not being set up yet', async () => {
+    const contract = await etheraffle.deployed()
+        , owner    = await contract.etheraffle.call()
+        , tktPrice = await contract.tktPrice.call()
+        , nums     = [1,2,3,4,5,6]
+        , affID    = 0
+    try {
+      await contract.enterRaffle(nums, affID, {from: owner, value: tktPrice.toNumber()})
+      assert.fail('Should not have been able to enter a raffle with no struct set up!')
+    } catch (e) {
+      // console.log('Error when attempting to enter a closed raffle: ', e)
+      // Transaction reverts as expected!
+    }
+  })
+
 })
 
 const createDelay = time =>
