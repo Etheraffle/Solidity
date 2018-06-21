@@ -237,6 +237,23 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(contBal.toNumber(), bal, `EthRelief balance should be ${half}`)
   })
 
+  it('Should set winning numbers correctly', async () => {
+    // Watch for winning numbers event -> ensure details correct.
+    const contract = await etheraffle.deployed()
+        , conEvent = contract.LogWinningNumbers({}, {fromBlock: 0, toBlock: 'latest'})
+        , week     = await contract.getWeek()
+        , struct   = await contract.raffle.call(week.toNumber() - 1)
+        , entries  = struct[4].toNumber()
+        , mockNums = [13, 15, 1, 14, 2, 12]
+        , mockID   = 999
+        , ev       = await waitForEvent(conEvent)
+    assert.equal(ev.args.forRaffle.toNumber(), week.toNumber() - 1, 'Winning numbers set for the wrong week!')
+    assert.equal(ev.args.numberOfEntries.toNumber(), entries, 'Incorrect number of raffle entries logged!')
+    assert.equal(ev.args.randomSerialNo.toNumber(), mockID, 'Incorrect serial number was logged!')
+    ev.args.wNumbers.map((num, i) => 
+      assert.equal(num.toNumber(), mockNums[i], 'Winning numbers logged do not match mocked numbers!'))
+  })
+
 })
 
 const createDelay = time =>
