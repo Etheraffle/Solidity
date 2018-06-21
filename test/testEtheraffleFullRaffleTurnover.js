@@ -343,6 +343,19 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(ppAfter.toNumber(), ppBefore.toNumber() + tktPrice, 'Prize pool has not incremented correctly!')
   })
 
+  it('Should have created a new Oraclize query due at correct time', async () => {
+    // Get query event -> calc due time from contract vars -> check for equality.
+    const contract = await etheraffle.deployed()
+        , getWeek  = await contract.getWeek.call()
+        , weekDur  = await contract.WEEKDUR.call()
+        , birthday = await contract.BIRTHDAY.call()
+        , rafEnd   = await contract.rafEnd.call()
+        , resDelay = await contract.resultsDelay.call()
+        , dueTime  = (getWeek.toNumber() * weekDur.toNumber()) + birthday.toNumber() + rafEnd.toNumber() + resDelay.toNumber()
+        , { args } = qArr[qArr.length - 1]
+    assert.equal(args.dueAt.toNumber(), dueTime, 'Last Oraclize query is due back at incorrect time!')
+  })
+
 })
 
 const createDelay = time =>
