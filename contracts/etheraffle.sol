@@ -928,7 +928,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     function accountForProfit(uint _profit) private {
-        if (_profit == 0) return
+        if (_profit == 0) return;
         modifyPrizePool(false, _profit);
     }
     /**
