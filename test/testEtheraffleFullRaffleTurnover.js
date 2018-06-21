@@ -268,6 +268,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
         , struct    = await contract.raffle.call(week.toNumber() - 1)
         , take      = await contract.take.call() // ppt 
         , tktPrice  = struct[0].toNumber()
+        , structUnc = struct[1].toNumber()
         , entries   = struct[4].toNumber()
         , profit    = Math.trunc(((tktPrice * entries) * take.toNumber()) / 1000)
         , calcPP    = initBal + (numEntries * tktPrice)- oracTot - profit 
@@ -280,6 +281,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(args.ticketPrice.toNumber(), tktPrice, 'Ticket price for raffle was logged incorrectly!')
     assert.equal(args.forRaffle.toNumber(), week.toNumber() - 1, 'Winning amounts set for wrong week number!')
     assert.equal(args.newMainPrizePool.toNumber(), newPP, 'Calculated new prize pool and event\'s new prize pool do not match!')
+    assert.equal(structUnc, unclaimed, 'Calculated unclaimed amount and struct\'s unclaimed amount do not match!')
     assert.equal(args.unclaimedPrizePool.toNumber(), unclaimed, 'Calculated unclaimed amount and event\'s unclaimed amount do not match!')
     calcAmts.map((e,i) => assert.equal(eventAmts[i], e, `Prize pools updated event logged incorrect prize amount at index ${i}`))
     calcAmts.map((e,i) => assert.equal(contAmts[i], e, `Contract\'s win amount at index ${i} does not equal calculated amount!`))
