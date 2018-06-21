@@ -113,6 +113,19 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(newPrizePool.toNumber(), prizePool.toNumber() + (tktPrice * accounts.length), 'Prize pool not incremented correctly!')
   })
 
+  it('Set raffle end time, thereby closing the previous raffle', async () => {
+    // Set raf end -> check get week increments -> enter raffle -> check it's a new raffle entry.
+    const contract  = await etheraffle.deployed()
+        , owner     = await contract.etheraffle.call()
+        , week      = await contract.week.call()
+        , struct    = await contract.raffle.call(week.toNumber())
+        , timeStamp = struct[2].toNumber()
+        , rafEnd    = _now - timeStamp
+    await contract.manuallySetRafEndTime(rafEnd, {from: owner})
+    const rafEndCheck = await contract.rafEnd.call()
+    assert.equal(rafEndCheck.toNumber(), rafEnd, 'New raffle end time was not set correctly!')
+  })
+ 
 })
 
 const createDelay = time =>
