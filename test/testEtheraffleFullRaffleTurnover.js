@@ -254,6 +254,38 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
       assert.equal(num.toNumber(), mockNums[i], 'Winning numbers logged do not match mocked numbers!'))
   })
 
+  it('Should account for profit & costs then set winning & unclaimed amts correctly', async () => {
+    // Pull vars from contract -> calculate winning amounts -> pull win amts from contract -> assert veracity
+    const contract  = await etheraffle.deployed()
+        , conEvent  = contract.LogPrizePoolsUpdated({}, {fromBlock: 0, toBlock: 'latest'})
+        , { args }  = await waitForEvent(conEvent)
+        , mockNums  = [1,1,0,0]
+        , gasAmt    = await contract.gasAmt.call()
+        , gasPrc    = await contract.gasPrc.call()
+        , oracCost  = await contract.oracCost.call()
+        , oracTot   = ((gasAmt.toNumber() * gasPrc.toNumber()) + oracCost.toNumber()) * 2
+        , week      = await contract.getWeek()
+        , struct    = await contract.raffle.call(week.toNumber() - 1)
+        , take      = await contract.take.call() // ppt 
+        , tktPrice  = struct[0].toNumber()
+        , entries   = struct[4].toNumber()
+        , profit    = Math.trunc(((tktPrice * entries) * take.toNumber()) / 1000)
+        , calcPP    = initBal + (numEntries * tktPrice)- oracTot - profit 
+        , winDeets  = await contract.getWinningDetails(week.toNumber() - 1)
+        , calcAmts  = odds.map((odd,i) => mockNums[i] ? calcPayout(odd, tktPrice, take, mockNums[i], calcPP, pctOfPool[i]) : 0)
+        , contAmts  = winDeets[1].map(e => e.toNumber())
+        , eventAmts = args.winningAmounts.map(e => e.toNumber())
+        , unclaimed = calcAmts.reduce((acc,e,i) => acc + (e * mockNums[i]), 0)
+        , newPP     = calcPP - unclaimed
+    assert.equal(args.ticketPrice.toNumber(), tktPrice, 'Ticket price for raffle was logged incorrectly!')
+    assert.equal(args.ticketPrice.toNumber(), tktPrice, 'Incorret ticket price in prize pools update event!')
+    assert.equal(args.forRaffle.toNumber(), week.toNumber() - 1, 'Winning amounts set for wrong week number!')
+    assert.equal(args.newMainPrizePool.toNumber(), newPP, 'Calculated new prize pool and event\'s new prize pool do not match!')
+    assert.equal(args.unclaimedPrizePool.toNumber(), unclaimed, 'Calculated unclaimed amount and event\'s unclaimed amount do not match!')
+    calcAmts.map((e,i) => assert.equal(eventAmts[i], e, `Prize pools updated event logged incorrect prize amount at index ${i}`))
+    calcAmts.map((e,i) => assert.equal(contAmts[i], e, `Contract\'s win amount at index ${i} does not equal calculated amount!`))
+  })
+
 })
 
 const createDelay = time =>
