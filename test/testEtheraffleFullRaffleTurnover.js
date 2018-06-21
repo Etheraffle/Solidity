@@ -207,6 +207,35 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
         , ev        = await waitForEvent(conEvent)
     assert.equal(ev.args.amount.toNumber(), half, 'Disbursal event amount incorrect!')
   })
+  
+  it('Disbursal balance should have been incremented', async () => {
+    // Query Disbursal contract balance -> calculate half of ER profit -> assert congruent.
+    const contract = await etheraffle.deployed()
+        , disbCon  = await disbursal.deployed()
+        , contBal  = disbursal.web3.eth.getBalance(disbCon.address)
+        , week     = await contract.getWeek()
+        , struct   = await contract.raffle.call(week.toNumber() - 1)
+        , tktPrice = struct[0].toNumber()
+        , take     = await contract.take.call()
+        , profit   = Math.trunc((tktPrice * numEntries * take) / 1000)
+        , half     = Math.trunc(profit / 2)
+    assert.equal(contBal.toNumber(), half, `Disbursal balance should be ${half}`)
+  })
+
+  it('EthRelief balance should have been incremented', async () => {
+    // Query EthRelief contract balance -> calculate half of ER profit -> assert congruent.
+    const contract = await etheraffle.deployed()
+        , erCon    = await ethRelief.deployed()
+        , contBal  = ethRelief.web3.eth.getBalance(erCon.address)
+        , week     = await contract.getWeek()
+        , struct   = await contract.raffle.call(week.toNumber() - 1)
+        , tktPrice = struct[0].toNumber()
+        , take     = await contract.take.call()
+        , profit   = Math.trunc((tktPrice * numEntries * take) / 1000)
+        , half     = Math.trunc(profit / 2)
+        , bal      = profit - half // Because of trunc, half may not == profit / 2
+    assert.equal(contBal.toNumber(), bal, `EthRelief balance should be ${half}`)
+  })
 
 })
 
