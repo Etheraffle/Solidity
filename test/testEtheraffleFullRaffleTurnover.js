@@ -97,6 +97,22 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(week.toNumber(), weekNow.toNumber(), 'Contract\'s week variable not set correctly!')
   })
 
+  it(`Enter the current raffle ${accounts.length} times`, async () => {
+    // Enter raffle with each account -> check numEntries has incremented -> check prize pool has incremented
+    const contract  = await etheraffle.deployed()
+        , affID     = 0
+        , week      = await contract.week.call()
+        , prizePool = await contract.prizePool.call()
+    let struct      = await contract.raffle.call(week.toNumber())
+    const tktPrice  = struct[0].toNumber()
+    accounts.map(async (account, i) => await contract.enterRaffle([1+i,2+i,3+i,4+i,5+i,6+i], affID, {from: account, value: tktPrice}))
+    struct = await contract.raffle.call(week.toNumber())
+    const numEntries   = struct[4].toNumber()
+        , newPrizePool = await contract.prizePool.call()
+    assert.equal(numEntries, accounts.length, 'Incorrect number of entries into this raffle!')
+    assert.equal(newPrizePool.toNumber(), prizePool.toNumber() + (tktPrice * accounts.length), 'Prize pool not incremented correctly!')
+  })
+
 })
 
 const createDelay = time =>
