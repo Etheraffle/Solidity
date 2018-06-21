@@ -69,6 +69,34 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     })
   })
 
+  it('Should set up current week\'s raffle struct correctly', async () => {
+    // Get week -> set up new raffle struct -> inspect structs data for veracity.
+    const contract  = await etheraffle.deployed()
+        , owner     = await contract.etheraffle.call()
+        , week      = await contract.getWeek()
+        , tktPrice  = await contract.tktPrice.call()
+        , birthday  = await contract.BIRTHDAY.call()
+        , weekDur   = await contract.WEEKDUR.call()
+        , timeStamp = birthday.toNumber() + (week.toNumber() * weekDur.toNumber())
+    await contract.manuallySetupRaffleStruct(week.toNumber(), tktPrice.toNumber(), timeStamp, {from: owner})
+    const struct = await contract.raffle.call(week.toNumber())
+    assert.equal(struct[0].toNumber(), tktPrice.toNumber(), 'Ticket price incorrectly set in struct!')
+    assert.equal(struct[2].toNumber(), timeStamp, 'Timestamp incorrectly set in struct!')
+    assert.isFalse(struct[3], 'Withdraw should not be open in raffle struct!')
+    assert.equal(struct[4].toNumber(), 0, 'There should not be any entries in this raffle!')
+    assert.equal(struct[5].toNumber(), 0, 'There should not be any free entries into this raffle!')
+  })
+
+  it('Should set current week correctly', async () => {
+    // Get week from contract -> set week -> check week is set.
+    const contract  = await etheraffle.deployed()
+        , owner = await contract.etheraffle.call()
+        , week  = await contract.getWeek()
+    await contract.manuallySetWeek(week.toNumber(), {from: owner})
+    const weekNow  = await contract.week.call()
+    assert.equal(week.toNumber(), weekNow.toNumber(), 'Contract\'s week variable not set correctly!')
+  })
+
 })
 
 const createDelay = time =>
