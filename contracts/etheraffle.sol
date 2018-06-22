@@ -699,11 +699,11 @@ contract Etheraffle is usingOraclize {
      */
     function openForWithdraw(uint _week) view internal returns (bool) {
         return (
-            winningNumbersSet(_week) &&
+            winningNumbersSet(_week) && // Note: This means we don't need to check if getWeek GT raffle's week
+            winningAmountsSet(_week) && // Note: New bit here instead of old temporal req.
             raffle[_week].wdrawOpen &&
             raffle[_week].timeStamp > 0 &&
-            now - raffle[_week].timeStamp < wdrawBfr &&
-            now - raffle[_week].timeStamp > WEEKDUR - (WEEKDUR / 7)
+            now - raffle[_week].timeStamp < wdrawBfr
         );
     }
     /**
@@ -717,7 +717,7 @@ contract Etheraffle is usingOraclize {
      * @return  Amount of numbers two arrays have in common.
      *
      */
-    function getMatches(uint[] _cNums, uint[] _wNums) pure internal returns (uint) {
+    function getMatches(uint[] _cNums, uint[] _wNums) pure public returns (uint) {
         require(_cNums.length == 6 && _wNums.length == 6);
         uint matches;
         for (uint i = 0; i < 6; i++) {
@@ -1130,6 +1130,18 @@ contract Etheraffle is usingOraclize {
      */
     function splitsSingle(uint _numWinners, uint _matchesIndex) internal view returns (uint) {
         return (prizePool * pctOfPool[_matchesIndex]) / (_numWinners * 1000);
+    }
+    /**
+     * @notice  Returns bool depending on whether the winning amounts
+     *          have been set in the struct or not.
+     *
+     * @param   _week   Week number for raffle in question.
+     *
+     * @return  True if winning numbers are set correctly in raffle struct.
+     *
+     */
+    function winningAmountsSet(uint _week) internal view returns (bool) {
+        return raffle[_week].winAmts.length > 0;
     }
     /**
      *
