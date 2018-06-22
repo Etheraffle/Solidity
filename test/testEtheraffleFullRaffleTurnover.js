@@ -10,7 +10,8 @@ const { assert }    = require("chai")
     , api2          = "\",\"k\":${[decrypt] BEhjzZIYd3GIvFUu4rWqwYOFKucnwToOUpP3x/svZVz/Vo68c6yIiq8k6XQDmPLajzSTD/TrpR5cF4BnLLhNDtELy7hQyMmFTuUa3JXBs0G0f4d7cTeIX8IG37KxtNfcvUafJy25}}']"
     , fakeRandom1   = "[URL] ['json(https://etheraffle.com/api/test).m','{\"flag\":\"true\",\"r\":\""
     , fakeRandom2   = "\",\"k\":${[decrypt] BEhjzZIYd3GIvFUu4rWqwYOFKucnwToOUpP3x/svZVz/Vo68c6yIiq8k6XQDmPLajzSTD/TrpR5cF4BnLLhNDtELy7hQyMmFTuUa3JXBs0G0f4d7cTeIX8IG37KxtNfcvUafJy25}}']"
-    
+// TODO: Write a function to check for revert in error messages so we can assert off that.
+
 contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts => {
 
   const win4Matches   = 9
@@ -440,10 +441,30 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.approximately(balBefore + winAmts[matches.toNumber() - 3], balAfter.toNumber(), 1*10**10, 'Winning account has not received correct amount of eth!')
   })
   
-  // it('Winner cannot successfully withdraw a prize twice', async () => {
-  //   const contract = await etheraffle.deployed()
-  //       , winner   = account[win4Matches]
-  // })
+  it('Winner cannot successfully withdraw a prize twice', async () => {
+    // Check entry is indeed winner -> attempt to withdraw -> check that it fails.
+    const contract = await etheraffle.deployed()
+        , week     = await contract.getWeek()
+        , winner   = accounts[win4Matches]
+        , cNums    = chosenNumbers[win4Matches]
+        , entryNum = await contract.getUserNumEntries(winner, week.toNumber() - 1)
+        , winDeets = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums  = winDeets[0].map(num => num.toNumber())
+        , matches  = await contract.getMatches.call(winNums, cNums)
+    assert.equal(matches.toNumber(), 4, `Account ${winner} should have 4 matches!`)
+    try {
+      await contract.withdrawWinnings(
+        week.toNumber() - 1, 
+        entryNum.toNumber(), 
+        cNums, 
+        {from: winner, gas: 300000}
+      )
+      assert.fail(null,null, 'Withdraw transaction should not have succeeded!')
+    } catch (e) {
+      // console.log('Error attempting second withdraw: ', e)
+      // Transaction reverts as expected!
+    }
+  })
   
   // it('Non-winner cannot successfully withdraw a prize', async () => {
   //   const contract = await etheraffle.deployed()
