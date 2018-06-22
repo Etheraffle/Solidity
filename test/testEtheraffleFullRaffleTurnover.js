@@ -378,6 +378,32 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(week.toNumber(), weekNo, 'Last Oraclize call is for the wrong week!')
   })
 
+  it('Winner can successfully withdraw a prize', async () => {
+    // Get winner account -> get number of matches -> assert prize worthy -> attempt to withdraw prize.
+    const contract = await etheraffle.deployed()
+        , week     = await contract.getWeek()
+        , entryNum = await contract.getUserNumEntries(accounts[win4Matches], week.toNumber() - 1)
+        , winDeets = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums  = winDeets[0].map(num => num.toNumber())
+        , winAmts  = winDeets[1].map(num => num.toNumber())
+        , matches  = await contract.getMatches.call(winNums, chosenNumbers[win4Matches])
+        , bal      = await etheraffle.web3.eth.getBalance(accounts[win4Matches])
+    ppGlobal       = await contract.prizePool.call() // set global var to prize pool for later test
+    bal4Matches    = bal.toNumber() // set global var to winner's balance for later test
+    assert.equal(matches.toNumber(), 4, `Account at index ${win4Matches} should have 4 matches!`)
+    try {
+      const wDraw  = await contract.withdrawWinnings(week.toNumber() - 1, entryNum.toNumber(), chosenNumbers[win4Matches], {from: accounts[win4Matches], gas: 300000})
+          , tx     = await web3.eth.getTransaction(wDraw.tx)
+          , gasAmt = wDraw.receipt.gasUsed
+          , gasPrc = tx.gasPrice.toNumber()
+          , gasTot = gasAmt * gasPrc
+      truffleAssert.eventEmitted(wDraw, 'LogWithdraw', ev => ev.amountWon == winAmts[matches - 3])
+      bal4Matches -= gasTot // Account for gas of above tx in stored account balance for a later test
+    } catch (e) {
+      assert.fail(_, _, `Winner should have been able to withdraw prize! Error: ${e}`)
+    }
+  })
+
 })
 
 const createDelay = time =>
