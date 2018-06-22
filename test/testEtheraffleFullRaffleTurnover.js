@@ -12,22 +12,32 @@ const { assert }    = require("chai")
     , fakeRandom2   = "\",\"k\":${[decrypt] BEhjzZIYd3GIvFUu4rWqwYOFKucnwToOUpP3x/svZVz/Vo68c6yIiq8k6XQDmPLajzSTD/TrpR5cF4BnLLhNDtELy7hQyMmFTuUa3JXBs0G0f4d7cTeIX8IG37KxtNfcvUafJy25}}']"
     
 contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts => {
+
+  const win4Matches   = 9
+      , win3Matches   = 8 
+      , win2Matches   = 7 // and account 1!
+      , tempDelay     = 30
+      , queryArr      = []
+      , mockID        = 999
+      , weekDur       = 604800
+      , initBal       = 1*10**18
+      , mockNumWins   = [1,1,0,0]
+      , birthday      = 1500249600
+      , numEntries    = accounts.length
+      , pctOfPool     = [520, 114, 47, 319]
+      , mockWinNums   = [13, 15, 1, 14, 2, 12]
+      , _now          = moment.utc().format('X')
+      , odds          = [56, 1032, 54200, 13983816]
+      , chosenNumbers = accounts.map((_, i) => [1+i,2+i,3+i,4+i,5+i,6+i])
+  let bal4Matches, bal3Matches, ppGlobal
   
-  const _now        = moment.utc().format('X')
-      , initBal     = 1*10**18
-      , numEntries  = accounts.length
-      , birthday    = 1500249600
-      , tempDelay   = 30
-      , weekDur     = 604800
-      , pctOfPool   = [520, 114, 47, 319]
-      , odds        = [56, 1032, 54200, 13983816]
-      , qArr        = []
+  /* Query sent event watcher */    
   etheraffle.deployed().then(contract => {
     const queryEvents = contract.LogQuerySent({}, {fromBlock: 0, toBlock: 'latest'})
     let counter = 0
     queryEvents.watch((err, res) => {
       err ? console.log('Error watching query events: ', err) : counter += 1
-      qArr.push(res)
+      queryArr.push(res)
       if (counter == 3) queryEvents.stopWatching()
     })
   })
@@ -105,7 +115,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
         , prizePool = await contract.prizePool.call()
     let struct      = await contract.raffle.call(week.toNumber())
     const tktPrice  = struct[0].toNumber()
-    accounts.map(async (account, i) => await contract.enterRaffle([1+i,2+i,3+i,4+i,5+i,6+i], affID, {from: account, value: tktPrice}))
+    accounts.map(async (account, i) => await contract.enterRaffle(chosenNumbers[i], affID, {from: account, value: tktPrice}))
     struct = await contract.raffle.call(week.toNumber())
     const numEntries   = struct[4].toNumber()
         , newPrizePool = await contract.prizePool.call()
@@ -244,14 +254,12 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
         , week     = await contract.getWeek()
         , struct   = await contract.raffle.call(week.toNumber() - 1)
         , entries  = struct[4].toNumber()
-        , mockNums = [13, 15, 1, 14, 2, 12]
-        , mockID   = 999
         , ev       = await waitForEvent(conEvent)
     assert.equal(ev.args.forRaffle.toNumber(), week.toNumber() - 1, 'Winning numbers set for the wrong week!')
     assert.equal(ev.args.numberOfEntries.toNumber(), entries, 'Incorrect number of raffle entries logged!')
     assert.equal(ev.args.randomSerialNo.toNumber(), mockID, 'Incorrect serial number was logged!')
     ev.args.wNumbers.map((num, i) => 
-      assert.equal(num.toNumber(), mockNums[i], 'Winning numbers logged do not match mocked numbers!'))
+      assert.equal(num.toNumber(), mockWinNums[i], 'Winning numbers logged do not match mocked numbers!'))
   })
 
   it('Should account for profit & costs then set winning & unclaimed amts correctly', async () => {
@@ -259,7 +267,6 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     const contract  = await etheraffle.deployed()
         , conEvent  = contract.LogPrizePoolsUpdated({}, {fromBlock: 0, toBlock: 'latest'})
         , { args }  = await waitForEvent(conEvent)
-        , mockNums  = [1,1,0,0]
         , gasAmt    = await contract.gasAmt.call()
         , gasPrc    = await contract.gasPrc.call()
         , oracCost  = await contract.oracCost.call()
@@ -273,10 +280,10 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
         , profit    = Math.trunc(((tktPrice * entries) * take.toNumber()) / 1000)
         , calcPP    = initBal + (numEntries * tktPrice)- oracTot - profit 
         , winDeets  = await contract.getWinningDetails(week.toNumber() - 1)
-        , calcAmts  = odds.map((odd,i) => mockNums[i] ? calcPayout(odd, tktPrice, take, mockNums[i], calcPP, pctOfPool[i]) : 0)
+        , calcAmts  = odds.map((odd,i) => mockNumWins[i] ? calcPayout(odd, tktPrice, take, mockNumWins[i], calcPP, pctOfPool[i]) : 0)
         , contAmts  = winDeets[1].map(e => e.toNumber())
         , eventAmts = args.winningAmounts.map(e => e.toNumber())
-        , unclaimed = calcAmts.reduce((acc,e,i) => acc + (e * mockNums[i]), 0)
+        , unclaimed = calcAmts.reduce((acc,e,i) => acc + (e * mockNumWins[i]), 0)
         , newPP     = calcPP - unclaimed
     assert.equal(args.ticketPrice.toNumber(), tktPrice, 'Ticket price for raffle was logged incorrectly!')
     assert.equal(args.forRaffle.toNumber(), week.toNumber() - 1, 'Winning amounts set for wrong week number!')
@@ -329,7 +336,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
         , nums          = [1,2,3,4,5,6]
         , week          = await contract.getWeek()
         , ppBefore      = await contract.prizePool.call()
-      let struct          = await contract.raffle.call(week.toNumber())
+    let struct          = await contract.raffle.call(week.toNumber())
     const tktPrice      = struct[0].toNumber()
         , entriesBefore = struct[4].toNumber()
     try {
@@ -353,7 +360,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
         , rafEnd   = await contract.rafEnd.call()
         , resDelay = await contract.resultsDelay.call()
         , dueTime  = (getWeek.toNumber() * weekDur.toNumber()) + birthday.toNumber() + rafEnd.toNumber() + resDelay.toNumber()
-        , { args } = qArr[qArr.length - 1]
+        , { args } = queryArr[queryArr.length - 1]
     assert.equal(args.dueAt.toNumber(), dueTime, 'Last Oraclize query is due back at incorrect time!')
   })
 
@@ -361,7 +368,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     // Get last query event -> get qID struct from it -> ensure details in qID are correct.
     const contract  = await etheraffle.deployed()
         , week      = await contract.getWeek()
-        , { args }  = qArr[qArr.length - 1]
+        , { args }  = queryArr[queryArr.length - 1]
         , qIDStruct = await contract.qID.call(args.queryID)
         , weekNo    = qIDStruct[0].toNumber()
         , isRandom  = qIDStruct[1]
@@ -370,17 +377,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.isFalse(isManual, 'Last Oraclize call should be an automated one!')
     assert.equal(week.toNumber(), weekNo, 'Last Oraclize call is for the wrong week!')
   })
-// that we can withdraw a prize 
-// that we can't re-withdraw a prize
-// that unclaimed sequestes pp correctly
-//that oraclize is accounted for correctly
-// Check contract status is changed per an oraclize query
-// enter x number of times and do the maths to calc the prizes correctly (inc free entries?)
 
-// win nums = 15, 14, 13, 12, 1, 2
-// acc one and seven wins two matches (so free go - test it out!) 
-// acc 9 wints 4 matches
-// acc 8 wins 3 matches
 })
 
 const createDelay = time =>
