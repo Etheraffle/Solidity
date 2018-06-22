@@ -154,7 +154,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
         , affID    = 0
     try {
       await contract.enterRaffle(nums, affID, {from: owner, value: tktPrice.toNumber()})
-      assert.fail('Should not have been able to enter a raffle with no struct set up!')
+      assert.fail(null, null, 'Should not have been able to enter a raffle with no struct set up!')
     } catch (e) {
       // console.log('Error when attempting to enter a closed raffle: ', e)
       // Transaction reverts as expected!
@@ -343,7 +343,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     try {
       await contract.enterRaffle(nums, affID, {from: owner, value: tktPrice})
     } catch (e) {
-      assert.fail('Should have been able to enter raffle successfully! Error: ', e)
+      assert.fail(null, null, 'Should have been able to enter raffle successfully! Error: ', e)
     }
     struct = await contract.raffle.call(week.toNumber())
     const entriesAfter = struct[4].toNumber()
@@ -383,17 +383,19 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     // Get winner account -> get number of matches -> assert prize worthy -> attempt to withdraw prize.
     const contract = await etheraffle.deployed()
         , week     = await contract.getWeek()
-        , entryNum = await contract.getUserNumEntries(accounts[win4Matches], week.toNumber() - 1)
+        , winner   = accounts[win4Matches]
+        , cNums    = chosenNumbers[win4Matches]
+        , entryNum = await contract.getUserNumEntries(winner, week.toNumber() - 1)
         , winDeets = await contract.getWinningDetails(week.toNumber() - 1)
         , winNums  = winDeets[0].map(num => num.toNumber())
         , winAmts  = winDeets[1].map(num => num.toNumber())
-        , matches  = await contract.getMatches.call(winNums, chosenNumbers[win4Matches])
-        , bal      = await etheraffle.web3.eth.getBalance(accounts[win4Matches])
+        , matches  = await contract.getMatches.call(winNums, cNums)
+        , bal      = await etheraffle.web3.eth.getBalance(winner)
     ppGlobal       = await contract.prizePool.call() // set global var to prize pool for later test
     bal4Matches    = bal.toNumber() // set global var to winner's balance for later test
-    assert.equal(matches.toNumber(), 4, `Account at index ${win4Matches} should have 4 matches!`)
+    assert.equal(matches.toNumber(), 4, `Account ${winner} should have 4 matches!`)
     try {
-      const wDraw  = await contract.withdrawWinnings(week.toNumber() - 1, entryNum.toNumber(), chosenNumbers[win4Matches], {from: accounts[win4Matches], gas: 300000})
+      const wDraw  = await contract.withdrawWinnings(week.toNumber() - 1, entryNum.toNumber(), cNums, {from: winner, gas: 300000})
           , tx     = await web3.eth.getTransaction(wDraw.tx)
           , gasAmt = wDraw.receipt.gasUsed
           , gasPrc = tx.gasPrice.toNumber()
@@ -401,7 +403,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
       truffleAssert.eventEmitted(wDraw, 'LogWithdraw', ev => ev.amountWon == winAmts[matches - 3])
       bal4Matches -= gasTot // Account for gas of above tx in stored account balance for a later test
     } catch (e) {
-      assert.fail(_, _, `Winner should have been able to withdraw prize! Error: ${e}`)
+      assert.fail(null, null, `Winner should have been able to withdraw prize! Error: ${e}`)
     }
   })
 
@@ -409,13 +411,14 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     // Calc unclaimed - prize just wdrawn -> get unclaimed from SC -> assert they're the same.
     const contract  = await etheraffle.deployed()
         , week      = await contract.getWeek()
+        , cNums     = chosenNumbers[win4Matches]
         , struct    = await contract.raffle.call(week.toNumber() - 1)
         , unclaimed = struct[1].toNumber()
         , winDeets  = await contract.getWinningDetails(week.toNumber() - 1)
         , winNums   = winDeets[0].map(num => num.toNumber())
         , winAmts   = winDeets[1].map(num => num.toNumber())
         , calcUnc   = winAmts.reduce((acc,e,i) => acc + (e * mockNumWins[i]), 0)
-        , matches   = await contract.getMatches.call(winNums, chosenNumbers[win4Matches])
+        , matches   = await contract.getMatches.call(winNums, cNums)
         , prizeAmt  = winAmts[matches - 3]
     assert.equal(unclaimed, calcUnc - prizeAmt,'Unclaimed has not been decremented correctly!')
   })
@@ -430,12 +433,14 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
   it('Prize winner\'s account should have incremented by prize amount', async () => {
     // Get winners balance before -> get balance after -> assert has incremented by prize amoutn
     const contract  = await etheraffle.deployed()
+        , winner    = accounts[win4Matches]
+        , cNums     = chosenNumbers[win4Matches]  
         , week      = await contract.getWeek()
         , winDeets  = await contract.getWinningDetails(week.toNumber() - 1)
         , winNums   = winDeets[0].map(num => num.toNumber())
         , winAmts   = winDeets[1].map(num => num.toNumber())
-        , matches   = await contract.getMatches.call(winNums, chosenNumbers[win4Matches])
-        , balAfter  = await etheraffle.web3.eth.getBalance(accounts[win4Matches])
+        , matches   = await contract.getMatches.call(winNums, cNums)
+        , balAfter  = await etheraffle.web3.eth.getBalance(winner)
         , balBefore = bal4Matches
     // Note: Use approx here because JS rounding arrors occasionally calculate the numbers to be 99.9999999% accurate but not exact match! Using 10Gwei as a delta here.
     assert.approximately(balBefore + winAmts[matches.toNumber() - 3], balAfter.toNumber(), 1*10**10, 'Winning account has not received correct amount of eth!')
