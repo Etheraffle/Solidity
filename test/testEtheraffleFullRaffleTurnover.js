@@ -549,12 +549,28 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
       await contract.withdrawWinnings(week.toNumber() - 1, entryNum, cNums, {from: nonWinner, gas: 300000})
       assert.fail(null, null, 'Withdraw transaction should not have succeeded!')
     } catch (e) {
-      console.log('Error attempting to withdraw using wrong entry number: ', e)
+      // console.log('Error attempting to withdraw using wrong entry number: ', e)
       // Transaction reverst as expected (fails the first requirement)!
     }
   })
 
-  // if('Account[8] winner can now withdraw with correct details', async () => {})
+  it('3 match winner can withdraw prize using correct details', async () => {
+    // Get winning details -> attempt withdraw -> check it succeeds
+    const contract = await etheraffle.deployed()
+        , winner   = accounts[win3Matches]
+        , cNums    = chosenNumbers[win3Matches]
+        , week     = await contract.getWeek()
+        , entryNum = await contract.getUserNumEntries(winner, week.toNumber() - 1)
+        , winDeets = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums  = winDeets[0].map(num => num.toNumber())
+        , matches  = await contract.getMatches.call(winNums, cNums)
+    assert.equal(matches.toNumber(), 3, `Account ${winner} should have made three matches!`)
+    try {
+      await contract.withdrawWinnings(week.toNumber() - 1, entryNum, cNums, {from: winner, gas: 300000})
+    } catch (e) {
+      assert.fail(null, null, `Withdraw transaction should have succeeded! Error: ${e}`)
+    }
+  })
 
 
   // if('Two match winner gets credited with one FreeLOT token', async () => {})
