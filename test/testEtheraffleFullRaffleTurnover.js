@@ -506,10 +506,48 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
       assert.fail(null,null, 'Withdraw transaction should not have succeeded!')
     } catch (e) {
       // console.log('Error attempting to withdraw using wrong week number: ', e)
-      // Transaction reverts as expected!
+      // Transaction hits invalid opcode when attempting to read from non-existing array whilst check eNums are valid.
     }
   })
 
+  it('3 match winner cannot withdraw prize when supplying incorrect entry number', async () => {
+    // Get winning details -> malform entry number -> attempt to withdraw -> check it fails
+    const contract   = await etheraffle.deployed()
+        , winner     = accounts[win3Matches]
+        , cNums      = chosenNumbers[win3Matches]
+        , week       = await contract.getWeek()
+        , entryNum   = await contract.getUserNumEntries(winner, week.toNumber() - 1)
+        , wrongENum  = entryNum.toNumber() + 1
+        , winDeets   = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums    = winDeets[0].map(num => num.toNumber())
+        , matches    = await contract.getMatches.call(winNums, cNums)
+    assert.equal(matches.toNumber(), 3, `Account ${winner} should have made three matches!`)
+    assert.notEqual(entryNum.toNumber(), wrongENum, 'Wrong week number should not match correct week number!')
+    try {
+      await contract.withdrawWinnings(week.toNumber() - 1, wrongENum, cNums, {from: winner, gas: 300000})
+      assert.fail(null,null, 'Withdraw transaction should not have succeeded!')
+    } catch (e) {
+      // console.log('Error attempting to withdraw using wrong entry number: ', e)
+      // Transaction reverts due to invalid opcode as expected (withdraw attmeps to read from an index in an array that doesn't exist)!
+    }
+  })
+
+  // it('Non-winner cannot successfully withdraw Account[8]\'s prize', async () => {
+  //   const contract  = await etheraffle.deployed()
+  //       , nonWinner = accounts[4]
+  // })
+
+  // if('Account[8] winner can now withdraw with correct details', async () => {})
+
+
+  // if('Two match winner gets credited with one FreeLOT token', async () => {})
+
+  // Check contract status is changed per an oraclize query
+
+  // win nums = 15, 14, 13, 12, 1, 2
+  // acc one and seven wins two matches (so free go - test it out!) 
+  // acc 9 wins 4 matches
+  // acc 8 wins 3 matches
 
 })
 
