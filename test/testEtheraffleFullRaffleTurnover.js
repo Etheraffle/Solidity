@@ -488,25 +488,29 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     }
   })
   
-  // it('Account[8] winner cannot withdraw prize when supplying incorrect week number', async () => {})
-  // it('Account[8] winner cannot withdraw prize when supplying incorrect entry number', async () => {})
+  it('3 match winner cannot withdraw prize when supplying incorrect week number', async () => {
+    // Get winning details -> malform week number -> attempt to withdraw -> check it fails
+    const contract   = await etheraffle.deployed()
+        , winner     = accounts[win3Matches]
+        , cNums      = chosenNumbers[win3Matches]
+        , week       = await contract.getWeek()
+        , entryNum   = await contract.getUserNumEntries(winner, week.toNumber() - 1)
+        , winDeets   = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums    = winDeets[0].map(num => num.toNumber())
+        , matches    = await contract.getMatches.call(winNums, cNums)
+        , wrongWeek  = week.toNumber() - 2
+    assert.equal(matches.toNumber(), 3, `Account ${winner} should have made three matches!`)
+    assert.notEqual(week.toNumber() - 1, week.toNumber() - 2, 'Wrong week number should not match correct week number!')
+    try {
+      await contract.withdrawWinnings(wrongWeek, entryNum.toNumber(), cNums, {from: winner, gas: 300000})
+      assert.fail(null,null, 'Withdraw transaction should not have succeeded!')
+    } catch (e) {
+      // console.log('Error attempting to withdraw using wrong week number: ', e)
+      // Transaction reverts as expected!
+    }
+  })
 
-  // it('Non-winner cannot successfully withdraw Account[8]\'s prize', async () => {
-  //   const contract  = await etheraffle.deployed()
-  //       , nonWinner = accounts[4]
-  // })
 
-  // if('Account[8] winner can now withdraw with correct details', async () => {})
-
-
-  // if('Two match winner gets credited with one FreeLOT token', async () => {})
-
-  // Check contract status is changed per an oraclize query
-
-  // win nums = 15, 14, 13, 12, 1, 2
-  // acc one and seven wins two matches (so free go - test it out!) 
-  // acc 9 wins 4 matches
-  // acc 8 wins 3 matches
 })
 
 const createDelay = time =>
