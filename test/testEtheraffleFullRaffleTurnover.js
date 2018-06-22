@@ -607,7 +607,13 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     }
   })
 
-  // it('Two match winner gets credited with one FreeLOT token', async () => {})
+  it('Two match winner gets credited with one FreeLOT token', async () => {
+    const freeCont = await freeLOT.deployed()
+        , winner   = accounts[win2Matches]
+    bal2Matches    = await freeCont.balanceOf.call(winner)
+    assert.equal(bal2Matches.toNumber(), 1, '2 match winner should now have one FreeLOT token!')
+  })
+
   // Check contract status is changed per an oraclize query
 
 })
