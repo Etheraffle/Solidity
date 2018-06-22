@@ -14,6 +14,7 @@ const { assert }    = require("chai")
 
 contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts => {
 
+  /* Following mocked details ensure a 4, 3 & two 2 matches winners exist */
   const win4Matches   = 9
       , win3Matches   = 8 
       , win2Matches   = 7 // and account 1!
@@ -572,30 +573,13 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     }
   })
 
-
   // if('Two match winner gets credited with one FreeLOT token', async () => {})
-
   // Check contract status is changed per an oraclize query
-
-  // win nums = 15, 14, 13, 12, 1, 2
-  // acc one and seven wins two matches (so free go - test it out!) 
-  // acc 9 wins 4 matches
-  // acc 8 wins 3 matches
 
 })
 
 const createDelay = time =>
   new Promise(resolve => setTimeout(resolve, time))
-
-const getAllEvents = _contract => // Where _contract = etheraffle.at(contract.address)
-  new Promise((resolve, reject) => 
-    _contract.allEvents({},{fromBlock:0, toBlock: 'latest'}).get((err, res) => 
-      err ? reject(null) : resolve(res)))
-
-const filterEvents = (_str, _contract) =>
-    getAllEvents(_contract)
-    .then(res => res.filter(({ event }) => event == _str))
-    .catch(e => console.log('Error filtering events: ', e))
 
 /* Payout Calculations from the smart contract re-written in JS */
 const calcPayout = (_odds, _tktPrice, _take, _numWinners, _prizePool, _pctOfPool) => 
