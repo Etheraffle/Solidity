@@ -32,7 +32,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
       , _now          = moment.utc().format('X')
       , odds          = [56, 1032, 54200, 13983816]
       , chosenNumbers = accounts.map((_, i) => [1+i,2+i,3+i,4+i,5+i,6+i])
-  let bal4Matches, bal3Matches, ppGlobal
+  let bal4Matches, bal2Matches, ppGlobal
   
   /* Query sent event watcher */    
   etheraffle.deployed().then(contract => {
@@ -584,9 +584,30 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
         , isMinter  = await freeCont.isMinter.call(erAdd)
     truffleAssert.eventEmitted(addMinter, 'LogMinterAddition', ev => ev.newMinter == erAdd)
     assert.isTrue(isMinter, 'Etheraffle should be a minter on the FreeLOT contract!')
-  })  
+  })
 
-  // if('Two match winner gets credited with one FreeLOT token', async () => {})
+  it('2 match winner can withdraw FreeLOT prize', async () => {
+    // Get 2 match winners balance of FreeLOT -> get winning details -> withdraw prize -> check it succeeds
+    const contract = await etheraffle.deployed()
+        , freeCont = await freeLOT.deployed()
+        , winner   = accounts[win2Matches]
+        , cNums    = chosenNumbers[win2Matches]
+        , week     = await contract.getWeek()
+        , entryNum = await contract.getUserNumEntries(winner, week.toNumber() - 1)
+        , winDeets = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums  = winDeets[0].map(num => num.toNumber())
+        , matches  = await contract.getMatches.call(winNums, cNums)
+    bal2Matches    = await freeCont.balanceOf.call(winner)
+    assert.equal(bal2Matches.toNumber(), 0, '2 match winner should have zero FreeLOT tokens at this point!')
+    assert.equal(matches.toNumber(), 2, `Account ${winner} should have made three matches!`)
+    try {
+      await contract.withdrawWinnings(week.toNumber() - 1, entryNum, cNums, {from: winner, gas: 300000})
+    } catch (e) {
+      assert.fail(null, null, `Withdraw transaction should have succeeded! Error: ${e}`)
+    }
+  })
+
+  // it('Two match winner gets credited with one FreeLOT token', async () => {})
   // Check contract status is changed per an oraclize query
 
 })
