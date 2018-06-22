@@ -459,7 +459,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(matches.toNumber(), 4, `Account ${winner} should have 4 matches!`)
     try {
       await contract.withdrawWinnings(week.toNumber() - 1, entryNum.toNumber(), cNums, {from: winner, gas: 300000})
-      assert.fail(null,null, 'Withdraw transaction should not have succeeded!')
+      assert.fail(null, null, 'Withdraw transaction should not have succeeded!')
     } catch (e) {
       // console.log('Error attempting second withdraw: ', e)
       // Transaction reverts as expected!
@@ -481,7 +481,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     cNums.map((e,i) => assert.notEqual(e, wrongCNums[i], 'Wrong chosen numbers should not match chosen numbers!'))
     try {
       await contract.withdrawWinnings(week.toNumber() - 1, entryNum.toNumber(), wrongCNums, {from: winner, gas: 300000})
-      assert.fail(null,null, 'Withdraw transaction should not have succeeded!')
+      assert.fail(null, null, 'Withdraw transaction should not have succeeded!')
     } catch (e) {
       // console.log('Error attempting second withdraw: ', e)
       // Transaction reverts as expected!
@@ -490,52 +490,69 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
   
   it('3 match winner cannot withdraw prize when supplying incorrect week number', async () => {
     // Get winning details -> malform week number -> attempt to withdraw -> check it fails
-    const contract   = await etheraffle.deployed()
-        , winner     = accounts[win3Matches]
-        , cNums      = chosenNumbers[win3Matches]
-        , week       = await contract.getWeek()
-        , entryNum   = await contract.getUserNumEntries(winner, week.toNumber() - 1)
-        , winDeets   = await contract.getWinningDetails(week.toNumber() - 1)
-        , winNums    = winDeets[0].map(num => num.toNumber())
-        , matches    = await contract.getMatches.call(winNums, cNums)
-        , wrongWeek  = week.toNumber() - 2
+    const contract  = await etheraffle.deployed()
+        , winner    = accounts[win3Matches]
+        , cNums     = chosenNumbers[win3Matches]
+        , week      = await contract.getWeek()
+        , entryNum  = await contract.getUserNumEntries(winner, week.toNumber() - 1)
+        , winDeets  = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums   = winDeets[0].map(num => num.toNumber())
+        , matches   = await contract.getMatches.call(winNums, cNums)
+        , wrongWeek = week.toNumber() - 2
     assert.equal(matches.toNumber(), 3, `Account ${winner} should have made three matches!`)
     assert.notEqual(week.toNumber() - 1, week.toNumber() - 2, 'Wrong week number should not match correct week number!')
     try {
       await contract.withdrawWinnings(wrongWeek, entryNum.toNumber(), cNums, {from: winner, gas: 300000})
-      assert.fail(null,null, 'Withdraw transaction should not have succeeded!')
+      assert.fail(null, null, 'Withdraw transaction should not have succeeded!')
     } catch (e) {
       // console.log('Error attempting to withdraw using wrong week number: ', e)
-      // Transaction hits invalid opcode when attempting to read from non-existing array whilst check eNums are valid.
+      // Transaction fails due to invalid opcode when attempting to read from non-existing array whilst check eNums are valid.
     }
   })
 
   it('3 match winner cannot withdraw prize when supplying incorrect entry number', async () => {
     // Get winning details -> malform entry number -> attempt to withdraw -> check it fails
-    const contract   = await etheraffle.deployed()
-        , winner     = accounts[win3Matches]
-        , cNums      = chosenNumbers[win3Matches]
-        , week       = await contract.getWeek()
-        , entryNum   = await contract.getUserNumEntries(winner, week.toNumber() - 1)
-        , wrongENum  = entryNum.toNumber() + 1
-        , winDeets   = await contract.getWinningDetails(week.toNumber() - 1)
-        , winNums    = winDeets[0].map(num => num.toNumber())
-        , matches    = await contract.getMatches.call(winNums, cNums)
+    const contract  = await etheraffle.deployed()
+        , winner    = accounts[win3Matches]
+        , cNums     = chosenNumbers[win3Matches]
+        , week      = await contract.getWeek()
+        , entryNum  = await contract.getUserNumEntries(winner, week.toNumber() - 1)
+        , wrongENum = entryNum.toNumber() + 1
+        , winDeets  = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums   = winDeets[0].map(num => num.toNumber())
+        , matches   = await contract.getMatches.call(winNums, cNums)
     assert.equal(matches.toNumber(), 3, `Account ${winner} should have made three matches!`)
     assert.notEqual(entryNum.toNumber(), wrongENum, 'Wrong week number should not match correct week number!')
     try {
       await contract.withdrawWinnings(week.toNumber() - 1, wrongENum, cNums, {from: winner, gas: 300000})
-      assert.fail(null,null, 'Withdraw transaction should not have succeeded!')
+      assert.fail(null, null, 'Withdraw transaction should not have succeeded!')
     } catch (e) {
       // console.log('Error attempting to withdraw using wrong entry number: ', e)
-      // Transaction reverts due to invalid opcode as expected (withdraw attmeps to read from an index in an array that doesn't exist)!
+      // Transaction fails due to invalid opcode as expected (withdraw attmeps to read from an index in an array that doesn't exist)!
     }
   })
 
-  // it('Non-winner cannot successfully withdraw Account[8]\'s prize', async () => {
-  //   const contract  = await etheraffle.deployed()
-  //       , nonWinner = accounts[4]
-  // })
+  it('Non-winner cannot successfully withdraw a winner\'s not-yet-withdrawn prize', async () => {
+    // Get winning details -> use different account -> attempt withdraw -> check it fails
+    const contract  = await etheraffle.deployed()
+        , winner    = accounts[win3Matches]
+        , nonWinner = accounts[4]
+        , cNums     = chosenNumbers[win3Matches]
+        , week      = await contract.getWeek()
+        , entryNum  = await contract.getUserNumEntries(winner, week.toNumber() - 1)
+        , winDeets  = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums   = winDeets[0].map(num => num.toNumber())
+        , matches   = await contract.getMatches.call(winNums, cNums)
+    assert.equal(matches.toNumber(), 3, `Account ${winner} should have made three matches!`)
+    assert.notEqual(winner, nonWinner, 'Non-winner account should not match the actual winner\'s account!')
+    try {
+      await contract.withdrawWinnings(week.toNumber() - 1, entryNum, cNums, {from: nonWinner, gas: 300000})
+      assert.fail(null, null, 'Withdraw transaction should not have succeeded!')
+    } catch (e) {
+      console.log('Error attempting to withdraw using wrong entry number: ', e)
+      // Transaction reverst as expected (fails the first requirement)!
+    }
+  })
 
   // if('Account[8] winner can now withdraw with correct details', async () => {})
 
