@@ -3,6 +3,7 @@ const { assert }    = require("chai")
     , truffleAssert = require('truffle-assertions')
     , etheraffle    = artifacts.require('etheraffle')
     , ethRelief     = artifacts.require('ethRelief')
+    , freeLOT       = artifacts.require('etheraffleFreeLOT')
     , disbursal     = artifacts.require('etheraffleDisbursal')
     , random1       = "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random[\"data\", \"serialNumber\"]','\\n{\"jsonrpc\": \"2.0\",\"method\":\"generateSignedIntegers\",\"id\":\""
     , random2       = "\",\"params\":{\"n\":\"6\",\"min\":1,\"max\":49,\"replacement\":false,\"base\":10,\"apiKey\":${[decrypt] BBxn5oQTs8LKRkJb32LS+dHf/c//H3sSjehJchlucpdFGEjBwtSu08okSPoSkoQQpPCW56kz7PoGm5VEc8r722oEg01AdB03CbURpSxU5cF9Q7MeyNAaDUcTOvlX1L2T/h/k4PUD6FEIvtynHZrSMisEF+r7WJxgiA==}}']"
@@ -572,6 +573,18 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
       assert.fail(null, null, `Withdraw transaction should have succeeded! Error: ${e}`)
     }
   })
+
+  it('Should add this Etheraffle contract as a FreeLOT minter', async () => {
+    // Add Etheraffle as FreeLOT minter -> enusre is minter
+    const contract  = await etheraffle.deployed()
+        , erAdd     = contract.address
+        , freeCont  = await freeLOT.deployed()
+        , freeOwner = await freeCont.etheraffle.call()
+        , addMinter = await freeCont.addMinter(erAdd, {from: freeOwner})
+        , isMinter  = await freeCont.isMinter.call(erAdd)
+    truffleAssert.eventEmitted(addMinter, 'LogMinterAddition', ev => ev.newMinter == erAdd)
+    assert.isTrue(isMinter, 'Etheraffle should be a minter on the FreeLOT contract!')
+  })  
 
   // if('Two match winner gets credited with one FreeLOT token', async () => {})
   // Check contract status is changed per an oraclize query
