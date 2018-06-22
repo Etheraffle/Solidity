@@ -404,6 +404,20 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     }
   })
 
+  it('Unclaimed prize pool should decrement by prize withdrawal amount', async () => {
+    const contract  = await etheraffle.deployed()
+        , week      = await contract.getWeek()
+        , struct    = await contract.raffle.call(week.toNumber() - 1)
+        , unclaimed = struct[1].toNumber()
+        , winDeets  = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums   = winDeets[0].map(num => num.toNumber())
+        , winAmts   = winDeets[1].map(num => num.toNumber())
+        , calcUnc   = winAmts.reduce((acc,e,i) => acc + (e * mockNumWins[i]), 0)
+        , matches   = await contract.getMatches.call(winNums, chosenNumbers[win4Matches])
+        , prizeAmt  = winAmts[matches - 3]
+    assert.equal(unclaimed, calcUnc - prizeAmt,'Unclaimed has not been decremented correctly!')
+  })
+
 })
 
 const createDelay = time =>
