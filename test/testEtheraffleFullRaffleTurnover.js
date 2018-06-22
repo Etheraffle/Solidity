@@ -405,6 +405,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
   })
 
   it('Unclaimed prize pool should decrement by prize withdrawal amount', async () => {
+    // Calc unclaimed - prize just wdrawn -> get unclaimed from SC -> assert they're the same.
     const contract  = await etheraffle.deployed()
         , week      = await contract.getWeek()
         , struct    = await contract.raffle.call(week.toNumber() - 1)
@@ -419,12 +420,14 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
   })
 
   it('Prize pool should not decrement by prize withdrawal amount', async () => {
+    // Check prize pool var saved before wdraw is same as pp from SC now.
     const contract = await etheraffle.deployed()
         , ppNow    = await contract.prizePool.call()
     assert.equal(ppGlobal.toNumber(), ppNow.toNumber(), 'Prize pool should not decrement on prize withdrawal!')
   })
 
   it('Prize winner\'s account should have incremented by prize amount', async () => {
+    // Get winners balance before -> get balance after -> assert has incremented by prize amoutn
     const contract  = await etheraffle.deployed()
         , week      = await contract.getWeek()
         , winDeets  = await contract.getWinningDetails(week.toNumber() - 1)
@@ -437,6 +440,28 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.approximately(balBefore + winAmts[matches.toNumber() - 3], balAfter.toNumber(), 1*10**10, 'Winning account has not received correct amount of eth!')
   })
   
+  // it('Winner cannot successfully withdraw a prize twice', async () => {
+  //   const contract = await etheraffle.deployed()
+  //       , winner   = account[win4Matches]
+  // })
+  
+  // it('Non-winner cannot successfully withdraw a prize', async () => {
+  //   const contract = await etheraffle.deployed()
+  //       , winner   = account[8]
+  // })
+
+  // it('Account[8] winner cannot withdraw prize when supplying incorrect winning numbers', async () => {})
+  // it('Account[8] winner cannot withdraw prize when supplying incorrect week number', async () => {})
+  // it('Account[8] winner cannot withdraw prize when supplying incorrect entry number', async () => {})
+  // if('Account[8] winner can now withdraw with correct details', async () => {})
+  // if('Two match winner gets credited with one FreeLOT token', async () => {})
+
+  // Check contract status is changed per an oraclize query
+
+  // win nums = 15, 14, 13, 12, 1, 2
+  // acc one and seven wins two matches (so free go - test it out!) 
+  // acc 9 wins 4 matches
+  // acc 8 wins 3 matches
 })
 
 const createDelay = time =>
