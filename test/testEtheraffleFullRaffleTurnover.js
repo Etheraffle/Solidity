@@ -630,7 +630,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
       await contract.withdrawWinnings(week.toNumber() - 1, entryNum, cNums, {from: winner, gas: 300000})
       assert.fail(null, null, 'Two match winner should not be able to withdraw prize twice!')
     } catch (e) {
-      console.log('Error when trying to withdraw two match win twice: ', e)
+      // console.log('Error when trying to withdraw two match win twice: ', e)
       // Transaction reverts as expected!
     }
   })
