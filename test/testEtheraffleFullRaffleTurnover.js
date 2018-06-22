@@ -418,6 +418,25 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(unclaimed, calcUnc - prizeAmt,'Unclaimed has not been decremented correctly!')
   })
 
+  it('Prize pool should not decrement by prize withdrawal amount', async () => {
+    const contract = await etheraffle.deployed()
+        , ppNow    = await contract.prizePool.call()
+    assert.equal(ppGlobal.toNumber(), ppNow.toNumber(), 'Prize pool should not decrement on prize withdrawal!')
+  })
+
+  it('Prize winner\'s account should have incremented by prize amount', async () => {
+    const contract  = await etheraffle.deployed()
+        , week      = await contract.getWeek()
+        , winDeets  = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums   = winDeets[0].map(num => num.toNumber())
+        , winAmts   = winDeets[1].map(num => num.toNumber())
+        , matches   = await contract.getMatches.call(winNums, chosenNumbers[win4Matches])
+        , balAfter  = await etheraffle.web3.eth.getBalance(accounts[win4Matches])
+        , balBefore = bal4Matches
+    // Note: Use approx here because JS rounding arrors occasionally calculate the numbers to be 99.9999999% accurate but not exact match! Using 10Gwei as a delta here.
+    assert.approximately(balBefore + winAmts[matches.toNumber() - 3], balAfter.toNumber(), 1*10**10, 'Winning account has not received correct amount of eth!')
+  })
+  
 })
 
 const createDelay = time =>
