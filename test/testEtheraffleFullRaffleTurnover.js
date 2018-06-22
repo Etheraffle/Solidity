@@ -381,7 +381,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(week.toNumber(), weekNo, 'Last Oraclize call is for the wrong week!')
   })
 
-  it('4 match winner can successfully withdraw a prize', async () => {
+  it('Four match winner can successfully withdraw a prize', async () => {
     // Get winner account -> get number of matches -> assert prize worthy -> attempt to withdraw prize.
     const contract = await etheraffle.deployed()
         , week     = await contract.getWeek()
@@ -432,7 +432,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.equal(ppGlobal.toNumber(), ppNow.toNumber(), 'Prize pool should not decrement on prize withdrawal!')
   })
 
-  it('4 match prize winner\'s account should have incremented by prize amount', async () => {
+  it('Four match prize winner\'s account should have incremented by prize amount', async () => {
     // Get winners balance before -> get balance after -> assert has incremented by prize amoutn
     const contract  = await etheraffle.deployed()
         , winner    = accounts[win4Matches]
@@ -448,7 +448,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.approximately(balBefore + winAmts[matches.toNumber() - 3], balAfter.toNumber(), 1*10**10, 'Winning account has not received correct amount of eth!')
   })
   
-  it('4 match winner cannot successfully withdraw their prize twice', async () => {
+  it('Four match winner cannot successfully withdraw their prize twice', async () => {
     // Check entry is indeed winner -> attempt to withdraw -> check that it fails.
     const contract = await etheraffle.deployed()
         , week     = await contract.getWeek()
@@ -490,7 +490,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     }
   })
   
-  it('3 match winner cannot withdraw prize when supplying incorrect week number', async () => {
+  it('Three match winner cannot withdraw prize when supplying incorrect week number', async () => {
     // Get winning details -> malform week number -> attempt to withdraw -> check it fails
     const contract  = await etheraffle.deployed()
         , winner    = accounts[win3Matches]
@@ -512,7 +512,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     }
   })
 
-  it('3 match winner cannot withdraw prize when supplying incorrect entry number', async () => {
+  it('Three match winner cannot withdraw prize when supplying incorrect entry number', async () => {
     // Get winning details -> malform entry number -> attempt to withdraw -> check it fails
     const contract  = await etheraffle.deployed()
         , winner    = accounts[win3Matches]
@@ -556,7 +556,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     }
   })
 
-  it('3 match winner can withdraw prize using correct details', async () => {
+  it('Three match winner can withdraw prize using correct details', async () => {
     // Get winning details -> attempt withdraw -> check it succeeds
     const contract = await etheraffle.deployed()
         , winner   = accounts[win3Matches]
@@ -586,7 +586,7 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
     assert.isTrue(isMinter, 'Etheraffle should be a minter on the FreeLOT contract!')
   })
 
-  it('2 match winner can withdraw FreeLOT prize', async () => {
+  it('Two match winner can withdraw FreeLOT prize', async () => {
     // Get 2 match winners balance of FreeLOT -> get winning details -> withdraw prize -> check it succeeds
     const contract = await etheraffle.deployed()
         , freeCont = await freeLOT.deployed()
@@ -612,6 +612,27 @@ contract('Etheraffle Oraclize Tests Part VII - Full Raffle Turnover', accounts =
         , winner   = accounts[win2Matches]
     bal2Matches    = await freeCont.balanceOf.call(winner)
     assert.equal(bal2Matches.toNumber(), 1, '2 match winner should now have one FreeLOT token!')
+  })
+
+  it('Two match winner cannot withdraw FreeLOT prize twice', async () => {
+    // Get 2 match winners balance of FreeLOT -> get winning details -> withdraw prize -> check it succeeds
+    const contract = await etheraffle.deployed()
+        , freeCont = await freeLOT.deployed()
+        , winner   = accounts[win2Matches]
+        , cNums    = chosenNumbers[win2Matches]
+        , week     = await contract.getWeek()
+        , entryNum = await contract.getUserNumEntries(winner, week.toNumber() - 1)
+        , winDeets = await contract.getWinningDetails(week.toNumber() - 1)
+        , winNums  = winDeets[0].map(num => num.toNumber())
+        , matches  = await contract.getMatches.call(winNums, cNums)
+    assert.equal(matches.toNumber(), 2, `Account ${winner} should have made three matches!`)
+    try {
+      await contract.withdrawWinnings(week.toNumber() - 1, entryNum, cNums, {from: winner, gas: 300000})
+      assert.fail(null, null, 'Two match winner should not be able to withdraw prize twice!')
+    } catch (e) {
+      console.log('Error when trying to withdraw two match win twice: ', e)
+      // Transaction reverts as expected!
+    }
   })
 
   // Check contract status is changed per an oraclize query
