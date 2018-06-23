@@ -877,7 +877,7 @@ contract Etheraffle is usingOraclize {
      */
     function setWinningNumbers(uint _week, string _result) internal {
         string[] memory arr = stringToArray(_result);
-        for (uint i = 0; i < 6; i++){
+        for (uint i = 0; i < 6; i++) {
             raffle[_week].winNums.push(parseInt(arr[i]));
         }
         uint serialNo = parseInt(arr[6]);
