@@ -1,7 +1,7 @@
 /**
  * NOTE: This v2 currently in testing phase, see deprecated for current main-chain version. It's also more method call-y than v1, and so slightly more expensive in gas (for turnovers, not the end user!) but MUCH more readable/maintainable.
 
- TODO: Batch entries (expand valid ticket price to take a param) (multiple on behalf of?)
+ TODO: Batch entries (expand valid ticket price to take a param) (multiple on behalf of?) (multiple free entries?)
  TODO: Future entries? (function out the struct setup to this so it can set up ones in future? Limit to a month or two? There may be issues re changing the ticket price?)
  */
 /**
@@ -352,7 +352,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     function enterRaffle(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
-        require (validTktPrice(week, 1));
+        require (validTktPrice(week, msg.value));
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
     /**
@@ -369,7 +369,7 @@ contract Etheraffle is usingOraclize {
      *
      */
     function enterOnBehalfOf(uint[] _cNums, uint _affID, address _onBehalfOf) payable public onlyIfNotPaused {
-        require (validTktPrice(week, 1));
+        require (validTktPrice(week, msg.value));
         buyTicket(_cNums, _onBehalfOf, msg.value, _affID);
     }
     /**
@@ -412,20 +412,19 @@ contract Etheraffle is usingOraclize {
     }
     /**
      * @notice  Checks that a raffle struct has a ticket price set and whether 
-     *          the caller's msg.value is greater than or equal to that price.
+     *          the caller's proposed price is GTE to it
      *
      * @param   _week   Week number for raffle in question.
      *
-     * @param   _amount Number of tickets being purchased.
-     *
+     * @param   _price  The price being paid for the ticket.
      *
      * @return  True if msg.value greater than tktPrice, else false.
      *
      */
-    function validTktPrice(uint _week, uint _amount) internal view returns (bool) {
+    function validTktPrice(uint _week, uint _price) internal view returns (bool) {
         return (
             raffle[_week].tktPrice > 0 && 
-            msg.value >= raffle[_week].tktPrice * _amount
+            raffle[_week].tktPrice <= _price
         );
     }
     /**
