@@ -355,6 +355,19 @@ contract Etheraffle is usingOraclize {
         require (validTktPrice(week, msg.value));
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
+
+
+    function enterRaffleMultiple(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
+        uint tktPrc = msg.value / (_cNums.length / 6);
+        require(validTktPrice(week, tktPrc));
+        for (uint i = 1; i <= (_cNums.length / 6); i++) {
+            uint[] memory cNums = new uint[](6);
+            for (uint j = 0; j < 6; j++) {
+                cNums[j] = _cNums[(6 * i) - 6 + j];
+            }
+            buyTicket(cNums, msg.sender, tktPrc, _affID);
+        }
+    }
     /**
      * @notice  Function to enter the raffle on behalf of another address.  
      *          Checks for correct ticket price. Only callable when the 
