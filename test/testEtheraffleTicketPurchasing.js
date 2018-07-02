@@ -3,12 +3,15 @@ const { assert }    = require("chai")
     , truffleAssert = require('truffle-assertions')
     , etheraffle    = artifacts.require('etheraffle')
     , freeLOT       = artifacts.require('etheraffleFreeLOT')
-    
-contract('Etheraffle Ticket Purchasing Tests', accounts => {
-  // Test all three methods for buying tickets!! Check correct struc vars afterwards
-  // Edit the raf end variable and check it reverts when trying to enter raffle! (no struct...)
-  // set up the "next" raffles struct manually then enter that one and test vars etc!
 
+  
+// TODO: test entries result in correct hashes in user arrays
+// TODO: close the raffle somehow and test raffle closed entry.
+// TODO: test for functions not running if paused 
+// Test all three methods for buying tickets!! Check correct struc vars afterwards
+
+contract('Etheraffle Ticket Purchasing Tests', accounts => {
+    
   it('Tickets can only be purchased by sending >= ticket price', async () => {
     const contract = await etheraffle.deployed()
         , week     = await contract.getWeek.call()
@@ -23,7 +26,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
     truffleAssert.eventEmitted(entryEQ, 'LogTicketBought')
     try {
       await contract.enterRaffle(entry, affID, {from: entrant, value: tktPrice - 1})
-      assert.fail('Shouldn\'t be able to enter raffle for less than ticket price!')
+      assert.fail(null, null, 'Shouldn\'t be able to enter raffle for less than ticket price!')
     } catch (e) {
       // console.log('Error when buying ticket for less than ticket price: ', e)
       // Transaction reverts as expected!
@@ -31,21 +34,21 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
   })
 
   it('Should log all ticket purchase details correctly', async () => {
-    const contract = await etheraffle.deployed()
-        , week     = await contract.getWeek.call()
-        , struct   = await contract.raffle.call(week)
-        , tktPrice = struct[0].toNumber()
-        , entry    = [1,2,3,4,5,6]
-        , entrant  = accounts[5]
-        , affID    = 5
-        , tx       = await contract.enterRaffle(entry, affID, {from: entrant, value: tktPrice})
-    truffleAssert.eventEmitted(tx, 'LogTicketBought', ev =>
+    const contract  = await etheraffle.deployed()
+        , week      = await contract.getWeek.call()
+        , struct    = await contract.raffle.call(week)
+        , tktPrice  = struct[0].toNumber()
+        , entryNums = [1,2,3,4,5,6]
+        , entrant   = accounts[5]
+        , affID     = 5
+        , entry     = await contract.enterRaffle(entryNums, affID, {from: entrant, value: tktPrice})
+    truffleAssert.eventEmitted(entry, 'LogTicketBought', ev =>
       ev.tktCost.toNumber() == tktPrice &&
-      ev.chosenNumbers.reduce((acc, e, i) => acc && e == entry[i], true)
+      ev.chosenNumbers.reduce((acc, e, i) => acc && e == entryNums[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
-        , entryNum = await contract.getUserNumEntries(entrant, week)
+    const [{ args }] = entry.logs.filter(e => e.event == 'LogTicketBought')
+        , entryNum   = await contract.getUserNumEntries(entrant, week)
     assert.equal(args.theEntrant, entrant)
     assert.equal(args.personalEntryNumber.toNumber(), entryNum.toNumber())
     assert.equal(args.forRaffle.toNumber(), week)
@@ -118,7 +121,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }] = entry.logs.filter(e => e.event == 'LogTicketBought')
         , numEntries = await contract.getUserNumEntries(onBehalfOf, week)
     assert.equal(args.theEntrant, onBehalfOf)
     assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
@@ -140,7 +143,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
     truffleAssert.eventEmitted(entryEQ, 'LogTicketBought')
     try {
       await contract.enterOnBehalfOf(numbers, affID, onBehalfOf, {from: buyer, value: tktPrice - 1})
-      assert.fail('Shouldn\'t be able to enter on behalf of another into a raffle for less than ticket price!')
+      assert.fail(null, null, 'Shouldn\'t be able to enter on behalf of another into a raffle for less than ticket price!')
     } catch (e) {
       // console.log('Error when buying ticket for someone else for less than ticket price: ', e)
       // Transaction reverts as expected!
@@ -164,8 +167,8 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
-        , entriesNow = await contract.getUserNumEntries(onBehalfOf, week)
+    const [{ args }]      = entry.logs.filter(e => e.event == 'LogTicketBought')
+        , entriesNow      = await contract.getUserNumEntries(onBehalfOf, week)
         , buyerEntriesNow = await contract.getUserNumEntries(buyer, week)
     assert.equal(args.theEntrant, onBehalfOf)
     assert.equal(args.personalEntryNumber.toNumber(), entriesNow.toNumber())
@@ -192,7 +195,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }] = entry.logs.filter(e => e.event == 'LogTicketBought')
         , numEntries = await contract.getUserNumEntries(entrant, week)
     assert.equal(args.theEntrant, entrant)
     assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
@@ -215,7 +218,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }] = entry.logs.filter(e => e.event == 'LogTicketBought')
         , numEntries = await contract.getUserNumEntries(entrant, week)
     assert.equal(args.theEntrant, entrant)
     assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
@@ -239,9 +242,9 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
-    , numEntries = await contract.getUserNumEntries(entrant, week)
-    , prizePoolNow = await contract.prizePool.call()
+    const [{ args }]   = entry.logs.filter(e => e.event == 'LogTicketBought')
+        , numEntries   = await contract.getUserNumEntries(entrant, week)
+        , prizePoolNow = await contract.prizePool.call()
     assert.equal(args.theEntrant, entrant)
     assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
     assert.equal(args.forRaffle.toNumber(), week)
@@ -268,7 +271,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }]  = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }] = entry.logs.filter(e => e.event == 'LogTicketBought')
         , userEntries = await contract.getUserNumEntries(entrant, week)
     assert.equal(args.theEntrant, entrant)
     assert.equal(args.personalEntryNumber.toNumber(), userEntries.toNumber())
@@ -297,7 +300,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }]       = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }]       = entry.logs.filter(e => e.event == 'LogTicketBought')
         , userEntriesAfter = await contract.getUserNumEntries(entrant, week)
     assert.equal(args.theEntrant, entrant)
     assert.equal(args.personalEntryNumber.toNumber(), userEntriesAfter.toNumber())
@@ -322,7 +325,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }]   = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }]   = entry.logs.filter(e => e.event == 'LogTicketBought')
         , userEntries  = await contract.getUserNumEntries(entrant, week)
         , freeBalAfter = await freeCont.balanceOf.call(entrant)
         , freeTotAfter = await freeCont.totalSupply.call()
@@ -344,7 +347,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
     assert.equal(freeBal.toNumber(), 0, 'FreeLOT balance is greater than zero!')
     try {
       await contract.enterFreeRaffle(numbers, affID, {from: entrant, value: tktPrice})
-      assert.fail('Entrant shouldn\'t be able to enter for free without a freeLOT token!')
+      assert.fail(null, null, 'Entrant shouldn\'t be able to enter for free without a freeLOT token!')
     } catch (e) {
       // console.log('Error when attempting to enter for free sans a FreeLOT token', e)
       // Transaction reverted as expected!
@@ -368,7 +371,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }]     = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }]     = entry.logs.filter(e => e.event == 'LogTicketBought')
         , userEntries    = await contract.getUserNumEntries(entrant, week)
         , freeBalAfter   = await freeCont.balanceOf.call(entrant)
         , prizePoolAfter = await contract.prizePool.call()
@@ -396,7 +399,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }] = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }] = entry.logs.filter(e => e.event == 'LogTicketBought')
         , numEntries = await contract.getUserNumEntries(onBehalfOf, week)
     assert.equal(args.theEntrant, onBehalfOf)
     assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
@@ -416,7 +419,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
     assert.equal(freeBal.toNumber(), 0, 'FreeLOT balance above zero!')
     try {
       await contract.enterOnBehalfOfFree(numbers, affID, onBehalfOf, {from: buyer, value: tktPrice})
-      assert.fail('Shouldn\'t be able to enter on behalf of for free if holding no FreeLOT tokens!')
+      assert.fail(null, null, 'Shouldn\'t be able to enter on behalf of for free if holding no FreeLOT tokens!')
     } catch (e) {
       // console.log('Error when attempting free entry on behalf of whilst holding 0 FreeLOT: ', e)
       // Transaction reverts as expected!
@@ -442,7 +445,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }]         = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }]         = entry.logs.filter(e => e.event == 'LogTicketBought')
         , buyerEntriesAfter  = await contract.getUserNumEntries(buyer, week)
         , behalfEntriesAfter = await contract.getUserNumEntries(onBehalfOf, week)
     assert.equal(args.theEntrant, onBehalfOf)
@@ -470,7 +473,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }]     = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }]     = entry.logs.filter(e => e.event == 'LogTicketBought')
         , numEntries     = await contract.getUserNumEntries(onBehalfOf, week)
         , prizePoolAfter = await contract.prizePool.call()
     assert.equal(args.theEntrant, onBehalfOf)
@@ -497,7 +500,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }]         = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }]         = entry.logs.filter(e => e.event == 'LogTicketBought')
         , numEntries         = await contract.getUserNumEntries(onBehalfOf, week)
         , freeBalBuyerAfter  = await freeCont.balanceOf.call(buyer)
         , freeBalBehalfAfter = await freeCont.balanceOf.call(onBehalfOf)
@@ -525,7 +528,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }]     = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }]     = entry.logs.filter(e => e.event == 'LogTicketBought')
         , numEntries     = await contract.getUserNumEntries(onBehalfOf, week)
     assert.equal(args.theEntrant, onBehalfOf)
     assert.equal(args.personalEntryNumber.toNumber(), numEntries.toNumber())
@@ -550,7 +553,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }]     = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }]     = entry.logs.filter(e => e.event == 'LogTicketBought')
         , numEntries     = await contract.getUserNumEntries(onBehalfOf, week)
         , prizePoolAfter = await contract.prizePool.call()
     assert.equal(args.theEntrant, onBehalfOf)
@@ -579,7 +582,7 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
       ev.chosenNumbers.reduce((acc, e, i) => acc && e == numbers[i], true)
     )
     /* Can't access indexed logs via truffleAssert hence following */
-    const [{ args }]   = await getAllEvents(etheraffle.at(contract.address))
+    const [{ args }]   = entry.logs.filter(e => e.event == 'LogTicketBought')
         , numEntries   = await contract.getUserNumEntries(onBehalfOf, week)
         , structAfter  = await contract.raffle.call(week)
         , numEntAfter  = structAfter[4]
@@ -590,15 +593,4 @@ contract('Etheraffle Ticket Purchasing Tests', accounts => {
     assert.equal(numEntAfter.toNumber(), numEntBefore.toNumber() + 1)    
     assert.equal(freeEntAfter.toNumber(), freeEntBefore.toNumber() + 1)      
   })
-
-  //test entries result in correct hashes in user arrays
-  // close the raffle somehow and test raffle closed entry.
-  // test for functions not running if paused 
-
 })
-
-/* Supply arg in form of: etheraffle.at(contract.address) */
-const getAllEvents = _contract => 
-  new Promise((resolve, reject) => 
-    _contract.allEvents({},{fromBlock:0, toBlock: 'latest'})
-    .get((err, res) => !err ? resolve(res) : console.log(err)))
