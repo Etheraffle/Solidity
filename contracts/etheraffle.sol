@@ -355,8 +355,16 @@ contract Etheraffle is usingOraclize {
         require (validTktPrice(week, msg.value));
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
-
-
+    // FIXME: write tests for below func and think through ramifications of fixing the tktPrc forever.
+    /**
+     * @notice  Function to enter multiple raffles. 
+     *
+     * @param   _cNums  Array of chosen numbers, every six being an ordered 
+     *          entry. 
+     *
+     * @param   _affID  Affiliate ID of the source of this entry.
+     *
+     */
     function enterRaffleMultiple(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
         uint tktPrc = msg.value / (_cNums.length / 6);
         require(validTktPrice(week, tktPrc));
