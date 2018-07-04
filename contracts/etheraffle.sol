@@ -376,12 +376,19 @@ contract Etheraffle is usingOraclize {
             buyTicket(cNums, msg.sender, tktPrc, _affID);
         }
     }
-    // FIXME: Write and test and think about the ramifications of this function (means we can't modify the tktprice without possibilites for arbing. Do we keep the price something small?? What if ETH goes MASSIVE, we don't want to be stuck with a huge ticket price...can it be a reward for people who entered into the future???)
+    // FIXME: Write and test and think about the ramifications of this function (means we can't modify the tktprice without possibilites for arbing. Do we keep the price something small?? What if ETH goes MASSIVE, we don't want to be stuck with a huge ticket price...can it be a reward for people who entered into the future??? 
+    // NOTE: (means payout calcs will be wrong though :S))
     /**
      * @notice  Function to enter into future raffle.
      *
      */
     function enterFutureRaffle(uint[] _cNums, ,uint weekNo, uint _affID) payable public onlyIfNotPaused {
+
+    }
+    /**
+     * @notice  Function to batch enter future raffles
+     */
+    function enterFutureRaffleMultiple() payable public onlyIfNotPaused {
 
     }
 
