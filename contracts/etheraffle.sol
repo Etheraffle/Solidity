@@ -1,8 +1,34 @@
 /**
- * NOTE: This v2 currently in testing phase, see deprecated for current main-chain version. It's also more method call-y than v1, and so slightly more expensive in gas (for turnovers, not the end user!) but MUCH more readable/maintainable.
+ *  FIXME: The main raffle struct's order may no longer match what front end functions are expecting when looping through struct array.
 
- TODO: Batch entries (expand valid ticket price to take a param) (multiple on behalf of?) (multiple free entries?)
- TODO: Future entries? (function out the struct setup to this so it can set up ones in future? Limit to a month or two? There may be issues re changing the ticket price?)
+TODO: have buy ticket take a week param 
+
+TODO: have enterRaffle pass in current week? Other methods can add their own
+
+TODO: raffleOpenForEntry will need to take the week param too
+
+TODO: need raffles structs to get set up when people attempt to enter a future raffle? Inc the current one?
+
+TODO: can call setUpRaffleStruct() to set up new raffle if not already
+
+TODO: have a check on the callback function to see if the raffle is already set up?
+
+TODO: lose free entries tracking
+
+TODO: add in earnings to struct, then we can change tkt price
+
+TODO: change profit calc from using ticket price to using tracked earnings
+
+TODO: alter new raffle setup to first check if raffle set up
+
+TODO: have enter future check for timestamp and if not set it up
+
+TODO: remove ticket prices in struct in favour of unclaimed or the incrementing balance of prices
+
+TODO: valid ticket price checker needs only to look at global price
+
+TODO: remove wdrawOpen since we don't really need it. Can use temporal and winAmts set to govern whether wdraw is available or not.
+
  */
 /**
  *      Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 Smart-Contract!
@@ -106,16 +132,28 @@ contract Etheraffle is usingOraclize {
      *
      */
     mapping (uint => rafStruct) public raffle;
-    struct rafStruct {
+    // struct rafStruct { // Note: Prev struct setup. New versions breaks tests & frontend
+    //     mapping (address => bytes32[]) entries;
+    //     uint tktPrice;
+    //     uint unclaimed;
+    //     uint[] winNums;
+    //     uint[] winAmts;
+    //     uint timeStamp;
+    //     bool wdrawOpen;
+    //     uint numEntries;
+    //     uint freeEntries;
+    // }
+
+    struct rafStruct { // Note: Prev struct setup. New versions breaks tests & frontend
         mapping (address => bytes32[]) entries;
-        uint tktPrice;
-        uint unclaimed;
         uint[] winNums;
         uint[] winAmts;
+        bool wdrawOpen; // Note: Do we need this? Can't we use temporal timestamp plus winAmts set being true ONLY?
+        uint earnings;
+        uint unclaimed;
         uint timeStamp;
-        bool wdrawOpen;
-        uint numEntries;
-        uint freeEntries;
+        uint numEntries;  // Note: do we even need these now?? - maybe for picking up correct num on front end??
+        // uint freeEntries; // Note: do we even need this now?? Don't need for profit calc if tracking earnings
     }
 
     mapping (bytes32 => qIDStruct) public qID;
@@ -134,18 +172,20 @@ contract Etheraffle is usingOraclize {
      *
      */
     /**
-    * @notice   Modifier to prepend to functions adding the additional
-    *           conditional requiring caller of the method to be the
-    *           etheraffle address.
-    */
+     * @notice   Modifier to prepend to functions adding the additional
+     *           conditional requiring caller of the method to be the
+     *           etheraffle address.#
+     *
+     */
     modifier onlyEtheraffle() {
         require(msg.sender == etheraffle);
         _;
     }
     /**
-    * @notice   Modifier to prepend to functions adding the additional
-    *           conditional requiring the paused bool to be false.
-    */
+     * @notice   Modifier to prepend to functions adding the additional
+     *           conditional requiring the paused bool to be false.#
+     *
+     */
     modifier onlyIfNotPaused() {
         require(!paused);
         _;
