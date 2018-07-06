@@ -355,43 +355,6 @@ contract Etheraffle is usingOraclize {
         require (validTktPrice(week, msg.value));
         buyTicket(_cNums, msg.sender, msg.value, _affID);
     }
-    // FIXME: write tests for below func and think through ramifications of fixing the tktPrc forever.
-    /**
-     * @notice  Function to enter multiple raffles. 
-     *
-     * @param   _cNums  Array of chosen numbers, every six being an ordered 
-     *          entry. 
-     *
-     * @param   _affID  Affiliate ID of the source of this entry.
-     *
-     */
-    function enterRaffleMultiple(uint[] _cNums, uint _affID) payable public onlyIfNotPaused {
-        uint tktPrc = msg.value / (_cNums.length / 6);
-        require(validTktPrice(week, tktPrc));
-        for (uint i = 1; i <= (_cNums.length / 6); i++) {
-            uint[] memory cNums = new uint[](6);
-            for (uint j = 0; j < 6; j++) {
-                cNums[j] = _cNums[(6 * i) - 6 + j];
-            }
-            buyTicket(cNums, msg.sender, tktPrc, _affID);
-        }
-    }
-    // FIXME: Write and test and think about the ramifications of this function (means we can't modify the tktprice without possibilites for arbing. Do we keep the price something small?? What if ETH goes MASSIVE, we don't want to be stuck with a huge ticket price...can it be a reward for people who entered into the future??? 
-    // NOTE: (means payout calcs will be wrong though :S))
-    /**
-     * @notice  Function to enter into future raffle.
-     *
-     */
-    function enterFutureRaffle(uint[] _cNums, ,uint weekNo, uint _affID) payable public onlyIfNotPaused {
-
-    }
-    /**
-     * @notice  Function to batch enter future raffles
-     */
-    function enterFutureRaffleMultiple() payable public onlyIfNotPaused {
-
-    }
-
     /**
      * @notice  Function to enter the raffle on behalf of another address.  
      *          Checks for correct ticket price. Only callable when the 
