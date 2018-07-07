@@ -1,10 +1,4 @@
 /**
- * NOTE: This v2 currently in testing phase, see deprecated for current main-chain version. It's also more method call-y than v1, and so slightly more expensive in gas (for turnovers, not the end user!) but MUCH more readable/maintainable.
-
- TODO: Batch entries (expand valid ticket price to take a param) (multiple on behalf of?) (multiple free entries?)
- TODO: Future entries? (function out the struct setup to this so it can set up ones in future? Limit to a month or two? There may be issues re changing the ticket price?)
- */
-/**
  *      Welcome to the 𝐄𝐭𝐡𝐞𝐫𝐚𝐟𝐟𝐥𝐞 Smart-Contract!
  *      The 𝐎𝐍𝐋𝐘 decentralized, charitable blockchain lottery!
  *      
