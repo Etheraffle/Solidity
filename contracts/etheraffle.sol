@@ -1,5 +1,6 @@
 /**
- *  FIXME: The main raffle struct's order may no longer match what front end functions are expecting when looping through struct array.
+-
+FIXME: The main raffle struct's order may no longer match what front end functions are expecting when looping through struct array.
 
 TODO: have buy ticket take a week param 
 
@@ -27,7 +28,7 @@ TODO: remove ticket prices in struct in favour of unclaimed or the incrementing 
 
 TODO: valid ticket price checker needs only to look at global price
 
-TODO: remove wdrawOpen since we don't really need it. Can use temporal and winAmts set to govern whether wdraw is available or not.
+TODO: remove wdrawOpen since we don't really need it. Can use temporal and winAmts set to govern whether wdraw is available or not!
 
  */
 /**
@@ -1677,4 +1678,3 @@ contract Etheraffle is usingOraclize {
         selfdestruct(ethRelief);
     }
 }
-
